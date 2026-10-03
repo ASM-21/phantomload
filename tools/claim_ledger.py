@@ -128,7 +128,13 @@ def build() -> list[dict]:
 
 
 def main() -> int:
+    # Provenance is captured ONCE, inside build(), before anything is written.
+    # An earlier version wrote the CSV and then queried git again for the
+    # CLAIMS.md header, so the header saw its own sibling file as a change and
+    # recorded dirty=True while every CSV row recorded dirty=False. Two
+    # provenance records for one run disagreed. Both now read the same capture.
     rows = build()
+    git = {"commit": rows[0]["commit"], "dirty": rows[0]["dirty"]}
     out = ROOT / "results" / "claim_ledger.csv"
     with out.open("w", newline="") as fh:
         writer = csv.DictWriter(fh, fieldnames=list(rows[0]))
@@ -136,7 +142,6 @@ def main() -> int:
         writer.writerows(rows)
 
     slices = provenance.slice_records()
-    git = provenance.git_state(ROOT)
     lines = [
         "# Claims",
         "",

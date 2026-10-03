@@ -254,7 +254,7 @@ METHOD.md        the rules, what they cost to learn, and what enforces them
 MODELED.md       simulated analyses, kept out of the citable findings by rule
 CLAIMS.md        every quoted figure with its provenance record, generated
 PRIOR_WORK.md    what was already published, and what is still unsearched
-tests/           182 tests
+tests/           183 tests
 ```
 
 ## Install and run
@@ -262,7 +262,7 @@ tests/           182 tests
 ```bash
 pip install -e ".[dev]"
 python run_all.py            # all tracks, tables, figures
-pytest -q                    # 182 tests
+pytest -q                    # 183 tests
 python tools/check_claims.py # 108 claims recomputed against the docs
 python tools/check_source.py # diff the vendored panel against live EIA (skips offline)
 ```

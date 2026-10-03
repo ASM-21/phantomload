@@ -516,3 +516,16 @@ def test_nothing_that_ships_contains_a_machine_path():
         hits += [(path.name, p) for p in patterns if p in body]
     assert not hits, hits[:5]
     assert "__pycache__" in (ROOT / ".gitignore").read_text()
+
+
+def test_ledger_header_and_rows_record_the_same_provenance():
+    """Both artifacts come from one run and must agree. They once did not: the
+    header was captured after the CSV was written and reported a dirty tree."""
+    import csv
+
+    claims_md = (ROOT / "CLAIMS.md").read_text()
+    header = re.search(r"Commit `([0-9a-f]+|unversioned)`, dirty `(\w+)`", claims_md)
+    assert header, "CLAIMS.md has no provenance header"
+    rows = list(csv.DictReader(open(ROOT / "results" / "claim_ledger.csv")))
+    assert rows[0]["commit"].startswith(header.group(1)[:12]) or header.group(1) == "unversioned"
+    assert str(rows[0]["dirty"]) == header.group(2)
