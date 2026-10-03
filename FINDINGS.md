@@ -681,6 +681,84 @@ reporting question open would produce a precise answer to the wrong ratio.
 The one thing that would move all three at once is respondent-level data with
 event counts. That is roadmap items 1 and 2, and it is the whole shopping list.
 
+## 11. What produces each part of the gap?
+
+**Answer.** The gap is three things with different mechanisms. One is
+explained, one is constrained, and the largest is open.
+
+MEASURED, EIA-861 utility files 2016 to 2018, every reporting utility, with
+balancing-authority codes carried back from 2017 and 2018 to 2016 by utility.
+
+| Component of enrolled capacity | 2016 | 2017 | 2018 | What it behaves like |
+| --- | --- | --- | --- | --- |
+| Realised | 33.0% | 38.9% | 40.5% | |
+| Partial delivery | 32.7% | 34.3% | 34.1% | sticky within a utility, not regionally driven |
+| No actual reported | 16.6% | 16.9% | 15.3% | concentrated outside organised markets |
+| Exact zero | 17.8% | 10.0% | 10.2% | rotates between years, concentrated outside organised markets |
+
+**The zero mass is explained, as far as public data allows.** It rotates (track
+1), which is what uncalled capacity looks like. It concentrates outside the
+seven RTO and ISO footprints, which rules out the obvious alternative: if zero
+and unreported actuals were reductions booked in a wholesale settlement rather
+than the retail filing, they would cluster inside RTO footprints. Instead 39% of
+capacity outside RTO footprints is at zero or unreported, against 22% inside, a
+ratio of 1.8. That fits the mechanism Nadel proposed in 2017: utilities outside
+organised markets decide for themselves whether to call, and a utility long on
+capacity has little reason to. Testing it directly needs reserve margins by
+utility.
+
+**The unreported share is constrained but not explained.** It also concentrates
+outside RTO footprints, which rules out wholesale bookkeeping as its general
+cause. What it is instead, non-response, exemption or a reporting convention, is
+not answerable from these files.
+
+**Partial delivery is the largest piece and the open question.** Utilities that
+delivered some but not all of their potential account for 49% to 57% of the gap
+every year. If system conditions decided how much of each program got called,
+utilization would move together across utilities in the same footprint in the
+same year. It does not. Footprint-by-year common shocks explain 6.0% of
+within-utility year-to-year variation, against 5.6% under shuffled labels,
+p = 0.35. And utilization barely moves at all within a utility: a
+within-utility SD of 0.076.
+
+A null result is only worth reporting with its power. Injecting a known
+footprint-by-year shock and re-running the test, it detects a shock of SD 0.05
+in more than 90% of trials, and a shock of SD 0.02 in about 30%. So the result
+rules out large regional dispatch effects and cannot see small ones.
+
+### Size matters more than anything else visible here
+
+The national ratio is capacity-weighted, so it reports what the largest
+programs do. Utilization falls steadily with program size: the median program
+realises 94% of potential in the smallest quarter of programs and 48% in the
+largest, and the largest quarter holds 88% of enrolled capacity. The median
+utility realises 67% of its potential, against a capacity-weighted national
+figure near 40%, and the median exceeds the weighted figure in every year. On
+one observation per utility, to avoid counting the same program three times,
+the rank correlation between size and utilization is rho = -0.31 across 415
+utilities, p below 1e-9.
+
+So the national headline is a statement about large programs, and a single
+program's number cannot be read against it without knowing its size. A small
+program at 40% is in the bottom fifth of its peers; a large one at 40% is near
+the middle. `python -m phantomload benchmark` makes that comparison.
+
+Why large programs realise less is not answered here, and it is one of the more
+useful open questions, because it connects to everything else in this section.
+Large programs are disproportionately the reserve-style load management fleets of
+vertically integrated utilities, which is where the zero mass concentrates, and
+they are also where a definitional choice about "potential" moves the most
+megawatts.
+
+What it leaves is a stable, utility-specific ratio. That could be a definition,
+where a utility's "potential" is a fixed multiple of what it ever expects to
+deliver; a dispatch protocol, where a program is always called at a fixed share;
+or a consistent partial response, where the same customers fail to respond every
+time. The first is the reporting question from attack D. The third is the
+phantom reading this repository has been arguing against. The data here cannot
+separate them, and of everything this repository leaves open, this matters most:
+it is half the gap.
+
 ## Cross-track thread
 
 The same shape shows up in six of the eight tracks: the number is not in dispute,

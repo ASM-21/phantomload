@@ -18,6 +18,7 @@ from ..tracks import t6_overhead as t6  # noqa: E402
 from .. import synthesis  # noqa: E402
 from ..tracks import t7_crossval as t7  # noqa: E402
 from ..tracks import t8_falsification as t8  # noqa: E402
+from ..tracks import t9_mechanisms as t9  # noqa: E402
 from .calibration import cone  # noqa: E402
 
 FIG_DIR = pathlib.Path(__file__).resolve().parents[2] / "figures"
@@ -303,6 +304,40 @@ def fig_targeting() -> pathlib.Path:
     return _save(fig, "fig11_targeting.png")
 
 
+def fig_decomposition() -> pathlib.Path:
+    dec = t9.decomposition().set_index("year")
+    size = t9.size_gradient()
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.6))
+    parts = [
+        ("realised", "realised", MEASURED),
+        ("gap_partial_delivery", "partial delivery (open)", SIM),
+        ("gap_unreported", "no actual reported", GREY),
+        ("gap_zero_mass", "exact zero (rotates)", "#c9a227"),
+    ]
+    bottom = None
+    for col, label, colour in parts:
+        ax1.bar(dec.index.astype(str), dec[col], bottom=bottom, label=label, color=colour)
+        bottom = dec[col] if bottom is None else bottom + dec[col]
+    ax1.set_ylim(0, 1)
+    ax1.set_ylabel("share of enrolled capacity")
+    ax1.set_title("The gap is three things", fontsize=11)
+    ax1.legend(fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.09), ncol=2,
+               frameon=False)
+    labels = [str(i).replace(" quarter", "") for i in size.index]
+    ax2.bar(labels, size.median_utilization, color=MEASURED, label="median program")
+    ax2.plot(labels, size.capacity_weighted_utilization, color=SIM, marker="o",
+             label="capacity-weighted")
+    for i, share in enumerate(size.share_of_enrolled_capacity):
+        ax2.text(i, 0.03, f"{share:.0%} of\ncapacity", ha="center", fontsize=8,
+                 color="white")
+    ax2.set_ylim(0, 1)
+    ax2.set_xlabel("program size, quartile of enrolled MW")
+    ax2.set_ylabel("dispatch utilization")
+    ax2.set_title("Large programs realise less, and hold the capacity", fontsize=11)
+    ax2.legend(fontsize=8)
+    return _save(fig, "fig12_decomposition.png")
+
+
 def make_all() -> list[pathlib.Path]:
     return [
         fig_utilization(),
@@ -316,4 +351,5 @@ def make_all() -> list[pathlib.Path]:
         fig_verdicts(),
         fig_reporting(),
         fig_targeting(),
+        fig_decomposition(),
     ]

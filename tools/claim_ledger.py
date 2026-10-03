@@ -23,6 +23,8 @@ from phantomload.shared import provenance  # noqa: E402
 
 # Ordered: first matching prefix wins, so specific prefixes come before general.
 SLICE_MAP: list[tuple[str, list[str], str]] = [
+    ("checklist basis", ["eia_cost_years"], "t2_cost.summary"),
+    ("checklist", ["eia_national_total"], "t1_utilization.national_summary"),
     ("t1 utility", ["aceee_2015_28_utilities"], "t1_utilization.utility_dispersion"),
     ("t1 largest zero", ["aceee_2015_28_utilities"], "t1_utilization.utility_dispersion"),
     ("t1 panel", ["eia_utility_2016_2018_positive"], "t1_utilization.utility_panel_summary"),
@@ -63,6 +65,7 @@ SLICE_MAP: list[tuple[str, list[str], str]] = [
     ("t7 enforcement", [], "t7_crossval.enforcement_cases"),
     ("t7", ["eia_national_by_sector"], "t7_crossval.summary"),
     ("t8d", ["ferc_regional", "eia_national_by_sector"], "t8_falsification.attack_d"),
+    ("t9", ["eia_utility_2016_2018_positive"], "t9_mechanisms.summary"),
     ("t8", ["eia_cost_years", "pjm_cone_2027_28"], "t8_falsification.run"),
     ("synthesis sweep", ["eia_cost_years"], "synthesis.headline_sweep_summary"),
     ("synthesis", ["eia_cost_years", "pjm_cone_2027_28", "pjm_lmp_annual"], "synthesis.summary"),

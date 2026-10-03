@@ -1128,3 +1128,97 @@ def test_cli_keeps_blank_apart_from_zero():
     r = zero_mass(df)
     assert r["exact_zero_entities"] == 10
     assert r["not_reported_entities"] == 10
+
+
+# --- track 9, mechanisms ----------------------------------------------------
+from phantomload.tracks import t9_mechanisms as t9  # noqa: E402
+
+
+def test_t9_decomposition_accounts_for_all_capacity():
+    """Realised plus the three gap components must sum to the whole. If they do
+    not, a category is being dropped or double counted."""
+    dec = t9.decomposition()
+    total = dec[["realised", "gap_zero_mass", "gap_unreported", "gap_partial_delivery"]].sum(axis=1)
+    assert (total - 1).abs().max() < 0.01
+
+
+def test_t9_partial_delivery_is_the_largest_component():
+    s = t9.summary()
+    assert s["partial_share_of_gap_min"] > s["zero_share_of_gap_max"]
+    assert s["partial_share_of_gap_min"] > 0.45
+
+
+def test_t9_wholesale_accounting_is_refuted_not_assumed():
+    """This repository's own hypothesis, tested and rejected. It must stay
+    rejected unless the data changes, and the direction must be stated."""
+    w = t9.wholesale_accounting_test()
+    assert w["wholesale_accounting_refuted_as_general_explanation"] is True
+    assert w["zero_or_unreported_outside_rto"] > w["zero_or_unreported_inside_rto"]
+    assert w["rto_share_of_exact_zero"] < w["rto_share_of_all_potential"]
+    assert w["ba_coverage"] > 0.95
+
+
+def test_t9_common_shock_null_is_reported_with_its_power():
+    """A null result is only meaningful if the test could have seen the effect.
+    This pins both the null and the power, so neither can drift alone."""
+    s = t9.dispatch_summary()
+    assert s["common_shocks_detected"] is False
+    assert s["p_value"] > 0.05
+    assert s["test_is_vacuous"] is False
+    assert s["smallest_reliably_detected_sd"] == 0.05
+    pw = t9.power_check().set_index("injected_shock_sd").detection_rate
+    assert pw.is_monotonic_increasing or pw.diff().dropna().min() > -0.1
+    assert pw.loc[0.01] < 0.2
+
+
+def test_t9_footprint_codes_are_the_seven_rto_iso():
+    assert t9.RTO_FOOTPRINTS == {"MISO", "SWPP", "PJM", "ERCO", "NYIS", "ISNE", "CISO"}
+
+
+def test_t9_fast_statistic_matches_the_readable_one():
+    """The vectorised permutation statistic is an optimisation, not a new
+    method. It must agree with the plain pandas definition exactly."""
+    df = t9.partial_delivery_panel()
+    dev = df.utilization - df.groupby("key").utilization.transform("mean")
+    common = df.assign(dev=dev).groupby(["ba", "year"]).dev.transform("mean")
+    slow = 1 - ((dev - common) ** 2).sum() / (dev**2).sum()
+    assert t9._common_shock_share(df) == pytest.approx(slow, abs=1e-12)
+
+
+# --- size, and the benchmark that uses it -----------------------------------
+def test_t9_utilization_falls_with_program_size():
+    s = t9.size_summary()
+    assert s["monotone_across_size"] is True
+    assert s["spearman_size_vs_utilization"] < -0.2
+    assert s["spearman_p"] < 1e-6
+    assert s["largest_quarter_share_of_capacity"] > 0.8
+    assert s["median_exceeds_weighted_every_year"] is True
+
+
+def test_t9_size_correlation_uses_one_row_per_utility():
+    """Utility-years repeat the same program. Counting them separately would
+    overstate the evidence, so the correlation is on per-utility means."""
+    s = t9.size_summary()
+    assert s["utilities"] == t9.panel().query("status != 'not_reported'").key.nunique()
+
+
+def test_benchmark_judges_against_size_peers():
+    """The same utilization reads differently for a small and a large program.
+    That is the whole reason the benchmark compares within size band."""
+    from phantomload.__main__ import benchmark
+
+    large = benchmark(2000, 800, None)
+    small = benchmark(5, 2, None)
+    assert large["your_utilization"] == small["your_utilization"]
+    assert small["your_percentile_within_size_band"] < large["your_percentile_within_size_band"]
+    assert "bottom quartile" in small["your_status"]
+    assert "usual range" in large["your_status"]
+
+
+def test_benchmark_flags_zero_and_unreported_without_judging():
+    from phantomload.__main__ import benchmark
+
+    assert "called" in benchmark(100, 0, None)["your_status"]
+    assert "not reported" in benchmark(100, None, None)["your_status"]
+    with pytest.raises(SystemExit):
+        benchmark(0, 5, None)

@@ -26,8 +26,9 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-DOCS = ["README.md", "FINDINGS.md", "FALSIFICATION.md", "PRIOR_WORK.md", "MODELED.md"]
-CITABLE = ["README.md", "FINDINGS.md", "FALSIFICATION.md", "PRIOR_WORK.md"]
+DOCS = ["README.md", "FINDINGS.md", "FALSIFICATION.md", "PRIOR_WORK.md", "MODELED.md",
+        "CHECKLIST.md"]
+CITABLE = ["README.md", "FINDINGS.md", "FALSIFICATION.md", "PRIOR_WORK.md", "CHECKLIST.md"]
 
 # Claims whose value depends on a simulation, a swept grid or an assumed central
 # parameter. The publication standard refuses to assemble generated results into
@@ -59,6 +60,7 @@ def _load_summaries() -> dict:
         t6_overhead,
         t7_crossval,
         t8_falsification,
+        t9_mechanisms,
     )
 
     return {
@@ -86,6 +88,7 @@ def _load_summaries() -> dict:
         "s8b": t8_falsification.attack_b(),
         "s8c": t8_falsification.attack_c(),
         "s8d": t8_falsification.attack_d(),
+        "s9": t9_mechanisms.summary(),
         "sy": synthesis.summary(),
         "sp": t1_utilization.persistence_summary(),
         "s4r": t4_curtailment.robustness_summary(),
@@ -99,10 +102,15 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
     su, sz, sup = m["su"], m["sz"], m["sup"]
     s5, s6, s7 = m["s5"], m["s6"], m["s7"]
     s8a, s8b, s8c, s8d = m["s8a"], m["s8b"], m["s8c"], m["s8d"]
+    s9 = m["s9"]
     t1 = m["t1"]
     return [
         ("t1 mean utilization", f"{s1['mean_utilization']:.1%}"),
         ("t1 shortfall share", f"{s1['shortfall_share_mean']:.1%}"),
+        ("checklist shortfall",
+         f"about {s1['shortfall_share_mean']:.0%} of enrolled capacity"),
+        ("checklist realised", f"roughly {s1['mean_utilization']:.0%} realised"),
+        ("checklist basis gap", f"factor of about {s2['basis_gap_ratio']:.1f}"),
         ("t1 headline rounded",
          f"the {s1['shortfall_share_mean']:.0%} of US demand response capacity"),
         ("t1 panel", f"{s1['first_year']} to {s1['last_year']}"),
@@ -140,6 +148,25 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
         ("synthesis sweep majority",
          f"{sy['sweep_share_of_configurations_where_dr_wins_majority']:.1%} of "
          f"{sy['sweep_configurations']} configurations"),
+        ("t9 outside vs inside",
+         f"{s9['ws_zero_or_unreported_outside_rto']:.0%} outside RTO footprints "
+         f"against {s9['ws_zero_or_unreported_inside_rto']:.0%} inside"),
+        ("t9 common shock",
+         f"{s9['cs_share_explained_by_common_shocks']:.1%} of year-to-year variation"),
+        ("t9 p value", f"p = {s9['cs_p_value']:.2f}"),
+        ("t9 detectable", f"shock of SD {s9['cs_smallest_reliably_detected_sd']:.2f}"),
+        ("t9 sticky", f"within-utility SD of {s9['cs_within_utility_sd']:.3f}"),
+        ("t9 size median",
+         f"median utility realises {s9['size_median_utility_utilization']:.0%}"),
+        ("t9 size bands",
+         f"{s9['size_smallest_quarter_median']:.0%} of potential in the smallest quarter "
+         f"of programs and {s9['size_largest_quarter_median']:.0%} in the largest"),
+        ("t9 size share",
+         f"{s9['size_largest_quarter_share_of_capacity']:.0%} of enrolled capacity"),
+        ("t9 size rho",
+         f"rho = {s9['size_spearman_size_vs_utilization']:.2f}"),
+        ("t9 partial share",
+         f"{s9['partial_share_of_gap_min']:.0%} to {s9['partial_share_of_gap_max']:.0%} of the gap"),
         ("t1 regional floor",
          f"{sr['mix_floor_min']:.1%} in the {sr['mix_floor_min_division']} to "
          f"{sr['mix_floor_max']:.1%} in {sr['mix_floor_max_division']}"),

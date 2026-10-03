@@ -22,6 +22,7 @@ from phantomload.tracks import (
     t6_overhead,
     t7_crossval,
     t8_falsification,
+    t9_mechanisms,
 )
 
 ROOT = pathlib.Path(__file__).resolve().parent
@@ -36,6 +37,7 @@ TRACKS = {
     "t6_overhead": t6_overhead,
     "t7_crossval": t7_crossval,
     "t8_falsification": t8_falsification,
+    "t9_mechanisms": t9_mechanisms,
     "synthesis": synthesis,
 }
 
@@ -51,6 +53,7 @@ ORDER = [
     "t4_curtailment",
     "t7_crossval",
     "t8_falsification",
+    "t9_mechanisms",
     "synthesis",
 ]
 

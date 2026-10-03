@@ -1,163 +1,142 @@
-# Roadmap
+# Research agenda
 
-Ordered by how much each would change the conclusions, not by effort.
+What is open, how much of the answer each question carries, and exactly where to
+start. Ordered by how much a result would change what this repository can say.
 
-## 1. Utility-level EIA-861 detailed files
+The organising fact is the decomposition in FINDINGS section 11: the unrealised
+gap is three components with different mechanisms. Each question below is tagged
+with the component it addresses and its share of the gap in 2018.
 
-Substantially closed. The 2016 to 2018 detailed files were found vendored inside
-an unrelated repository and now drive the central result: exact zeros hold 10%
-to 18% of enrolled capacity a year, and 79% of zero-reported capacity rotates
-between years rather than persisting, which favours uncalled over absent.
+| Component | Share of enrolled capacity, 2018 | Status |
+| --- | --- | --- |
+| Partial delivery | 34% | open: stable within a utility, mechanism unknown |
+| No actual reported | 15% | constrained: not wholesale bookkeeping, otherwise unknown |
+| Exact zero | 10% | largely explained: rotates, concentrates outside organised markets |
 
-What remains, in order of value:
+---
 
-- **More years.** Three is the minimum that permits a persistence test and not
-  enough to separate a weather cycle from a trend. The same file name for 2013
-  to 2015 and 2019 onward would extend it. Searching for
-  `Demand_Response_2019.xlsx` and its neighbours is the first thing to try.
-- **The not-reported group.** Utilities reporting potential but no actual figure
-  hold another 15% to 17% of capacity every year. Nothing here explains them.
-  Whether they are wholesale-registered programs recorded elsewhere, small
-  programs exempt from the field, or simple non-response is answerable from the
-  same files with the balancing-authority column, which 2017 and 2018 carry.
-- **The BGE hypothesis.** The largest persistent zero is a program that bids
-  into PJM. If persistent zeros concentrate in utilities whose programs
-  participate in wholesale markets, the persistence result is partly a
-  retail-wholesale accounting effect. Testable by joining the BA column to the
-  RTO footprints.
+## 1. Why is partial delivery stable? *Partial delivery, half the gap.*
 
-## 2. Anything with an event count
+The most important open question. Utilities that deliver some of their potential
+deliver about the same fraction every year, unmoved by regional conditions. Three
+explanations fit and they have opposite implications:
 
-The identification problem in track 1 is structural given EIA data. It is not
-structural given utility evaluation reports filed with state commissions, which
-routinely list events called, duration and measured performance. Even a
-convenience sample of twenty programs would separate "never called" from "called
-and underdelivered" for the first time in this repo.
+- **Definition.** Potential is a fixed multiple of what the program ever
+  delivers, for example a contracted maximum against a typical event. Benign; a
+  reporting artefact.
+- **Protocol.** The program is always dispatched at a fixed share of enrolment,
+  for example cycling a rotating subset of devices. Benign; a design choice.
+- **Response.** The same customers fail to respond every time. This is the
+  phantom reading, confined to this component.
 
-## 3. A netted demand response cost
+**What separates them.** Event-level evaluations, which report devices enrolled,
+devices dispatched and devices responding for each event. Definition predicts
+full response to a partial call against an inflated base; protocol predicts
+partial dispatch with full response; response predicts full dispatch with
+partial response.
 
-Downgraded, not closed. The asymmetry is real: PJM prices its peaker gross and
-net of energy revenue, EIA reports demand response cost gross only. But the
-correction is now bounded rather than unknown. Avoided energy per delivered kW
-is the implied event hours, which EIA does publish, so the credit is hours times
-price, and sweeping both across generous ranges closes none of the $60.43 per
-kW-year gap to net CONE.
+**Where to look.** CALMAC, state commission evaluation archives, and DOE's
+Uniform Methods Project protocols. Ten programs would be enough to start.
 
-Measuring it properly would still be worth doing, because the bound is loose and
-the same arithmetic in the fully aligned cell of `synthesis.py` sits much closer
-to the line. Rough options, in increasing order of effort: apply an RTO-average
-on-peak LMP to the reported energy savings; use event-hour LMPs if event timing
-ever becomes available through item 2; or take avoided-cost values from utility
-program evaluations, which would import their assumptions along with their
-numbers.
+**Entry point.** `phantomload/tracks/t9_mechanisms.py`, function
+`partial_delivery_panel()`, which identifies the utilities to look for.
 
-The higher-value version of this is now item 2 rather than item 3. Event timing
-determines the price, and the synthesis shows the whole comparison terminates on
-whether demand response is dispatched into scarcity.
+**What would change.** A finding of consistent partial response would make part
+of the phantom reading true for the largest component, and the README's answer
+would have to change in place.
 
-## 4. Winter demand response
+## 2. Why do large programs realise less? *All components.*
 
-The seasonal result in track 4 is the most actionable thing this repo produced
-and it is barely explored. Winter net load reaches 85 to 91% of the annual
-maximum in PJM and ERCOT, a summer call window cannot reach any of it, and the
-February 2021 hours that do crack the scarcity tail are understated because
-generation data cannot see shed load.
+Median utilization falls from 94% in the smallest quarter of programs to 48% in
+the largest, and the largest quarter holds 88% of capacity. Candidates: large
+programs are reserve-style load management fleets that are called rarely; large
+programs define potential more generously; large programs have weaker per-device
+response. Each predicts something different about the zero mass, the regional
+reporting index and event-level response respectively, so this question is
+answerable by combining tests already in the repository with item 1's data.
 
-What is missing is the program side, and only for retail. PJM's wholesale market
-already requires year-round availability, and reported that seasonal aggregation
-was constrained by how little winter-capable resource was offered, so the
-physical asymmetry is priced there. EIA does not publish call windows or seasonal
-availability for retail programs, so this repo can only show that the hours
-exist, not what share of enrolled capacity is contractually reachable in January. Utility tariff
-sheets and RTO capacity market rules both carry that, and it would turn a timing
-observation into a capacity number.
+**Entry point.** `t9_mechanisms.size_gradient()`. Adding program type, which
+EIA's detailed files carry in some years, would be the first step.
 
-## 5. Observed curtailment instead of a proxy
+## 3. What is the unreported group? *No actual reported, a quarter of the gap.*
 
-Track 4 uses top-decile renewable share as an oversupply proxy. CAISO and ERCOT
-publish actual curtailed MWh. Swapping the proxy for the real series would let
-the track quantify absorbable energy rather than only window timing.
+Utilities reporting potential but no actual hold 15% to 17% of capacity every
+year. It is not wholesale bookkeeping, since it concentrates outside RTO
+footprints. Candidates: small utilities exempt from the field, programs that
+existed on paper and were never run, or plain non-response to the survey item.
+The EIA-861 form instructions and its short-form exemptions would settle the
+first.
 
-## 6. Reporting-practice variation
+**Entry point.** `t9_mechanisms.footprint_split()`, extended by utility size and
+by whether the utility files the short form.
 
-Named in FALSIFICATION.md as the most likely third explanation for the shortfall
-and not currently testable. "Potential peak demand savings" is self-reported and
-unaudited. If some utilities report contracted capacity and others report a
-modelled maximum, part of the gap is a survey artefact. Utility-level data plus a
-few program filings would let this be checked directly, and it should be checked
-before anyone quotes the headline as an efficiency finding.
+## 4. Is the zero mass a capacity-surplus effect? *Exact zero, a sixth of the gap.*
 
-## 7. The retail-wholesale overlap
+The proposed mechanism, from ACEEE in 2017, is that utilities long on capacity do
+not call demand response. The data fit it: zeros rotate and concentrate where
+utilities dispatch for themselves. The direct test pairs each utility's zero
+years with its reserve margin, which state integrated resource plans and FERC
+Form 1 report.
 
-Both populations are now measured, 30.5 GW retail and 33.3 GW wholesale, and
-neither reporter publishes the intersection. Estimating it would need utility
-and CSP registration lists matched to EIA respondents, which is a records
-exercise rather than an analysis. Until someone does it, no defensible national
-total for demand response capacity exists, and any figure that adds the two is
-wrong by an unknown amount.
+**Entry point.** `t1_utilization.zero_persistence()`; join a reserve-margin
+column by utility and year.
 
-## 8. One utility evaluation report
+## 5. More years, found by file name. *All components.*
 
-The cheapest open item in this file. Track 3's inversion is not identified, and
-after re-parameterising into the units evaluations actually use, the entire
-remaining spread is driven by one number: peak reduction in kW per participating
-customer under direct load control. Utility evaluation reports state it directly.
-One report from a large residential program would collapse a band that currently
-runs 0.31 to 0.94.
+Every utility-level result rests on 2016 to 2018. Three years is the minimum for
+a persistence test and too short to separate a weather cycle from a trend. The
+files were found by searching for `Demand_Response_2017.xlsx`; the same search
+for other years is the cheapest high-value contribution available.
 
-The wider lesson is already written into FINDINGS section 3 and is worth more
-than the number: parameterise in the units the source literature reports, or the
-model imports a nuisance parameter the data cannot constrain, and it will
-dominate the answer while looking like irreducible uncertainty.
+**Entry point.** `tools/build_eia861_utility.py`, constant `YEARS`. The
+reconciliation test will confirm any new year against the national panel.
 
-## 9. Hourly prices in the called hours
+## 6. The price in the hours demand response is called. *Cost comparison.*
 
-Half done. The annual anchor is in: PJM's market monitor publishes the
-real-time load-weighted average LMP, so the capstone's requirement is now
-expressed as 8.5x the annual average rather than as a bare dollars-per-kWh
-figure, and the netting gap as 12.7x.
+The cost comparison terminates on the value of avoided energy in called hours,
+which is bounded here and not measured. Hourly PJM LMP from Data Miner, paired
+with the net-load ranking track 4 already computes, would measure it. Two
+independent routes in this repository put the implied premium near 2.5 times an
+average hour against the roughly 8.5 times the strictest comparison needs; a
+measured figure would settle it.
 
-The half that remains is the one that matters. Demand response is called in
-roughly the top one percent of hours, and the annual average says nothing about
-what those hours price at. PJM Data Miner carries hourly LMP and was not
-reachable here. Pairing it with the net-load ranking already computed in track 4
-would give the called-hour price directly, and would turn the last swept
-parameter in the repository into a measured one.
+**Entry point.** `t2_cost.netting_bound()`, parameter `ENERGY_VALUE`.
+
+## 7. Winter callability of retail programs. *Cross-cutting.*
+
+The most robust result here is that summer-shaped programs cannot reach winter
+stress, reached three independent ways. PJM's wholesale market already requires
+year-round availability. What is missing is the retail side: what share of
+utility-administered programs can be called in January. Utility tariff sheets
+carry it.
+
+**Entry point.** `t4_curtailment.winter_shoulder()`.
+
+## 8. The retail-wholesale overlap. *Scope.*
+
+Both populations are measured, about 30 GW retail and 33 GW wholesale, and no
+published source estimates the intersection. Matching EIA respondents to RTO
+registration lists would. Until then no defensible national total for demand
+response capacity exists.
+
+## 9. The DLC denominator. *Modeled results.*
+
+One evaluation reporting both kW per controlled device and devices per enrolled
+customer would move track 3's modeled reconciliation into the citable findings.
+
+**Entry point.** `calibration.DEVICES_PER_ENROLLED_CUSTOMER`.
 
 ## 10. A literature review
 
-The largest single gap in the work and the one a reviewer would raise first.
-Nothing here has been checked against the published literature, because the
-environment this was built in could reach government data portals and market
-monitor reports but not journals. Several results are the kind of thing that
-plausibly exists already.
+Four ad hoc searches and one commissioned systematic search each changed
+something material, recorded in PRIOR_WORK.md. The claims most exposed to
+literature not yet read: that no published source decomposes the EIA gap into
+uncalled and absent capacity, and that the accounting-basis asymmetry in demand
+response cost comparisons has not been named. The DOE Uniform Methods Project and
+the resource adequacy accreditation literature are where a correction would come
+from.
 
-Where to look, roughly in order of how likely the result is to be there
-already:
-
-- Demand response evaluation and measurement-and-verification literature, for
-  the realisation rate itself and for per-participant impact values, which would
-  also close item 8.
-- Capacity accreditation and effective load carrying capability work, for the
-  accounting-basis problem in the synthesis. Resource adequacy modellers have
-  almost certainly written about netting and accreditation asymmetries.
-- Survey methodology and administrative data quality, for the reporting
-  heterogeneity test in attack D. The mix-adjusted index is a standard
-  shift-share construction under another name.
-- Reliability statistics, for the identification bound. Estimating the frequency
-  of rare events from short records is an old problem with a large literature,
-  and the closed form in track 1 is elementary enough that it will have one.
-
-Until that is done, nothing in this repository should be presented as novel. It
-should be presented as computed, checked and reproducible, which it is.
-
-## 11. Cross-repo reuse
-
-Track 5 currently represents a customer as a single coincident-peak scalar.
-Wiring it to grid-lab's tariff-explorer archetypes and load shapes would let the
-TOU and DR interaction run on 8760s and produce a bill impact rather than a
-dimensionless attribution share. The attribution shares themselves are scale-free
-and would not move.
+---
 
 ## Before pushing
 

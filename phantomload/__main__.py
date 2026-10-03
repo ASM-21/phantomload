@@ -6,6 +6,7 @@ different country's reporting, or a single utility's program-level records.
 This makes that one command.
 
     python -m phantomload zero-mass your_data.csv
+    python -m phantomload benchmark --potential 100 --actual 35 [--rto | --non-rto]
 
 Input: a CSV with one row per reporting entity per year and these columns.
 
@@ -81,12 +82,92 @@ def zero_mass(df: pd.DataFrame) -> dict:
     return out
 
 
+def benchmark(potential_mw: float, actual_mw: float | None, in_rto: bool | None) -> dict:
+    """Place one program among every US utility program, 2016 to 2018.
+
+    For a planner asking whether their program is unusual, or a reviewer asking
+    whether a filing is. Answers with percentiles in the measured population,
+    and never with a judgement: an unusual number is a reason to ask the
+    checklist questions, not an answer to them.
+    """
+    import numpy as np
+
+    from .tracks import t9_mechanisms as t9
+
+    if potential_mw <= 0:
+        raise SystemExit("potential must be positive")
+    pop = t9.panel()
+    if in_rto is not None:
+        pop = pop[pop.in_rto == in_rto]
+    reported = pop[pop.status != "not_reported"]
+    out = {
+        "population": f"{len(pop):,} utility-years"
+        + ("" if in_rto is None else (" inside RTO footprints" if in_rto else " outside RTO footprints")),
+        "population_share_reporting_zero": float((reported.actual_peak_mw == 0).mean()),
+        "population_share_not_reporting": float((pop.status == "not_reported").mean()),
+        "population_median_utilization": float(reported.utilization.median()),
+    }
+    if actual_mw is None:
+        out["your_status"] = "not reported, like the share above"
+        return out
+    u = actual_mw / potential_mw
+    out["your_utilization"] = float(u)
+    out["your_percentile"] = float((reported.utilization < u).mean())
+    # Utilization falls steeply with program size, so the fair comparison is
+    # against programs of similar size, not against everyone.
+    edges = reported.potential_peak_mw.quantile([0, 0.25, 0.5, 0.75, 1.0]).to_numpy()
+    band = int(np.clip(np.searchsorted(edges, potential_mw, side="right") - 1, 0, 3))
+    names = ["smallest", "second", "third", "largest"]
+    lo, hi = edges[band], edges[band + 1]
+    peers = reported[reported.potential_peak_mw.between(lo, hi)]
+    span = (f"{lo:,.0f} MW and above" if band == 3
+            else f"up to {hi:,.0f} MW" if band == 0
+            else f"{lo:,.0f} to {hi:,.0f} MW")
+    out["size_band"] = f"{names[band]} quarter, {span}"
+    out["size_band_median_utilization"] = float(peers.utilization.median())
+    out["your_percentile_within_size_band"] = float((peers.utilization < u).mean())
+    if actual_mw == 0:
+        out["your_status"] = (
+            "exact zero: ask whether the program was called (CHECKLIST.md question 1)"
+        )
+    elif u < peers.utilization.quantile(0.25):
+        out["your_status"] = (
+            "bottom quartile for its size: ask how potential is defined and whether "
+            "the ratio is stable year to year (CHECKLIST.md questions 3 and 4)"
+        )
+    elif u > 1:
+        out["your_status"] = (
+            "above potential: check the definition, since realised should not "
+            "exceed what the program can deliver"
+        )
+    else:
+        out["your_status"] = "within the usual range"
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m phantomload")
     sub = ap.add_subparsers(dest="cmd", required=True)
     zm = sub.add_parser("zero-mass", help="run the zero-mass test on a CSV")
     zm.add_argument("csv")
+    bm = sub.add_parser(
+        "benchmark", help="place one program among every US program, 2016-2018"
+    )
+    bm.add_argument("--potential", type=float, required=True, help="potential MW")
+    bm.add_argument("--actual", type=float, default=None, help="actual MW; omit if not reported")
+    where = bm.add_mutually_exclusive_group()
+    where.add_argument("--rto", action="store_true", help="compare only inside RTO footprints")
+    where.add_argument("--non-rto", action="store_true", help="compare only outside them")
     args = ap.parse_args(argv)
+
+    if args.cmd == "benchmark":
+        in_rto = True if args.rto else (False if args.non_rto else None)
+        result = benchmark(args.potential, args.actual, in_rto)
+        width = max(len(k) for k in result)
+        for k, v in result.items():
+            shown = f"{v:.1%}" if isinstance(v, float) else v
+            print(f"{k:<{width}}  {shown}")
+        return 0
 
     result = zero_mass(pd.read_csv(args.csv))
     width = max(len(k) for k in result)

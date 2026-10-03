@@ -1,0 +1,5 @@
+injected_shock_sd,detection_rate,provenance
+0.01,0.035,simulated
+0.02,0.305,simulated
+0.03,0.62,simulated
+0.05,0.92,simulated

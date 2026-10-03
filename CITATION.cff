@@ -7,9 +7,9 @@ authors:
     given-names: Andrew
     orcid: "https://orcid.org/0009-0004-8758-2687"
     affiliation: "independent"
-version: 0.3.0
+version: 0.4.0
 repository-code: "https://github.com/ASM-21/phantomload"
-date-released: "2026-09-20"
+date-released: "2026-10-03"
 license: Apache-2.0
 keywords:
   - demand response
@@ -18,19 +18,21 @@ keywords:
   - capacity market
   - EIA-861
 abstract: >-
-  US utilities report an average of 39.2 percent of their enrolled demand
-  response peak-reduction capability as actually realised at system peak over
-  2013 to 2024. PhantomLoad measures that shortfall from EIA-861 aggregates and
-  then shows it cannot be read as waste, on three independent grounds. The data
-  cannot separate capacity that was never called from capacity that would not
-  have delivered, and a twelve-year panel can only rule out reserve resources
-  designed for events more frequent than once in 4.5 years. Priced against PJM's
-  published cost of new entry, demand response wins six of the eight defensible
-  pairings of accounting bases, including both pairings that mix nothing. And
-  mix-adjusted reported capacity per enrolled customer varies five-fold across
-  census divisions, enough room for inconsistent reporting to hold the entire
-  shortfall. What decides the economics is when demand response is dispatched,
-  which neither the retail nor the wholesale accounting reports.
+  US utilities realise about 39 percent of the demand response peak reduction
+  they report as available, a gap that has held for twelve years. Using
+  EIA-861 utility-level files for 2016 to 2018, which reconcile to the national
+  series to the megawatt, this work decomposes that gap into three components
+  with different mechanisms. Capacity reported at exactly zero rotates between
+  years and concentrates where utilities dispatch for themselves, which reads as
+  available but uncalled. Capacity with no reported outcome is not wholesale
+  bookkeeping. Partial delivery, about half the gap, is stable within a utility
+  and unmoved by regional conditions, which leaves its mechanism open.
+  Utilization falls steeply with program size, so the national figure describes
+  large programs; the median utility realises two thirds of its potential.
+  Priced against PJM's published cost of new entry, demand response is cheaper
+  in six of eight defensible pairings of accounting bases. The public record
+  does not support reading the gap as waste, and the work states what data
+  would settle it.
 references:
   - type: data
     title: "Form EIA-861, Annual Electric Power Industry Report"

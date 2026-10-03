@@ -127,6 +127,36 @@ accounting bases from the synthesis. Reading the shortfall as non-performance
 requires an argument that reporting is consistent across respondents, and no
 such argument appears in the source.
 
+## Attack E: is the zero mass just wholesale bookkeeping?
+
+**Hypothesis.** This repository's own. The largest persistent zero, BGE, runs a
+program that bids into PJM, so its realised reduction might be recorded in the
+wholesale settlement and reported as zero in the retail filing. If that were the
+general mechanism, zero and unreported actuals would concentrate inside RTO
+footprints.
+
+**Result: REFUTED as a general explanation.** Both concentrate outside. Zero
+reports carry 37% of their capacity inside RTO footprints, and unreported ones
+48%, against 57% of all enrolled capacity. Outside RTO footprints 39% of
+capacity sits at zero or unreported, against 22% inside. BGE may still be a case
+of it; the pattern is not.
+
+What the refutation leaves standing is more interesting than the hypothesis: the
+zero mass is a feature of utilities that dispatch for themselves, which is where
+a long capacity position would show up as a program nobody calls.
+
+## Attack F: does partial delivery follow system conditions?
+
+**Hypothesis.** If the largest piece of the gap were also reserve, held back
+until conditions demanded it, utilization would rise and fall together across
+utilities in the same footprint in the same year.
+
+**Result: NOT SUPPORTED, with a stated detection floor.** Common shocks explain no
+more year-to-year variation than shuffled labels, and the test detects a
+regional shock of SD 0.05 in more than 90% of injected trials. Partial delivery
+is a stable property of each program. This attack cuts against the reading the
+rest of this repository leans toward, and it is reported for that reason.
+
 ## Retractions
 
 Two claims in this repo have been withdrawn after looking harder. Both are

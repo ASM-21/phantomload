@@ -49,6 +49,36 @@ which reported zero from 2015 through 2018, and whose program bids into PJM's
 wholesale market, so its peak reduction may simply be recorded in the other
 accounting. Above zero the distribution is continuous and separates nothing.
 
+**The national number is a statement about large programs.** The
+**median utility realises 67%** of its enrolled potential. The capacity-weighted
+national figure is near 40% because utilization falls steeply with size, from
+**94% of potential in the smallest quarter of programs and 48% in the largest**,
+and the largest quarter holds **88% of enrolled capacity** (**rho = -0.31**
+across utilities). A program's number means little without its size, which is
+what `python -m phantomload benchmark` is for.
+
+**The gap is three different things, and they behave differently.** In 2018 the
+unrealised 59.5% splits into partial delivery (34%), capacity with no actual
+figure reported (15%), and the zero mass (10%). Partial delivery is the largest
+piece every year, **49% to 57% of the gap**, and it does not behave like the
+zero mass. Within a utility it barely moves year to year, a
+**within-utility SD of 0.076**, and regional conditions explain only
+**6.0% of year-to-year variation**, no more than chance (**p = 0.35**). The test
+can see a regional **shock of SD 0.05** reliably and found none. So partial
+delivery reads as a stable property of each program, whether its definition, its
+dispatch protocol or a consistent partial response, rather than as system
+conditions deciding how much got called. That part of the gap is not settled by
+anything here, and it is the most important open question in the repository.
+
+The zero and unreported shares are not wholesale bookkeeping either. If they
+were reductions recorded in an RTO's settlement instead of the retail filing,
+they would cluster inside RTO footprints. They cluster outside: **39% outside
+RTO footprints against 22% inside**. That fits the mechanism ACEEE proposed in
+2017, utilities outside organised markets that are long on capacity simply not
+calling, though testing it needs reserve margins this repository does not have.
+
+![decomposition](figures/fig12_decomposition.png)
+
 An earlier version of this paragraph rested on ACEEE's 2015 table of the 28
 largest programs, where 5 of 25 reported exactly zero, including
 **Florida Power & Light Co reported 1,666 MW** of potential and none delivered,
@@ -115,6 +145,36 @@ Full write-ups in [FINDINGS.md](FINDINGS.md), the attacks on all of it in
 to do with demand response.
 
 > **Retracted from the first version.** This repo originally swept an assumed comparator range of 80 to 150 dollars per kW-year with a central value of 115, described as the commonly quoted CT range. Pulling PJM's actual planning parameters showed the range was wrong in the way that mattered: net CONE for the RTO is $68.35, below the assumed floor, and it is the number that decides the comparison. The assumed range would have made the cost verdict look like a close call driven by uncertainty. It is not. It is driven by which CONE basis you pick, and that is a choice, not an error bar.
+
+## Who this is for, and what to do with it
+
+**Commission staff and regulators** reviewing demand response filings, integrated
+resource plans or capacity claims. Start with [CHECKLIST.md](CHECKLIST.md): eight
+questions to ask before reading a potential-versus-actual gap as underperformance,
+each with the evidence behind it and the data request that answers it.
+
+**Utility planners and program managers.** Place your program among every US
+program of similar size, since size matters more than anything else visible here:
+
+    python -m phantomload benchmark --potential 120 --actual 45
+
+With several years of your own records, run the test this repository's main
+result rests on: `python -m phantomload zero-mass your_data.csv`.
+
+**Resource adequacy and capacity market analysts.** FINDINGS section 9 and the
+accreditation correction: the eight pairings of accounting bases, why a
+realisation ratio is not an accreditation factor, and why the winter four-hour
+case is the one demand response loses.
+
+**Researchers.** [ROADMAP.md](ROADMAP.md) is a research agenda organised by how
+much of the gap each open question carries, with the competing explanations,
+the test that would separate them, where the data lives and the function to
+start in. The most valuable single question, why partial delivery is stable
+within a utility, accounts for half the gap.
+
+**Journalists and advocates.** The short version: the national shortfall is real,
+it is mostly a statement about large programs, and the public data cannot show it
+is waste. [CHECKLIST.md](CHECKLIST.md) says what would have to be shown first.
 
 ## A note on terminology
 
@@ -232,7 +292,7 @@ Full write-ups in [FINDINGS.md](FINDINGS.md) and [FALSIFICATION.md](FALSIFICATIO
 
 ## Why you can trust the numbers
 
-- Every quoted figure in these docs is recomputed by `tools/check_claims.py`, which fails the build on drift in either direction: change the analysis without the text, or the text without the analysis, and CI goes red. 108 claims are pinned, and the same script rejects dead links to files that no longer exist.
+- Every quoted figure in these docs is recomputed by `tools/check_claims.py`, which fails the build on drift in either direction: change the analysis without the text, or the text without the analysis, and CI goes red. 121 claims are pinned, and the same script rejects dead links to files that no longer exist.
 - The same script enforces caveat retention. Delete the sentence saying the comparator is unverified, or the one saying phantom and reserve are not separable, and the build fails. It also rejects overclaiming language outside retraction blockquotes.
 - The source table is checked against itself: published sector values must sum to published totals within EIA's own rounding, and spot values are pinned to the published table cell by cell. `tools/check_source.py` re-fetches the live EIA tables and diffs them against the vendored copy, so a future EIA revision of a prior year surfaces as a failure rather than as silent staleness.
 - Simulated records cannot masquerade as measured ones. They are built through `synthetic_program()`, which stamps provenance at construction and ignores any attempt to pass a different one.
@@ -244,17 +304,17 @@ Full write-ups in [FINDINGS.md](FINDINGS.md) and [FALSIFICATION.md](FALSIFICATIO
 ```
 phantomload/
   shared/        dr_program.py registry, calibration.py parameters, plotting.py
-  tracks/        t1..t8, one module per track, each with run()
+  tracks/        t1..t9, one module per track, each with run()
   synthesis.py   the capstone: every pairing of accounting bases, in one table
 data/            EIA-861 panel, PJM CONE and LMP, FERC regional and RTO tables, CarbonCast hourly generation
 tools/           four data builders, check_claims.py, check_source.py, rename.sh
 results/         every table each track produces, plus findings.json
-figures/         eleven figures, all drawn from track outputs
+figures/         twelve figures, all drawn from track outputs
 METHOD.md        the rules, what they cost to learn, and what enforces them
 MODELED.md       simulated analyses, kept out of the citable findings by rule
 CLAIMS.md        every quoted figure with its provenance record, generated
 PRIOR_WORK.md    what was already published, and what is still unsearched
-tests/           183 tests
+tests/           193 tests
 ```
 
 ## Install and run
@@ -262,8 +322,8 @@ tests/           183 tests
 ```bash
 pip install -e ".[dev]"
 python run_all.py            # all tracks, tables, figures
-pytest -q                    # 183 tests
-python tools/check_claims.py # 108 claims recomputed against the docs
+pytest -q                    # 193 tests
+python tools/check_claims.py # 121 claims recomputed against the docs
 python tools/check_source.py # diff the vendored panel against live EIA (skips offline)
 ```
 

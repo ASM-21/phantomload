@@ -371,7 +371,7 @@ def test_literature_gap_is_disclosed():
     assert "No systematic literature review has been performed" in readme
     assert "should be presented as novel" in readme
     roadmap = (ROOT / "ROADMAP.md").read_text()
-    assert "## 10. A literature review" in roadmap
+    assert "A literature review" in roadmap
     prior = (ROOT / "PRIOR_WORK.md").read_text()
     assert "still unsearched" in prior
 
