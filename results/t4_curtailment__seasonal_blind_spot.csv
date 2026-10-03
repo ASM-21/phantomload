@@ -1,0 +1,10 @@
+region,depth_hours,winter_hours_in_tail,winter_share_of_tail,reachable_by_summer_window,dates,provenance
+CISO,94,0,0.0,,,measured_generation_understates_shed_load
+CISO,200,0,0.0,,,measured_generation_understates_shed_load
+CISO,500,0,0.0,,,measured_generation_understates_shed_load
+ERCO,94,0,0.0,,,measured_generation_understates_shed_load
+ERCO,200,6,0.03,False,"2021-02-14, 2021-02-15",measured_generation_understates_shed_load
+ERCO,500,20,0.04,False,"2021-02-12, 2021-02-13, 2021-02-14, 2021-02-15",measured_generation_understates_shed_load
+PJM,94,0,0.0,,,measured_generation_understates_shed_load
+PJM,200,0,0.0,,,measured_generation_understates_shed_load
+PJM,500,0,0.0,,,measured_generation_understates_shed_load

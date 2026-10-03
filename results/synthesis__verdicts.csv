@@ -1,0 +1,9 @@
+dr_basis,comparator,accreditation,dr_cost_per_kw_yr,comparator_cost_per_kw_yr,ratio,dr_wins,inconsistencies,n_inconsistencies,provenance
+per kW enrolled,gross CONE,nameplate,50.38795211330221,149.309,0.33747431242123527,True,none,0,measured_both_sides
+per kW delivered,gross CONE,accredited,128.775117675702,193.37795101760136,0.665924512065912,True,none,0,measured_both_sides
+per kW enrolled,gross CONE,accredited,50.38795211330221,193.37795101760136,0.26056720452434556,True,"comparator haircut, demand response not",1,measured_both_sides
+per kW enrolled,net CONE,nameplate,50.38795211330221,68.347,0.7372372176291895,True,"comparator netted, demand response not",1,measured_both_sides
+per kW delivered,gross CONE,nameplate,128.775117675702,149.309,0.8624739143367246,True,"demand response haircut, comparator not",1,measured_both_sides
+per kW delivered,net CONE,accredited,128.775117675702,88.5198,1.454760603567812,False,"comparator netted, demand response not",1,measured_both_sides
+per kW enrolled,net CONE,accredited,50.38795211330221,88.5198,0.5692280383970841,True,"comparator netted, demand response not; comparator haircut, demand response not",2,measured_both_sides
+per kW delivered,net CONE,nameplate,128.775117675702,68.347,1.8841370897874379,False,"comparator netted, demand response not; demand response haircut, comparator not",2,measured_both_sides

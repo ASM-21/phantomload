@@ -1,0 +1,10 @@
+division,potential_mw,customers,implied_customers,intensity_index,kw_per_customer,provenance
+Pacific,1330.0,1348727.0,495578.82647703966,0.3674419111332684,0.9861150551594207,measured_regional_vs_national_intensity
+West South Central,2834.7,919050.0,526662.2213421867,0.5730506733498577,3.0843806104129263,measured_regional_vs_national_intensity
+East North Central,4680.8,1516053.0,954285.8509788968,0.6294541490164901,3.087491004602082,measured_regional_vs_national_intensity
+South Atlantic,9146.4,4328784.0,4349532.084269317,1.004793051413357,2.1129259394786155,measured_regional_vs_national_intensity
+Middle Atlantic,1303.7,230625.0,290225.02756468096,1.2584283038034947,5.65289972899729,measured_regional_vs_national_intensity
+New England,295.1,100576.0,140519.33338358588,1.3971457741766016,2.934099586382437,measured_regional_vs_national_intensity
+West North Central,4285.9,1265964.0,2080216.5560068164,1.6431877652182973,3.385483315481325,measured_regional_vs_national_intensity
+East South Central,4062.6,204373.0,400363.5932398705,1.9589847643273353,19.878359665904988,measured_regional_vs_national_intensity
+Mountain,2602.7,653102.0,1329480.896174835,2.035640521962626,3.985135553098903,measured_regional_vs_national_intensity

@@ -1,0 +1,29 @@
+utility,state,potential_peak_mw,actual_peak_mw,system_peak_mw,reported_actual,realisation,potential_share_of_own_peak,provenance
+"Duke Energy Florida, Inc",FL,1039,0.0,9475,True,0.0,0.10965699208443272,measured
+Interstate Power and Light Co,IA,301,0.0,3005,True,0.0,0.10016638935108153,measured
+South Carolina Public Service Authority,SC,523,0.0,5869,True,0.0,0.08911228488669279,measured
+Florida Power & Light Co,FL,1666,0.0,22859,True,0.0,0.0728815783717573,measured
+Baltimore Gas & Electric Co,MD,394,0.0,6712,True,0.0,0.058700834326579264,measured
+The Toledo Edison Co,OH,206,1.0,2149,True,0.0048543689320388345,0.09585853885528153,measured
+"Duke Energy Indiana, LLC",IN,582,6.0,5748,True,0.010309278350515464,0.10125260960334029,measured
+Alabama Power Co,AL,1667,120.0,12398,True,0.07198560287942411,0.1344571705113728,measured
+Commonwealth Edison Co,IL,1305,105.0,20163,True,0.08045977011494253,0.06472251153102217,measured
+Idaho Power Co,ID,345,31.0,3402,True,0.08985507246376812,0.10141093474426807,measured
+Wisconsin Public Service Corp,WI,381,47.0,2117,True,0.12335958005249344,0.17997165800661313,measured
+Arkansas Electric Coop Corp,AR,628,151.0,3301,True,0.24044585987261147,0.19024538018782186,measured
+Tennessee Valley Authority,TN,2342,646.0,32751,True,0.27583262169086253,0.07150926689261397,measured
+"Duke Energy Carolinas, LLC",NC,674,266.0,18490,True,0.39465875370919884,0.03645213628988642,measured
+Pacific Gas & Electric Co,CA,557,273.0,18631,True,0.49012567324955114,0.029896409210455693,measured
+"Duke Energy Carolinas, LLC",SC,287,154.0,18490,True,0.5365853658536586,0.01552190373174689,measured
+Great River Energy,MN,520,280.0,2524,True,0.5384615384615384,0.20602218700475436,measured
+JEA,FL,254,165.0,2863,True,0.6496062992125984,0.08871812783793225,measured
+Southern California Edison Co,CA,4086,2725.0,22556,True,0.6669114047968674,0.18114913991842524,measured
+Nevada Power Co,NV,206,161.0,5864,True,0.7815533980582524,0.03512960436562074,measured
+Duke Energy Progress - (NC),NC,520,426.0,14814,True,0.8192307692307692,0.03510193060618334,measured
+North Carolina Eastern MPA,NC,361,325.0,1359,True,0.9002770083102493,0.2656364974245769,measured
+Indiana Michigan Power Co,IN,377,351.0,4398,True,0.9310344827586207,0.08572078217371533,measured
+Gulf Power Co,FL,369,369.0,2495,True,1.0,0.14789579158316632,measured
+Public Service Co of Colorado,CO,489,489.0,6111,True,1.0,0.08001963672066764,measured
+MidAmerican Energy Co,IA,211,,4624,False,,0.045631487889273355,measured
+Georgia Power Co,GA,339,,16104,False,,0.021050670640834577,measured
+Consolidated Edison Co-NY Inc,NY,233,,12613,False,,0.018473004043447237,measured

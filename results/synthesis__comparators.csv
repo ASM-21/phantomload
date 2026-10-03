@@ -1,0 +1,5 @@
+comparator,accreditation,cost_per_kw_yr,netted_of_energy_revenue,provenance
+gross CONE,nameplate,149.309,False,measured_pjm
+gross CONE,accredited,193.37795101760136,False,measured_pjm
+net CONE,nameplate,68.347,True,measured_pjm
+net CONE,accredited,88.5198,True,measured_pjm

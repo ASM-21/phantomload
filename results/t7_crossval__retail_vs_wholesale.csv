@@ -1,0 +1,3 @@
+year,retail_potential_mw,retail_actual_mw,wholesale_registered_mw,wholesale_over_retail_potential,naive_sum_mw,populations_disjoint,overlap_published,provenance
+2023,30542.0,10752.0,33054.5,1.0822637679261344,63596.5,False,False,measured_two_sources
+2024,31491.0,12322.0,33272.0,1.0565558413514973,64763.0,False,False,measured_two_sources

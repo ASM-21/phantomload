@@ -1,0 +1,301 @@
+dr_cost_year,delivery_year,location,dr_wins_of_8,provenance
+2015,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2015,2026/2027,BGE,4,measured_both_sides
+2015,2026/2027,COMED,7,measured_both_sides
+2015,2026/2027,DAYTON,6,measured_both_sides
+2015,2026/2027,DEOK,6,measured_both_sides
+2015,2026/2027,DOM,5,measured_both_sides
+2015,2026/2027,DPL SOUTH,6,measured_both_sides
+2015,2026/2027,EMAAC,7,measured_both_sides
+2015,2026/2027,JCPL,7,measured_both_sides
+2015,2026/2027,MAAC,6,measured_both_sides
+2015,2026/2027,PEPCO,6,measured_both_sides
+2015,2026/2027,PL,7,measured_both_sides
+2015,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2015,2026/2027,RTO,6,measured_both_sides
+2015,2026/2027,SWMAAC,6,measured_both_sides
+2015,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2015,2027/2028,BGE,5,measured_both_sides
+2015,2027/2028,COMED,7,measured_both_sides
+2015,2027/2028,DAYTON,6,measured_both_sides
+2015,2027/2028,DEOK,6,measured_both_sides
+2015,2027/2028,DOM,6,measured_both_sides
+2015,2027/2028,DPL SOUTH,6,measured_both_sides
+2015,2027/2028,EMAAC,7,measured_both_sides
+2015,2027/2028,JCPL,7,measured_both_sides
+2015,2027/2028,MAAC,6,measured_both_sides
+2015,2027/2028,PEPCO,6,measured_both_sides
+2015,2027/2028,PL,6,measured_both_sides
+2015,2027/2028,"PS, PS NORTH",7,measured_both_sides
+2015,2027/2028,RTO,6,measured_both_sides
+2015,2027/2028,SWMAAC,6,measured_both_sides
+2016,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2016,2026/2027,BGE,4,measured_both_sides
+2016,2026/2027,COMED,7,measured_both_sides
+2016,2026/2027,DAYTON,6,measured_both_sides
+2016,2026/2027,DEOK,6,measured_both_sides
+2016,2026/2027,DOM,6,measured_both_sides
+2016,2026/2027,DPL SOUTH,6,measured_both_sides
+2016,2026/2027,EMAAC,6,measured_both_sides
+2016,2026/2027,JCPL,7,measured_both_sides
+2016,2026/2027,MAAC,6,measured_both_sides
+2016,2026/2027,PEPCO,6,measured_both_sides
+2016,2026/2027,PL,6,measured_both_sides
+2016,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2016,2026/2027,RTO,6,measured_both_sides
+2016,2026/2027,SWMAAC,6,measured_both_sides
+2016,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2016,2027/2028,BGE,6,measured_both_sides
+2016,2027/2028,COMED,7,measured_both_sides
+2016,2027/2028,DAYTON,6,measured_both_sides
+2016,2027/2028,DEOK,6,measured_both_sides
+2016,2027/2028,DOM,6,measured_both_sides
+2016,2027/2028,DPL SOUTH,6,measured_both_sides
+2016,2027/2028,EMAAC,7,measured_both_sides
+2016,2027/2028,JCPL,7,measured_both_sides
+2016,2027/2028,MAAC,6,measured_both_sides
+2016,2027/2028,PEPCO,6,measured_both_sides
+2016,2027/2028,PL,6,measured_both_sides
+2016,2027/2028,"PS, PS NORTH",7,measured_both_sides
+2016,2027/2028,RTO,6,measured_both_sides
+2016,2027/2028,SWMAAC,6,measured_both_sides
+2017,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2017,2026/2027,BGE,4,measured_both_sides
+2017,2026/2027,COMED,7,measured_both_sides
+2017,2026/2027,DAYTON,6,measured_both_sides
+2017,2026/2027,DEOK,6,measured_both_sides
+2017,2026/2027,DOM,5,measured_both_sides
+2017,2026/2027,DPL SOUTH,6,measured_both_sides
+2017,2026/2027,EMAAC,7,measured_both_sides
+2017,2026/2027,JCPL,7,measured_both_sides
+2017,2026/2027,MAAC,6,measured_both_sides
+2017,2026/2027,PEPCO,6,measured_both_sides
+2017,2026/2027,PL,7,measured_both_sides
+2017,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2017,2026/2027,RTO,6,measured_both_sides
+2017,2026/2027,SWMAAC,6,measured_both_sides
+2017,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2017,2027/2028,BGE,5,measured_both_sides
+2017,2027/2028,COMED,7,measured_both_sides
+2017,2027/2028,DAYTON,6,measured_both_sides
+2017,2027/2028,DEOK,6,measured_both_sides
+2017,2027/2028,DOM,6,measured_both_sides
+2017,2027/2028,DPL SOUTH,6,measured_both_sides
+2017,2027/2028,EMAAC,7,measured_both_sides
+2017,2027/2028,JCPL,8,measured_both_sides
+2017,2027/2028,MAAC,6,measured_both_sides
+2017,2027/2028,PEPCO,6,measured_both_sides
+2017,2027/2028,PL,7,measured_both_sides
+2017,2027/2028,"PS, PS NORTH",8,measured_both_sides
+2017,2027/2028,RTO,6,measured_both_sides
+2017,2027/2028,SWMAAC,6,measured_both_sides
+2018,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2018,2026/2027,BGE,4,measured_both_sides
+2018,2026/2027,COMED,7,measured_both_sides
+2018,2026/2027,DAYTON,5,measured_both_sides
+2018,2026/2027,DEOK,6,measured_both_sides
+2018,2026/2027,DOM,5,measured_both_sides
+2018,2026/2027,DPL SOUTH,6,measured_both_sides
+2018,2026/2027,EMAAC,6,measured_both_sides
+2018,2026/2027,JCPL,7,measured_both_sides
+2018,2026/2027,MAAC,6,measured_both_sides
+2018,2026/2027,PEPCO,6,measured_both_sides
+2018,2026/2027,PL,6,measured_both_sides
+2018,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2018,2026/2027,RTO,6,measured_both_sides
+2018,2026/2027,SWMAAC,5,measured_both_sides
+2018,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2018,2027/2028,BGE,5,measured_both_sides
+2018,2027/2028,COMED,7,measured_both_sides
+2018,2027/2028,DAYTON,6,measured_both_sides
+2018,2027/2028,DEOK,6,measured_both_sides
+2018,2027/2028,DOM,6,measured_both_sides
+2018,2027/2028,DPL SOUTH,6,measured_both_sides
+2018,2027/2028,EMAAC,7,measured_both_sides
+2018,2027/2028,JCPL,7,measured_both_sides
+2018,2027/2028,MAAC,6,measured_both_sides
+2018,2027/2028,PEPCO,6,measured_both_sides
+2018,2027/2028,PL,6,measured_both_sides
+2018,2027/2028,"PS, PS NORTH",7,measured_both_sides
+2018,2027/2028,RTO,6,measured_both_sides
+2018,2027/2028,SWMAAC,6,measured_both_sides
+2019,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2019,2026/2027,BGE,4,measured_both_sides
+2019,2026/2027,COMED,6,measured_both_sides
+2019,2026/2027,DAYTON,5,measured_both_sides
+2019,2026/2027,DEOK,6,measured_both_sides
+2019,2026/2027,DOM,5,measured_both_sides
+2019,2026/2027,DPL SOUTH,6,measured_both_sides
+2019,2026/2027,EMAAC,6,measured_both_sides
+2019,2026/2027,JCPL,7,measured_both_sides
+2019,2026/2027,MAAC,6,measured_both_sides
+2019,2026/2027,PEPCO,6,measured_both_sides
+2019,2026/2027,PL,6,measured_both_sides
+2019,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2019,2026/2027,RTO,6,measured_both_sides
+2019,2026/2027,SWMAAC,6,measured_both_sides
+2019,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2019,2027/2028,BGE,5,measured_both_sides
+2019,2027/2028,COMED,7,measured_both_sides
+2019,2027/2028,DAYTON,6,measured_both_sides
+2019,2027/2028,DEOK,6,measured_both_sides
+2019,2027/2028,DOM,6,measured_both_sides
+2019,2027/2028,DPL SOUTH,6,measured_both_sides
+2019,2027/2028,EMAAC,7,measured_both_sides
+2019,2027/2028,JCPL,7,measured_both_sides
+2019,2027/2028,MAAC,6,measured_both_sides
+2019,2027/2028,PEPCO,6,measured_both_sides
+2019,2027/2028,PL,6,measured_both_sides
+2019,2027/2028,"PS, PS NORTH",7,measured_both_sides
+2019,2027/2028,RTO,6,measured_both_sides
+2019,2027/2028,SWMAAC,6,measured_both_sides
+2020,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2020,2026/2027,BGE,4,measured_both_sides
+2020,2026/2027,COMED,7,measured_both_sides
+2020,2026/2027,DAYTON,6,measured_both_sides
+2020,2026/2027,DEOK,6,measured_both_sides
+2020,2026/2027,DOM,5,measured_both_sides
+2020,2026/2027,DPL SOUTH,6,measured_both_sides
+2020,2026/2027,EMAAC,6,measured_both_sides
+2020,2026/2027,JCPL,7,measured_both_sides
+2020,2026/2027,MAAC,6,measured_both_sides
+2020,2026/2027,PEPCO,6,measured_both_sides
+2020,2026/2027,PL,6,measured_both_sides
+2020,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2020,2026/2027,RTO,6,measured_both_sides
+2020,2026/2027,SWMAAC,6,measured_both_sides
+2020,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2020,2027/2028,BGE,5,measured_both_sides
+2020,2027/2028,COMED,7,measured_both_sides
+2020,2027/2028,DAYTON,6,measured_both_sides
+2020,2027/2028,DEOK,6,measured_both_sides
+2020,2027/2028,DOM,6,measured_both_sides
+2020,2027/2028,DPL SOUTH,6,measured_both_sides
+2020,2027/2028,EMAAC,7,measured_both_sides
+2020,2027/2028,JCPL,7,measured_both_sides
+2020,2027/2028,MAAC,6,measured_both_sides
+2020,2027/2028,PEPCO,6,measured_both_sides
+2020,2027/2028,PL,6,measured_both_sides
+2020,2027/2028,"PS, PS NORTH",7,measured_both_sides
+2020,2027/2028,RTO,6,measured_both_sides
+2020,2027/2028,SWMAAC,6,measured_both_sides
+2021,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2021,2026/2027,BGE,4,measured_both_sides
+2021,2026/2027,COMED,7,measured_both_sides
+2021,2026/2027,DAYTON,5,measured_both_sides
+2021,2026/2027,DEOK,6,measured_both_sides
+2021,2026/2027,DOM,5,measured_both_sides
+2021,2026/2027,DPL SOUTH,6,measured_both_sides
+2021,2026/2027,EMAAC,6,measured_both_sides
+2021,2026/2027,JCPL,7,measured_both_sides
+2021,2026/2027,MAAC,6,measured_both_sides
+2021,2026/2027,PEPCO,6,measured_both_sides
+2021,2026/2027,PL,6,measured_both_sides
+2021,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2021,2026/2027,RTO,6,measured_both_sides
+2021,2026/2027,SWMAAC,5,measured_both_sides
+2021,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2021,2027/2028,BGE,5,measured_both_sides
+2021,2027/2028,COMED,7,measured_both_sides
+2021,2027/2028,DAYTON,6,measured_both_sides
+2021,2027/2028,DEOK,6,measured_both_sides
+2021,2027/2028,DOM,5,measured_both_sides
+2021,2027/2028,DPL SOUTH,6,measured_both_sides
+2021,2027/2028,EMAAC,7,measured_both_sides
+2021,2027/2028,JCPL,7,measured_both_sides
+2021,2027/2028,MAAC,6,measured_both_sides
+2021,2027/2028,PEPCO,6,measured_both_sides
+2021,2027/2028,PL,6,measured_both_sides
+2021,2027/2028,"PS, PS NORTH",7,measured_both_sides
+2021,2027/2028,RTO,6,measured_both_sides
+2021,2027/2028,SWMAAC,6,measured_both_sides
+2022,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2022,2026/2027,BGE,4,measured_both_sides
+2022,2026/2027,COMED,7,measured_both_sides
+2022,2026/2027,DAYTON,5,measured_both_sides
+2022,2026/2027,DEOK,6,measured_both_sides
+2022,2026/2027,DOM,5,measured_both_sides
+2022,2026/2027,DPL SOUTH,6,measured_both_sides
+2022,2026/2027,EMAAC,7,measured_both_sides
+2022,2026/2027,JCPL,7,measured_both_sides
+2022,2026/2027,MAAC,6,measured_both_sides
+2022,2026/2027,PEPCO,6,measured_both_sides
+2022,2026/2027,PL,7,measured_both_sides
+2022,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2022,2026/2027,RTO,6,measured_both_sides
+2022,2026/2027,SWMAAC,6,measured_both_sides
+2022,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2022,2027/2028,BGE,5,measured_both_sides
+2022,2027/2028,COMED,7,measured_both_sides
+2022,2027/2028,DAYTON,6,measured_both_sides
+2022,2027/2028,DEOK,6,measured_both_sides
+2022,2027/2028,DOM,6,measured_both_sides
+2022,2027/2028,DPL SOUTH,6,measured_both_sides
+2022,2027/2028,EMAAC,7,measured_both_sides
+2022,2027/2028,JCPL,8,measured_both_sides
+2022,2027/2028,MAAC,7,measured_both_sides
+2022,2027/2028,PEPCO,6,measured_both_sides
+2022,2027/2028,PL,7,measured_both_sides
+2022,2027/2028,"PS, PS NORTH",8,measured_both_sides
+2022,2027/2028,RTO,6,measured_both_sides
+2022,2027/2028,SWMAAC,6,measured_both_sides
+2023,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2023,2026/2027,BGE,4,measured_both_sides
+2023,2026/2027,COMED,6,measured_both_sides
+2023,2026/2027,DAYTON,5,measured_both_sides
+2023,2026/2027,DEOK,6,measured_both_sides
+2023,2026/2027,DOM,5,measured_both_sides
+2023,2026/2027,DPL SOUTH,6,measured_both_sides
+2023,2026/2027,EMAAC,6,measured_both_sides
+2023,2026/2027,JCPL,6,measured_both_sides
+2023,2026/2027,MAAC,6,measured_both_sides
+2023,2026/2027,PEPCO,6,measured_both_sides
+2023,2026/2027,PL,6,measured_both_sides
+2023,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2023,2026/2027,RTO,6,measured_both_sides
+2023,2026/2027,SWMAAC,6,measured_both_sides
+2023,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2023,2027/2028,BGE,5,measured_both_sides
+2023,2027/2028,COMED,7,measured_both_sides
+2023,2027/2028,DAYTON,6,measured_both_sides
+2023,2027/2028,DEOK,6,measured_both_sides
+2023,2027/2028,DOM,6,measured_both_sides
+2023,2027/2028,DPL SOUTH,6,measured_both_sides
+2023,2027/2028,EMAAC,6,measured_both_sides
+2023,2027/2028,JCPL,7,measured_both_sides
+2023,2027/2028,MAAC,6,measured_both_sides
+2023,2027/2028,PEPCO,6,measured_both_sides
+2023,2027/2028,PL,6,measured_both_sides
+2023,2027/2028,"PS, PS NORTH",7,measured_both_sides
+2023,2027/2028,RTO,6,measured_both_sides
+2023,2027/2028,SWMAAC,6,measured_both_sides
+2024,2026/2027,"ATSI, Cleveland",6,measured_both_sides
+2024,2026/2027,BGE,4,measured_both_sides
+2024,2026/2027,COMED,6,measured_both_sides
+2024,2026/2027,DAYTON,5,measured_both_sides
+2024,2026/2027,DEOK,6,measured_both_sides
+2024,2026/2027,DOM,5,measured_both_sides
+2024,2026/2027,DPL SOUTH,6,measured_both_sides
+2024,2026/2027,EMAAC,6,measured_both_sides
+2024,2026/2027,JCPL,7,measured_both_sides
+2024,2026/2027,MAAC,6,measured_both_sides
+2024,2026/2027,PEPCO,6,measured_both_sides
+2024,2026/2027,PL,6,measured_both_sides
+2024,2026/2027,"PS, PS NORTH",7,measured_both_sides
+2024,2026/2027,RTO,6,measured_both_sides
+2024,2026/2027,SWMAAC,5,measured_both_sides
+2024,2027/2028,"ATSI, Cleveland",6,measured_both_sides
+2024,2027/2028,BGE,5,measured_both_sides
+2024,2027/2028,COMED,7,measured_both_sides
+2024,2027/2028,DAYTON,6,measured_both_sides
+2024,2027/2028,DEOK,6,measured_both_sides
+2024,2027/2028,DOM,5,measured_both_sides
+2024,2027/2028,DPL SOUTH,6,measured_both_sides
+2024,2027/2028,EMAAC,7,measured_both_sides
+2024,2027/2028,JCPL,7,measured_both_sides
+2024,2027/2028,MAAC,6,measured_both_sides
+2024,2027/2028,PEPCO,6,measured_both_sides
+2024,2027/2028,PL,6,measured_both_sides
+2024,2027/2028,"PS, PS NORTH",7,measured_both_sides
+2024,2027/2028,RTO,6,measured_both_sides
+2024,2027/2028,SWMAAC,6,measured_both_sides

@@ -1,0 +1,10 @@
+division,dr_customers,dynamic_pricing_customers,dp_per_dr_customer,overlap_can_cover_all_dr,provenance
+Pacific,1348727.0,7772829.0,5.763085487278004,True,measured
+Mountain,653102.0,2253880.0,3.451038275797655,True,measured
+West South Central,919050.0,1579824.0,1.7189750285621022,True,measured
+East North Central,1516053.0,2512498.0,1.6572626418733383,True,measured
+New England,100576.0,144308.0,1.434815462933503,True,measured
+West North Central,1265964.0,1549726.0,1.2241469741635622,True,measured
+Middle Atlantic,230625.0,279248.0,1.210831436314363,True,measured
+East South Central,204373.0,141917.0,0.6944019024039378,False,measured
+South Atlantic,4328784.0,2005858.0,0.46337678202469795,False,measured

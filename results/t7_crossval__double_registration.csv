@@ -1,0 +1,3 @@
+market,docket,accepted,issue,resolution,provenance
+MISO,ER25-2050-000,2025-07-18,"resources could register as both Emergency Demand Response and Load Modifying Resource, drawing capacity payments while reducing the chance of being called as either",dual registration removed,measured
+PJM,n/a,,"Economic and Load Management registrations may include the same resource, so PJM reports a de-duplicated unique MW total",reported as unique MW,measured

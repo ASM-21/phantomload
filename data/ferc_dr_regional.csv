@@ -1,0 +1,91 @@
+division,year,customer_class,metric,value
+East North Central,2022,all,potential_peak_mw,4974.0
+East North Central,2022,all,dr_customers,1431542
+East North Central,2022,all,dynamic_pricing_customers,997574
+East North Central,2023,all,potential_peak_mw,4680.8
+East North Central,2023,all,dr_customers,1516053
+East North Central,2023,all,dynamic_pricing_customers,2512498
+East North Central,2023,residential,potential_peak_mw,861.92
+East North Central,2023,commercial,potential_peak_mw,829.38
+East North Central,2023,industrial,potential_peak_mw,2989.5
+East South Central,2022,all,potential_peak_mw,4223.4
+East South Central,2022,all,dr_customers,203712
+East South Central,2022,all,dynamic_pricing_customers,69859
+East South Central,2023,all,potential_peak_mw,4062.6
+East South Central,2023,all,dr_customers,204373
+East South Central,2023,all,dynamic_pricing_customers,141917
+East South Central,2023,residential,potential_peak_mw,363.28
+East South Central,2023,commercial,potential_peak_mw,104.0
+East South Central,2023,industrial,potential_peak_mw,3595.32
+Middle Atlantic,2022,all,potential_peak_mw,842.1
+Middle Atlantic,2022,all,dr_customers,184804
+Middle Atlantic,2022,all,dynamic_pricing_customers,276014
+Middle Atlantic,2023,all,potential_peak_mw,1303.7
+Middle Atlantic,2023,all,dr_customers,230625
+Middle Atlantic,2023,all,dynamic_pricing_customers,279248
+Middle Atlantic,2023,residential,potential_peak_mw,242.06
+Middle Atlantic,2023,commercial,potential_peak_mw,928.5
+Middle Atlantic,2023,industrial,potential_peak_mw,133.18
+Mountain,2022,all,potential_peak_mw,2389.4
+Mountain,2022,all,dr_customers,1356157
+Mountain,2022,all,dynamic_pricing_customers,1868528
+Mountain,2023,all,potential_peak_mw,2602.7
+Mountain,2023,all,dr_customers,653102
+Mountain,2023,all,dynamic_pricing_customers,2253880
+Mountain,2023,residential,potential_peak_mw,1233.79
+Mountain,2023,commercial,potential_peak_mw,414.02
+Mountain,2023,industrial,potential_peak_mw,954.86
+New England,2022,all,potential_peak_mw,309.2
+New England,2022,all,dr_customers,86732
+New England,2022,all,dynamic_pricing_customers,136319
+New England,2023,all,potential_peak_mw,295.1
+New England,2023,all,dr_customers,100576
+New England,2023,all,dynamic_pricing_customers,144308
+New England,2023,residential,potential_peak_mw,128.45
+New England,2023,commercial,potential_peak_mw,106.78
+New England,2023,industrial,potential_peak_mw,59.9
+Pacific,2022,all,potential_peak_mw,1390.3
+Pacific,2022,all,dr_customers,773107
+Pacific,2022,all,dynamic_pricing_customers,7983495
+Pacific,2023,all,potential_peak_mw,1330.0
+Pacific,2023,all,dr_customers,1348727
+Pacific,2023,all,dynamic_pricing_customers,7772829
+Pacific,2023,residential,potential_peak_mw,454.84
+Pacific,2023,commercial,potential_peak_mw,290.03
+Pacific,2023,industrial,potential_peak_mw,585.14
+South Atlantic,2022,all,potential_peak_mw,8449.2
+South Atlantic,2022,all,dr_customers,4034799
+South Atlantic,2022,all,dynamic_pricing_customers,2357868
+South Atlantic,2023,all,potential_peak_mw,9146.4
+South Atlantic,2023,all,dr_customers,4328784
+South Atlantic,2023,all,dynamic_pricing_customers,2005858
+South Atlantic,2023,residential,potential_peak_mw,3997.15
+South Atlantic,2023,commercial,potential_peak_mw,2601.26
+South Atlantic,2023,industrial,potential_peak_mw,2547.99
+West North Central,2022,all,potential_peak_mw,4787.4
+West North Central,2022,all,dr_customers,1295155
+West North Central,2022,all,dynamic_pricing_customers,828644
+West North Central,2023,all,potential_peak_mw,4285.9
+West North Central,2023,all,dr_customers,1265964
+West North Central,2023,all,dynamic_pricing_customers,1549726
+West North Central,2023,residential,potential_peak_mw,1924.58
+West North Central,2023,commercial,potential_peak_mw,824.56
+West North Central,2023,industrial,potential_peak_mw,1536.78
+West South Central,2022,all,potential_peak_mw,3082.6
+West South Central,2022,all,dr_customers,953766
+West South Central,2022,all,dynamic_pricing_customers,1078678
+West South Central,2023,all,potential_peak_mw,2834.7
+West South Central,2023,all,dr_customers,919050
+West South Central,2023,all,dynamic_pricing_customers,1579824
+West South Central,2023,residential,potential_peak_mw,460.56
+West South Central,2023,commercial,potential_peak_mw,936.59
+West South Central,2023,industrial,potential_peak_mw,1437.59
+US total,2022,all,potential_peak_mw,30447.6
+US total,2022,all,dr_customers,10319774
+US total,2022,all,dynamic_pricing_customers,15596979
+US total,2023,all,potential_peak_mw,30542.0
+US total,2023,all,dr_customers,10567254
+US total,2023,all,dynamic_pricing_customers,18240088
+US total,2023,residential,potential_peak_mw,9666.6
+US total,2023,commercial,potential_peak_mw,7035.11
+US total,2023,industrial,potential_peak_mw,13840.27

@@ -1,0 +1,4 @@
+region_idx,region,peak_risk_month,peak_risk_month_share,share_in_dr_months,peak_risk_hour_local,share_in_dr_hours,provenance
+CISO,CISO,5,0.24672364672364672,0.22507122507122507,12,0.10997150997150998,measured_generation_proxy_curtailment
+ERCO,ERCO,3,0.22962962962962963,0.014245014245014245,3,0.09971509971509972,measured_generation_proxy_curtailment
+PJM,PJM,3,0.21652421652421652,0.05811965811965812,14,0.14928774928774927,measured_generation_proxy_curtailment

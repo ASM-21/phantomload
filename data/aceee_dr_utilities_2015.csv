@@ -1,0 +1,29 @@
+utility,state,potential_peak_mw,actual_peak_mw,system_peak_mw,reported_actual
+North Carolina Eastern MPA,NC,361,325,1359,True
+Great River Energy,MN,520,280,2524,True
+Arkansas Electric Coop Corp,AR,628,151,3301,True
+Southern California Edison Co,CA,4086,2725,22556,True
+Wisconsin Public Service Corp,WI,381,47,2117,True
+Gulf Power Co,FL,369,369,2495,True
+Alabama Power Co,AL,1667,120,12398,True
+"Duke Energy Florida, Inc",FL,1039,0,9475,True
+Idaho Power Co,ID,345,31,3402,True
+"Duke Energy Indiana, LLC",IN,582,6,5748,True
+Interstate Power and Light Co,IA,301,0,3005,True
+The Toledo Edison Co,OH,206,1,2149,True
+South Carolina Public Service Authority,SC,523,0,5869,True
+JEA,FL,254,165,2863,True
+Indiana Michigan Power Co,IN,377,351,4398,True
+Public Service Co of Colorado,CO,489,489,6111,True
+Florida Power & Light Co,FL,1666,0,22859,True
+Tennessee Valley Authority,TN,2342,646,32751,True
+Commonwealth Edison Co,IL,1305,105,20163,True
+Baltimore Gas & Electric Co,MD,394,0,6712,True
+MidAmerican Energy Co,IA,211,,4624,False
+"Duke Energy Carolinas, LLC",NC,674,266,18490,True
+Duke Energy Progress - (NC),NC,520,426,14814,True
+Nevada Power Co,NV,206,161,5864,True
+Pacific Gas & Electric Co,CA,557,273,18631,True
+Georgia Power Co,GA,339,,16104,False
+Consolidated Edison Co-NY Inc,NY,233,,12613,False
+"Duke Energy Carolinas, LLC",SC,287,154,18490,True

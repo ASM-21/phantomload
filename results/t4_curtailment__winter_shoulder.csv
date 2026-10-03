@@ -1,0 +1,4 @@
+region,winter_peak_share_of_annual,winter_peak_month,summer_window_peak_share,months_outside_window_above_80pct,provenance
+CISO,0.6015411831729184,12,1.0,1,measured_generation_proxy_net_load
+ERCO,0.905353021915866,2,1.0,2,measured_generation_proxy_net_load
+PJM,0.8488706967814191,2,1.0,1,measured_generation_proxy_net_load

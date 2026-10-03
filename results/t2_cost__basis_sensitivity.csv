@@ -1,0 +1,3 @@
+side,low_basis,low_value,high_basis,high_value,spread_ratio,provenance
+demand response,per kW enrolled,50.38795211330221,per kW delivered,128.775117675702,2.5556727803927934,measured
+pjm peaker,net CONE,68.347,gross CONE,149.309,2.1845728415292553,measured

@@ -1,0 +1,4 @@
+year,rt_load_weighted_avg_lmp_usd_per_mwh,rt_load_weighted_avg_lmp_usd_per_kwh,coverage,basis
+2023,31.08,0.03108,"full year, 2024 SOM report comparison column","annual average across all hours, NOT called-hour price"
+2024,33.74,0.03374,"full year, 2024 SOM report","annual average across all hours, NOT called-hour price"
+2025,50.73,0.05073,"through 2025-12-31, IMM Members Committee report","annual average across all hours, NOT called-hour price"

@@ -1,0 +1,9 @@
+return_period_years,p_quiet_over_panel,min_window_years,identifiable_in_panel,alpha,provenance
+2,0.000244140625,5,True,0.05,identity
+3,0.00770734662925895,8,True,0.05,identity
+5,0.06871947673600004,14,False,0.05,identity
+10,0.2824295364810001,29,False,0.05,identity
+15,0.4369596344452394,44,False,0.05,identity
+20,0.5403600876626367,59,False,0.05,identity
+30,0.665764935722816,89,False,0.05,identity
+50,0.7847167237347998,149,False,0.05,identity

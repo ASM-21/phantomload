@@ -1,0 +1,5 @@
+sector,implied_event_hours_2022,implied_event_hours_latest,exceeds_60h_in_2022,exceeds_60h_latest,provenance
+commercial,48.64532208588957,35.84167684167684,False,False,measured_ratio_vs_assumed_program_design
+industrial,24.50945108120369,14.442322834645669,False,False,measured_ratio_vs_assumed_program_design
+residential,217.98328267477203,51.82298850574713,True,False,measured_ratio_vs_assumed_program_design
+total,93.5112461126781,33.225450413893846,True,False,measured_ratio_vs_assumed_program_design

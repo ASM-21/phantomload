@@ -1,0 +1,72 @@
+PhantomLoad
+Copyright 2026 Andrew Morrissey
+Licensed under the Apache License, Version 2.0, see LICENSE.
+
+This repository redistributes third-party data.
+
+1. CarbonCast hourly generation by fuel
+   Files: data/carboncast/CISO_direct_emissions.csv,
+          data/carboncast/ERCO_direct_emissions.csv,
+          data/carboncast/PJM_direct_emissions.csv
+   Source: https://github.com/carbonfirst/CarbonCast
+   Authors: Diptyaroop Maji, Prashant Shenoy, Ramesh K. Sitaraman,
+            University of Massachusetts Amherst
+   Licence: Apache License 2.0, full text in
+            data/carboncast/LICENSE-Apache-2.0.md
+   Files are redistributed unmodified. Derived columns are computed at runtime
+   in phantomload/tracks/t4_curtailment.py and are not written back over the
+   source files.
+
+2. PJM cost of new entry parameters
+   File: data/pjm_cone.csv
+   Source: PJM Interconnection, "2027/2028 RPM Base Residual Auction Planning
+           Period Parameters", August 26 2025, Table 3.
+   Status: auction planning parameters published by PJM for public use. The
+           values were transcribed from the published PDF; the transcription
+           lives in tools/build_pjm_cone.py and is checked against PJM's own
+           gross-minus-offset arithmetic by tests/test_tracks.py.
+
+3. PJM average energy price
+   File: data/pjm_lmp.csv
+   Source: Monitoring Analytics, independent market monitor for PJM, State of
+           the Market and Members Committee reports.
+   Status: published market monitoring reports; the vendored file carries three
+           annual figures transcribed from them.
+
+4. FERC regional and wholesale demand response tables
+   Files: data/ferc_dr_regional.csv, data/rto_dr.csv
+   Source: Federal Energy Regulatory Commission, "2025 Assessment of Demand
+           Response and Advanced Metering", Staff Report, December 2025.
+   Status: work of the U.S. Government, not subject to domestic copyright.
+           FERC compiles tables 3-1, 3-2, 5-1 and 5-2 from Form EIA-861 files
+           and table 3-3 from the RTOs' and ISOs' own annual reports.
+
+5. ACEEE utility-level demand response data, 2015
+   File: data/aceee_dr_utilities_2015.csv
+   Source: Steven Nadel, American Council for an Energy-Efficient Economy,
+           "Demand response programs can reduce utilities' peak demand an
+           average of 10%, complementing savings from energy efficiency
+           programs", 9 February 2017, and its data appendix.
+   Underlying data: 2015 Form EIA-861 demand response file, a U.S. Government
+           work, aggregated to utility level by ACEEE.
+   See PRIOR_WORK.md for what this work established before this repository did.
+
+6. EIA-861 utility-level demand response files, 2016 to 2018
+   File: data/eia861_dr_utility_2016_2018.csv
+   Source: Form EIA-861 detailed data files, Demand_Response_<year>.xlsx,
+           U.S. Energy Information Administration. Work of the U.S. Government,
+           not subject to domestic copyright.
+   Obtained from: IMMM-SFA/electricity_entity_boundaries, which redistributes
+           the unmodified EIA files; that repository's own code is licensed BSD
+           2-Clause, Copyright (c) 2019 Integrated Multi-Sector Multi-Scale
+           Modeling. Only the public-domain EIA values are used here.
+
+7. EIA-861 demand response aggregates
+   File: data/eia861_dr_national.csv
+   Source: U.S. Energy Information Administration, Form EIA-861, "Annual
+           Electric Power Industry Report", as published in Electric Power
+           Annual tables 10.3, 10.4 and 10.8.
+   Status: work of the U.S. Government, not subject to domestic copyright.
+   The values were transcribed from the published HTML tables; the
+   transcription lives in tools/build_eia861_panel.py and is checked against
+   EIA's own published totals by tests/test_data.py.
