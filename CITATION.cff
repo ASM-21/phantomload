@@ -7,9 +7,9 @@ authors:
     given-names: Andrew
     orcid: "https://orcid.org/0009-0004-8758-2687"
     affiliation: "independent"
-version: 0.2.0
+version: 0.3.0
 repository-code: "https://github.com/ASM-21/phantomload"
-date-released: "2026-09-05"
+date-released: "2026-09-20"
 license: Apache-2.0
 keywords:
   - demand response

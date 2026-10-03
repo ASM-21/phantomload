@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "phantomload"
-version = "0.2.0"
+version = "0.3.0"
 description = "61% of enrolled US demand response capacity goes unrealised each year, and public data shows that is not evidence of waste. EIA-861, PJM, FERC"
 readme = "README.md"
 requires-python = ">=3.10"
