@@ -47,8 +47,8 @@ would have to change in place.
 
 ## 2. Why do large programs realise less? *All components.*
 
-Median utilization falls from 94% in the smallest quarter of programs to 48% in
-the largest, and the largest quarter holds 88% of capacity. Candidates: large
+Median utilization falls from 96% in the smallest quarter of programs to 48% in
+the largest, and the largest quarter holds 87% of capacity. Candidates: large
 programs are reserve-style load management fleets that are called rarely; large
 programs define potential more generously; large programs have weaker per-device
 response. Each predicts something different about the zero mass, the regional
@@ -81,15 +81,37 @@ Form 1 report.
 **Entry point.** `t1_utilization.zero_persistence()`; join a reserve-margin
 column by utility and year.
 
-## 5. More years, found by file name. *All components.*
+## 5. More years. *All components.*
 
-Every utility-level result rests on 2016 to 2018. Three years is the minimum for
-a persistence test and too short to separate a weather cycle from a trend. The
-files were found by searching for `Demand_Response_2017.xlsx`; the same search
-for other years is the cheapest high-value contribution available.
+Every utility-level result rests on 2016 to 2018, the minimum for a persistence
+test and too short to separate a weather cycle from a trend.
 
-**Entry point.** `tools/build_eia861_utility.py`, constant `YEARS`. The
-reconciliation test will confirm any new year against the national panel.
+**The route.** Catalyst Cooperative's PUDL archives the raw EIA-861 release for
+every year from 1990 to 2025 on Zenodo (record 10.5281/zenodo.4127028, per-year
+zips of 1 to 5 MB) and publishes a cleaned demand response table,
+`core_eia861__yearly_demand_response`, for 2013 onward. Zenodo is not reachable
+from the environment this was built in; from anywhere else it is a download. A
+search for the file names turned up no other vendored copies.
+
+**The traps, from PUDL's own column maps,** which anyone extending the panel will
+hit:
+
+- 2013 to 2016 carry no balancing-authority column. A utility reporting under
+  two authorities in one state, as Wabash Valley Power does in Indiana, appears
+  as two indistinguishable rows. `utility_panel()` sums them into one entity.
+- 2019 adds a short-form flag and shifts the balancing-authority column by one.
+  From 2019 EIA folded short-form respondents into the main tables, so a panel
+  that crosses 2019 has a definitional break in who is included.
+- Utility-state rows fall from about 450 in 2019 to about 330 by 2021. Whether
+  that is fewer programs or the reporting change is a question in itself.
+
+**Check new years against.** PUDL's expected row counts, four per utility and
+state, which this repository's parse already matches for 2017 and 2018 and
+misses in 2016 by exactly the Wabash pair; and the national panel, which every
+year must reconcile to within the published table's rounding.
+
+**Entry point.** `tools/build_eia861_utility.py`, constant `YEARS`, plus a
+column map for 2019 onward.
 
 ## 6. The price in the hours demand response is called. *Cost comparison.*
 

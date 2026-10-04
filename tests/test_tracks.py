@@ -1008,14 +1008,19 @@ def test_utility_panel_reconciles_to_the_national_panel():
     Summed utility values must match the national panel to the megawatt."""
     from phantomload.shared.dr_program import load_eia_panel
 
+    # The national table is published in whole megawatts, so the utility sum can
+    # sit up to half a megawatt away by rounding alone. 2017 sums to 31,507.5
+    # against a published 31,508, and summation order decides whether that lands
+    # a hair either side of exactly 0.5. Tolerance is rounding plus float noise.
+    tolerance = 0.5 + 1e-6
     panel = load_eia_panel()
     up = t1.utility_panel()
     for year, g in up.groupby("year"):
         assert g.potential_peak_mw.sum() == pytest.approx(
-            float(panel.loc[(year, "total"), "potential_peak_mw"]), abs=0.5
+            float(panel.loc[(year, "total"), "potential_peak_mw"]), abs=tolerance
         )
         assert g.actual_peak_mw.sum() == pytest.approx(
-            float(panel.loc[(year, "total"), "actual_peak_mw"]), abs=0.5
+            float(panel.loc[(year, "total"), "actual_peak_mw"]), abs=tolerance
         )
 
 
@@ -1222,3 +1227,47 @@ def test_benchmark_flags_zero_and_unreported_without_judging():
     assert "not reported" in benchmark(100, None, None)["your_status"]
     with pytest.raises(SystemExit):
         benchmark(0, 5, None)
+
+
+# --- entity key integrity, and a third-party check on the parse -------------
+# PUDL (Catalyst Cooperative) publishes expected row counts for its EIA-861
+# demand response table, four rows per utility and state, one per customer
+# class. They are an independent check on how many utility rows each file holds.
+PUDL_EXPECTED_ROWS = {2016: 1704, 2017: 1688, 2018: 1716}
+
+
+def test_utility_panel_key_is_unique_per_year():
+    """The bug this would have caught: Wabash Valley Power reports in Indiana
+    under both PJM and MISO, so utility plus state is not unique in the raw
+    file, and three functions once resolved the duplicate three different ways."""
+    up = t1.utility_panel()
+    assert not up.duplicated(["year", "key"]).any()
+
+
+def test_raw_rows_reconcile_to_pudl_expected_counts():
+    raw = t1.utility_panel_raw()
+    counts = raw.groupby("year").size()
+    assert counts.loc[2017] == PUDL_EXPECTED_ROWS[2017] // 4
+    assert counts.loc[2018] == PUDL_EXPECTED_ROWS[2018] // 4
+    # 2016 has no balancing-authority column, so the Wabash pair cannot be told
+    # apart and PUDL collapses it; that one pair is the whole difference
+    assert counts.loc[2016] == PUDL_EXPECTED_ROWS[2016] // 4 + 1
+    pair = raw[(raw.year == 2016) & (raw.utility_number == "40211") & (raw.state == "IN")]
+    assert len(pair) == 2
+
+
+def test_aggregating_by_entity_preserves_every_total():
+    raw = t1.utility_panel_raw()
+    up = t1.utility_panel()
+    for col in ("potential_peak_mw", "actual_peak_mw", "customers_enrolled"):
+        assert up.groupby("year")[col].sum().round(6).equals(
+            raw.groupby("year")[col].sum().round(6)
+        ), col
+
+
+def test_all_blank_groups_stay_not_reported():
+    """Summing with a default of zero would turn 'did not report' into 'reported
+    zero', which is the distinction the central result rests on."""
+    up = t1.utility_panel()
+    assert (up.status == "not_reported").sum() > 0
+    assert up[up.status == "not_reported"].actual_peak_mw.isna().all()

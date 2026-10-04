@@ -7,9 +7,9 @@ authors:
     given-names: Andrew
     orcid: "https://orcid.org/0009-0004-8758-2687"
     affiliation: "independent"
-version: 0.4.0
+version: 0.4.1
 repository-code: "https://github.com/ASM-21/phantomload"
-date-released: "2026-10-03"
+date-released: "2026-10-04"
 license: Apache-2.0
 keywords:
   - demand response
@@ -28,7 +28,7 @@ abstract: >-
   bookkeeping. Partial delivery, about half the gap, is stable within a utility
   and unmoved by regional conditions, which leaves its mechanism open.
   Utilization falls steeply with program size, so the national figure describes
-  large programs; the median utility realises two thirds of its potential.
+  large programs; the median utility realises about two thirds of its potential.
   Priced against PJM's published cost of new entry, demand response is cheaper
   in six of eight defensible pairings of accounting bases. The public record
   does not support reading the gap as waste, and the work states what data

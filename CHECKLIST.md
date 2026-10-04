@@ -18,8 +18,8 @@ capacity-weighted, so it describes the largest programs, and utilization falls
 steeply with size.
 
 **What the evidence says.** The median utility realises 67% of its potential.
-By program size the median runs from 94% of potential in the smallest quarter
-of programs and 48% in the largest, and the largest quarter holds 88% of
+By program size the median runs from 96% of potential in the smallest quarter
+of programs and 48% in the largest, and the largest quarter holds 87% of
 enrolled capacity. A small program at 40% is in the bottom fifth of its peers; a
 large one at 40% is near the middle.
 
@@ -80,7 +80,7 @@ definition, its protocol or a consistent shortfall in response.
 **What the evidence says.** Partial delivery is 49% to 57% of the gap. It is
 sticky within a utility, a within-utility SD of 0.076, and it does not move with
 regional conditions: footprint-wide shocks explain 6.0% of year-to-year
-variation, p = 0.35.
+variation, p = 0.36.
 
 **How to answer it.** If the ratio is stable, ask why: what fraction of devices
 respond per event, and what share of enrolment is ever dispatched. Event-level

@@ -1,6 +1,6 @@
 # Method
 
-Thirteen rules this repository runs on. Each is here because it was learned during
+Fourteen rules this repository runs on. Each is here because it was learned during
 the build, usually by being violated first. Each says what went wrong, what the
 general rule is, and whether anything mechanically enforces it, because a rule
 nothing enforces is a hope.
@@ -205,6 +205,25 @@ trusting it, which here meant matching the national panel to the megawatt.
 
 **Enforcement.** Partial. `test_utility_panel_reconciles_to_the_national_panel`
 guards the data once found. Nothing can make the search happen.
+
+## 14. Totals cannot see a duplicated key; counts can
+
+**What happened.** The utility panel reconciled to the national series to the
+megawatt in every year, and still carried a bug. Wabash Valley Power reports in
+Indiana under two balancing authorities, so utility plus state was not a unique
+key, and three functions resolved the duplicate three different ways: one kept
+the first row, one averaged two different programs, one put both into a single
+footprint. Summing never notices, because the rows sum correctly whichever way
+they are grouped. It surfaced only when the raw row count for one year came out
+one higher than PUDL's independently published expected count.
+
+**The rule.** Reconcile counts as well as totals, against a third party's
+processing where one exists, and assert that every key you group on is unique
+before grouping on it. A total that matches proves the values are right; it says
+nothing about whether each entity appears once.
+
+**Enforcement.** Yes. `test_utility_panel_key_is_unique_per_year` and
+`test_raw_rows_reconcile_to_pudl_expected_counts`.
 
 ---
 

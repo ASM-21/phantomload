@@ -661,9 +661,44 @@ class InsufficientData(RuntimeError):
     """Raised instead of returning a degenerate answer."""
 
 
+# Wabash Valley Power reports in Indiana under two balancing authorities, PJM
+# and MISO, in every year, and in 2016, before EIA added the column, as two rows
+# with nothing to tell them apart. A key of utility plus state is therefore not
+# unique, and an earlier version of this module let three downstream functions
+# resolve that three different ways: persistence kept the first row, the size
+# test averaged two different programs, and the footprint test put both in one
+# footprint. Totals were never affected, which is why reconciliation passed.
+#
+# The entity here is one utility within one state, summed across balancing
+# authorities, assigned to the authority that holds most of its capacity. A test
+# asserts the key is unique, and another reconciles the raw row counts against
+# PUDL's expected counts, which differ in 2016 by exactly this pair.
+NUMERIC = [
+    "customers_enrolled",
+    "potential_peak_mw",
+    "actual_peak_mw",
+    "energy_savings_mwh",
+    "customer_incentives_kusd",
+    "other_costs_kusd",
+]
+
+
+def utility_panel_raw() -> pd.DataFrame:
+    return pd.read_csv(UTILITY_PANEL, dtype={"utility_number": str})
+
+
 def utility_panel() -> pd.DataFrame:
-    df = pd.read_csv(UTILITY_PANEL, dtype={"utility_number": str})
-    df["key"] = df.utility_number + "_" + df.state
+    raw = utility_panel_raw()
+    raw["key"] = raw.utility_number + "_" + raw.state
+    dominant = (
+        raw.sort_values("potential_peak_mw", ascending=False)
+        .drop_duplicates(["year", "key"])
+        .set_index(["year", "key"])[["utility", "utility_number", "state", "ba_code"]]
+    )
+    # min_count=1 keeps an all-blank group blank: a utility whose every row
+    # reported no actual stays "not reported", never becomes a zero
+    sums = raw.groupby(["year", "key"])[NUMERIC].sum(min_count=1)
+    df = dominant.join(sums).reset_index()
     df["reported_actual"] = df.actual_peak_mw.notna()
     df["status"] = "positive"
     df.loc[df.actual_peak_mw == 0, "status"] = "exact_zero"

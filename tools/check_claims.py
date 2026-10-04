@@ -165,6 +165,7 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
          f"{s9['size_largest_quarter_share_of_capacity']:.0%} of enrolled capacity"),
         ("t9 size rho",
          f"rho = {s9['size_spearman_size_vs_utilization']:.2f}"),
+        ("t9 size n", f"across {s9['size_utilities']}"),
         ("t9 partial share",
          f"{s9['partial_share_of_gap_min']:.0%} to {s9['partial_share_of_gap_max']:.0%} of the gap"),
         ("t1 regional floor",
@@ -392,6 +393,10 @@ RETIRED = [
     "28% narrower",
     "Only 7.7% of",
     "is exactly the ratio this repo measures",
+    # moved when the Wabash Valley duplicate key was fixed, 2026-10-04
+    "94% of potential in the smallest quarter",
+    "rho = -0.31",
+    "p = 0.35",
 ]
 HISTORICAL_MARKERS = ("retract", "earlier", "previous", "withdrawn", " was ",
                       "originally", "first version", "had been")

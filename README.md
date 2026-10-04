@@ -52,8 +52,8 @@ accounting. Above zero the distribution is continuous and separates nothing.
 **The national number is a statement about large programs.** The
 **median utility realises 67%** of its enrolled potential. The capacity-weighted
 national figure is near 40% because utilization falls steeply with size, from
-**94% of potential in the smallest quarter of programs and 48% in the largest**,
-and the largest quarter holds **88% of enrolled capacity** (**rho = -0.31**
+**96% of potential in the smallest quarter of programs and 48% in the largest**,
+and the largest quarter holds **87% of enrolled capacity** (**rho = -0.30**
 across utilities). A program's number means little without its size, which is
 what `python -m phantomload benchmark` is for.
 
@@ -63,7 +63,7 @@ figure reported (15%), and the zero mass (10%). Partial delivery is the largest
 piece every year, **49% to 57% of the gap**, and it does not behave like the
 zero mass. Within a utility it barely moves year to year, a
 **within-utility SD of 0.076**, and regional conditions explain only
-**6.0% of year-to-year variation**, no more than chance (**p = 0.35**). The test
+**6.0% of year-to-year variation**, no more than chance (**p = 0.36**). The test
 can see a regional **shock of SD 0.05** reliably and found none. So partial
 delivery reads as a stable property of each program, whether its definition, its
 dispatch protocol or a consistent partial response, rather than as system
@@ -292,7 +292,7 @@ Full write-ups in [FINDINGS.md](FINDINGS.md) and [FALSIFICATION.md](FALSIFICATIO
 
 ## Why you can trust the numbers
 
-- Every quoted figure in these docs is recomputed by `tools/check_claims.py`, which fails the build on drift in either direction: change the analysis without the text, or the text without the analysis, and CI goes red. 121 claims are pinned, and the same script rejects dead links to files that no longer exist.
+- Every quoted figure in these docs is recomputed by `tools/check_claims.py`, which fails the build on drift in either direction: change the analysis without the text, or the text without the analysis, and CI goes red. 122 claims are pinned, and the same script rejects dead links to files that no longer exist.
 - The same script enforces caveat retention. Delete the sentence saying the comparator is unverified, or the one saying phantom and reserve are not separable, and the build fails. It also rejects overclaiming language outside retraction blockquotes.
 - The source table is checked against itself: published sector values must sum to published totals within EIA's own rounding, and spot values are pinned to the published table cell by cell. `tools/check_source.py` re-fetches the live EIA tables and diffs them against the vendored copy, so a future EIA revision of a prior year surfaces as a failure rather than as silent staleness.
 - Simulated records cannot masquerade as measured ones. They are built through `synthetic_program()`, which stamps provenance at construction and ignores any attempt to pass a different one.
@@ -314,7 +314,7 @@ METHOD.md        the rules, what they cost to learn, and what enforces them
 MODELED.md       simulated analyses, kept out of the citable findings by rule
 CLAIMS.md        every quoted figure with its provenance record, generated
 PRIOR_WORK.md    what was already published, and what is still unsearched
-tests/           193 tests
+tests/           197 tests
 ```
 
 ## Install and run
@@ -322,8 +322,8 @@ tests/           193 tests
 ```bash
 pip install -e ".[dev]"
 python run_all.py            # all tracks, tables, figures
-pytest -q                    # 193 tests
-python tools/check_claims.py # 121 claims recomputed against the docs
+pytest -q                    # 197 tests
+python tools/check_claims.py # 122 claims recomputed against the docs
 python tools/check_source.py # diff the vendored panel against live EIA (skips offline)
 ```
 

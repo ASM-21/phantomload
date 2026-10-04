@@ -191,6 +191,16 @@ once per state, keyed on utility number plus state.
 
 Regenerate with `python tools/build_eia861_utility.py <path-to-EIA_861_Dataset>`.
 
+Two more checks, both tested. Raw row counts match PUDL's independently
+published expected counts for 2017 and 2018, and exceed them in 2016 by exactly
+one pair: Wabash Valley Power, which reports in Indiana under both PJM and MISO
+and, before EIA added the balancing-authority column, appears as two identical
+looking rows. The analysis treats one utility within one state as one entity,
+summed across balancing authorities, so the key it groups on is unique.
+
+For other years see ROADMAP item 5: PUDL archives every release on Zenodo, which
+was not reachable here.
+
 ## 7. CarbonCast hourly generation by fuel
 
 `data/carboncast/CISO_direct_emissions.csv`,

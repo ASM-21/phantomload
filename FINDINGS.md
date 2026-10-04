@@ -718,7 +718,7 @@ every year. If system conditions decided how much of each program got called,
 utilization would move together across utilities in the same footprint in the
 same year. It does not. Footprint-by-year common shocks explain 6.0% of
 within-utility year-to-year variation, against 5.6% under shuffled labels,
-p = 0.35. And utilization barely moves at all within a utility: a
+p = 0.36. And utilization barely moves at all within a utility: a
 within-utility SD of 0.076.
 
 A null result is only worth reporting with its power. Injecting a known
@@ -730,12 +730,12 @@ rules out large regional dispatch effects and cannot see small ones.
 
 The national ratio is capacity-weighted, so it reports what the largest
 programs do. Utilization falls steadily with program size: the median program
-realises 94% of potential in the smallest quarter of programs and 48% in the
-largest, and the largest quarter holds 88% of enrolled capacity. The median
+realises 96% of potential in the smallest quarter of programs and 48% in the
+largest, and the largest quarter holds 87% of enrolled capacity. The median
 utility realises 67% of its potential, against a capacity-weighted national
 figure near 40%, and the median exceeds the weighted figure in every year. On
 one observation per utility, to avoid counting the same program three times,
-the rank correlation between size and utilization is rho = -0.31 across 415
+the rank correlation between size and utilization is rho = -0.30 across 415
 utilities, p below 1e-9.
 
 So the national headline is a statement about large programs, and a single
