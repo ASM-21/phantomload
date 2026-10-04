@@ -100,12 +100,21 @@ def benchmark(potential_mw: float, actual_mw: float | None, in_rto: bool | None)
     if in_rto is not None:
         pop = pop[pop.in_rto == in_rto]
     reported = pop[pop.status != "not_reported"]
+    # Reports where actual exactly equals potential are usually a contract
+    # quantity, not a measurement, and they are far more common among small
+    # programs. Comparing against them flatters small programs, so peers are
+    # drawn only from reports that carry a measurement.
+    copied = np.isclose(reported.actual_peak_mw, reported.potential_peak_mw) & (
+        reported.actual_peak_mw > 0
+    )
+    reported = reported[~copied]
     out = {
         "population": f"{len(pop):,} utility-years"
         + ("" if in_rto is None else (" inside RTO footprints" if in_rto else " outside RTO footprints")),
         "population_share_reporting_zero": float((reported.actual_peak_mw == 0).mean()),
         "population_share_not_reporting": float((pop.status == "not_reported").mean()),
         "population_median_utilization": float(reported.utilization.median()),
+        "peers_exclude_copied_reports": True,
     }
     if actual_mw is None:
         out["your_status"] = "not reported, like the share above"
@@ -126,7 +135,13 @@ def benchmark(potential_mw: float, actual_mw: float | None, in_rto: bool | None)
     out["size_band"] = f"{names[band]} quarter, {span}"
     out["size_band_median_utilization"] = float(peers.utilization.median())
     out["your_percentile_within_size_band"] = float((peers.utilization < u).mean())
-    if actual_mw == 0:
+    if actual_mw > 0 and np.isclose(actual_mw, potential_mw):
+        out["your_status"] = (
+            "actual equals potential: this is usually a contract figure rather than "
+            "a measurement, so check how actual was determined before comparing "
+            "(CHECKLIST.md question 0)"
+        )
+    elif actual_mw == 0:
         out["your_status"] = (
             "exact zero: ask whether the program was called (CHECKLIST.md question 1)"
         )

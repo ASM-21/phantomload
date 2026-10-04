@@ -716,48 +716,75 @@ not answerable from these files.
 delivered some but not all of their potential account for 49% to 57% of the gap
 every year. If system conditions decided how much of each program got called,
 utilization would move together across utilities in the same footprint in the
-same year. It does not. Footprint-by-year common shocks explain 6.0% of
-within-utility year-to-year variation, against 5.6% under shuffled labels,
-p = 0.36. And utilization barely moves at all within a utility: a
-within-utility SD of 0.076.
+same year.
 
-A null result is only worth reporting with its power. Injecting a known
-footprint-by-year shock and re-running the test, it detects a shock of SD 0.05
-in more than 90% of trials, and a shock of SD 0.02 in about 30%. So the result
-rules out large regional dispatch effects and cannot see small ones.
+> **Rescoped.** An earlier version of this section concluded that partial
+> delivery does not move with regional conditions, on the strength of a single
+> specification: footprint-by-year shocks explained
+> 6.0% of year-to-year variation against 5.6% under shuffled labels, p = 0.36,
+> with a power check
+> showing a shock of SD 0.05 would have been detected. That test rested on two
+> choices made once, and when they were varied the conclusion did not hold.
 
-### Size matters more than anything else visible here
+The two choices are whether to include reports where actual exactly equals
+potential, and how many utilities a footprint needs before it is tested. The
+first matters because 63 utilities in this panel report utilization of exactly
+1.0 in every year; an observation fixed by convention adds no variance and pulls
+every regional average toward zero, which biases the test toward a null. The
+second matters because footprints with few utilities add noise.
 
-The national ratio is capacity-weighted, so it reports what the largest
-programs do. Utilization falls steadily with program size: the median program
-realises 96% of potential in the smallest quarter of programs and 48% in the
-largest, and the largest quarter holds 87% of enrolled capacity. The median
-utility realises 67% of its potential, against a capacity-weighted national
-figure near 40%, and the median exceeds the weighted figure in every year. On
-one observation per utility, to avoid counting the same program three times,
-the rank correlation between size and utilization is rho = -0.30 across 415
-utilities, p below 1e-9.
+Across the grid of three inclusion rules and three footprint thresholds, the
+regional common share exceeds its shuffled-label null in all nine
+specifications and is significant in 3 of 9, with p from 0.0055 to 0.36. With
+every report included, as first published, nothing is detectable. Excluding
+utilities that ever report actual equal to potential, a modest regional
+component appears, about 11% of year-to-year variation against 6% expected.
 
-So the national headline is a statement about large programs, and a single
-program's number cannot be read against it without knowing its size. A small
-program at 40% is in the bottom fifth of its peers; a large one at 40% is near
-the middle. `python -m phantomload benchmark` makes that comparison.
+So this component is specification-dependent, and the honest summary is that it
+leans slightly toward dispatch responding to system conditions, rather than
+toward a fixed property of each program, without either being established. The
+three candidate mechanisms remain: a definition, where potential is a fixed
+multiple of what a program ever delivers; a protocol, where a program is always
+called at a fixed share; and a consistent partial response, which is the phantom
+reading this repository argues against. Event-level evaluations would separate
+them, and of everything left open here this matters most, because it is half the
+gap.
 
-Why large programs realise less is not answered here, and it is one of the more
-useful open questions, because it connects to everything else in this section.
-Large programs are disproportionately the reserve-style load management fleets of
-vertically integrated utilities, which is where the zero mass concentrates, and
-they are also where a definitional choice about "potential" moves the most
-megawatts.
+### A third of reported deliveries are not measurements
 
-What it leaves is a stable, utility-specific ratio. That could be a definition,
-where a utility's "potential" is a fixed multiple of what it ever expects to
-deliver; a dispatch protocol, where a program is always called at a fixed share;
-or a consistent partial response, where the same customers fail to respond every
-time. The first is the reporting question from attack D. The third is the
-phantom reading this repository has been arguing against. The data here cannot
-separate them, and of everything this repository leaves open, this matters most:
-it is half the gap.
+Among utilities reporting a positive actual figure, 30% of reports set actual
+exactly equal to potential, and they hold 13% of positive capacity. The habit is
+concentrated in small programs, 55% of the smallest quarter against 16% of the
+largest, and it persists: of 278 utilities reporting a positive figure in every
+year, 67 report exact equality in every year and 174 never do. A program whose
+delivered figure equals its enrolled figure three years running is recording a
+contract or copying a field, not measuring how much load actually came off.
+
+This is the most direct evidence on the reporting question in attack D, which
+until now rested on a regional spread in reported intensity that genuine program
+differences could also produce. Exact equality, repeated, has no such ambiguity.
+
+> **Withdrawn.** v0.4.0 reported that utilization falls steeply with program
+> size and led with the claim that the national number is a statement about
+> large programs, with the median utility realising 67% of potential. Most of
+> that gradient was the convention above. The raw medians still run from 96% in
+> the smallest quarter of programs to 48% in the largest, and the largest quarter
+> still holds 87% of enrolled capacity, but on reports that carry a measurement
+> the rank correlation weakens from -0.30 to -0.13 and the median utility
+> realises 50%, close to the capacity-weighted figure.
+
+The class split settles it. If large programs realised less because they are
+disproportionately industrial interruptible contracts, the gradient would vanish
+within class. On raw reports it does not: it is significant within residential,
+commercial and industrial alike. On measured reports it vanishes in every class,
+with no within-class correlation larger than 0.11 in magnitude and none
+significant. So the gradient was neither class mix nor program size. It was the
+convention.
+
+What remains is a weak pooled gradient, rho -0.13 on measured reports with
+p = 0.03, probably a small class-mix effect, and a practical lesson for anyone
+reading one program's number: check whether its delivered figure is its enrolled
+figure before comparing it with anything.
 
 ## Cross-track thread
 

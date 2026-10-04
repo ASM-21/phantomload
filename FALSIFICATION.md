@@ -151,11 +151,24 @@ a long capacity position would show up as a program nobody calls.
 until conditions demanded it, utilization would rise and fall together across
 utilities in the same footprint in the same year.
 
-**Result: NOT SUPPORTED, with a stated detection floor.** Common shocks explain no
-more year-to-year variation than shuffled labels, and the test detects a
-regional shock of SD 0.05 in more than 90% of injected trials. Partial delivery
-is a stable property of each program. This attack cuts against the reading the
-rest of this repository leans toward, and it is reported for that reason.
+**First result, now rescoped.** In the specification first run, common shocks
+explained no more year-to-year variation than shuffled labels, p = 0.36, and a
+power check showed a regional shock of SD 0.05 would have been caught. That was
+reported as evidence that partial delivery is a fixed property of each program.
+
+**What attacking the attack found.** The test rested on two choices made once.
+One was to include 63 utilities whose reported utilization is exactly 1.0 every
+year, because their actual figure is their potential. Observations fixed by
+convention add no variance and pull every regional average toward zero, so they
+bias the test toward a null. The other was the minimum number of utilities a
+footprint needs. Across the nine combinations the regional share beats chance
+every time and is significant in three, p from 0.0055 to 0.36.
+
+**Result: SPECIFICATION-DEPENDENT.** Neither "partial delivery follows system
+conditions" nor "it does not" survives. The lean, once copied reports are set
+aside, is slightly toward a regional, dispatch-driven component, which is the
+opposite of the first reading. This attack is kept in full because the first
+version of it was itself an untested analyst choice presented as a finding.
 
 ## Retractions
 

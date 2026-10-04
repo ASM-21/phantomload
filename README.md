@@ -49,26 +49,37 @@ which reported zero from 2015 through 2018, and whose program bids into PJM's
 wholesale market, so its peak reduction may simply be recorded in the other
 accounting. Above zero the distribution is continuous and separates nothing.
 
-**The national number is a statement about large programs.** The
-**median utility realises 67%** of its enrolled potential. The capacity-weighted
-national figure is near 40% because utilization falls steeply with size, from
-**96% of potential in the smallest quarter of programs and 48% in the largest**,
-and the largest quarter holds **87% of enrolled capacity** (**rho = -0.30**
-across utilities). A program's number means little without its size, which is
-what `python -m phantomload benchmark` is for.
+**Nearly a third of reported deliveries are not measurements.** Among utilities
+reporting a positive actual figure, **30% of reports set actual exactly equal to
+potential**, rising to 55% of the smallest programs, and 67 utilities do it in
+every year. A program whose delivered figure equals its enrolled figure three
+years running is recording a contract or copying a field. That convention
+explains most of a result this repository published and has now withdrawn: an
+apparently steep fall in utilization with program size, from 96% of potential in
+the smallest quarter of programs to 48% in the largest. On reports that carry a
+measurement the gradient is weak (rho -0.13), and the median utility realises
+**50% excluding those reports**, close to the capacity-weighted national figure,
+not the 67% the raw reports suggest. Size still matters for reading a single
+program's number, mainly because small programs so often report a contract
+rather than an outcome. `python -m phantomload benchmark` compares against peers
+of similar size and flags the convention.
 
 **The gap is three different things, and they behave differently.** In 2018 the
 unrealised 59.5% splits into partial delivery (34%), capacity with no actual
 figure reported (15%), and the zero mass (10%). Partial delivery is the largest
-piece every year, **49% to 57% of the gap**, and it does not behave like the
-zero mass. Within a utility it barely moves year to year, a
-**within-utility SD of 0.076**, and regional conditions explain only
-**6.0% of year-to-year variation**, no more than chance (**p = 0.36**). The test
-can see a regional **shock of SD 0.05** reliably and found none. So partial
-delivery reads as a stable property of each program, whether its definition, its
-dispatch protocol or a consistent partial response, rather than as system
-conditions deciding how much got called. That part of the gap is not settled by
-anything here, and it is the most important open question in the repository.
+piece every year, **49% to 57% of the gap**, and whether it responds to system
+conditions is the question this repository could not settle. If system need
+decided how much of each program got called, utilization would rise and fall
+together across utilities in the same footprint. Whether that shows up depends
+on two choices made once: whether to include the reports where actual simply
+equals potential, and how many utilities a footprint needs before it counts.
+Across the nine combinations, the regional common share exceeds what shuffled
+labels produce in all nine and is significant in **3 of 9**, with p ranging
+from 0.0055 to 0.36. With every report included, as first published, nothing is
+detectable (**p = 0.36**); excluding the copied reports, a modest regional
+component appears. So this part of the gap is open, leaning slightly toward
+dispatch rather than structure, and it is the most important open question in
+the repository.
 
 The zero and unreported shares are not wholesale bookkeeping either. If they
 were reductions recorded in an RTO's settlement instead of the retail filing,
@@ -169,12 +180,12 @@ case is the one demand response loses.
 **Researchers.** [ROADMAP.md](ROADMAP.md) is a research agenda organised by how
 much of the gap each open question carries, with the competing explanations,
 the test that would separate them, where the data lives and the function to
-start in. The most valuable single question, why partial delivery is stable
-within a utility, accounts for half the gap.
+start in. The most valuable single question, whether partial delivery responds to
+system conditions, accounts for half the gap.
 
 **Journalists and advocates.** The short version: the national shortfall is real,
-it is mostly a statement about large programs, and the public data cannot show it
-is waste. [CHECKLIST.md](CHECKLIST.md) says what would have to be shown first.
+a large part of what utilities report as delivered is a contract figure rather
+than a measurement, and the public data cannot show the shortfall is waste. [CHECKLIST.md](CHECKLIST.md) says what would have to be shown first.
 
 ## A note on terminology
 
@@ -292,7 +303,7 @@ Full write-ups in [FINDINGS.md](FINDINGS.md) and [FALSIFICATION.md](FALSIFICATIO
 
 ## Why you can trust the numbers
 
-- Every quoted figure in these docs is recomputed by `tools/check_claims.py`, which fails the build on drift in either direction: change the analysis without the text, or the text without the analysis, and CI goes red. 122 claims are pinned, and the same script rejects dead links to files that no longer exist.
+- Every quoted figure in these docs is recomputed by `tools/check_claims.py`, which fails the build on drift in either direction: change the analysis without the text, or the text without the analysis, and CI goes red. 126 claims are pinned, and the same script rejects dead links to files that no longer exist.
 - The same script enforces caveat retention. Delete the sentence saying the comparator is unverified, or the one saying phantom and reserve are not separable, and the build fails. It also rejects overclaiming language outside retraction blockquotes.
 - The source table is checked against itself: published sector values must sum to published totals within EIA's own rounding, and spot values are pinned to the published table cell by cell. `tools/check_source.py` re-fetches the live EIA tables and diffs them against the vendored copy, so a future EIA revision of a prior year surfaces as a failure rather than as silent staleness.
 - Simulated records cannot masquerade as measured ones. They are built through `synthetic_program()`, which stamps provenance at construction and ignores any attempt to pass a different one.
@@ -314,7 +325,7 @@ METHOD.md        the rules, what they cost to learn, and what enforces them
 MODELED.md       simulated analyses, kept out of the citable findings by rule
 CLAIMS.md        every quoted figure with its provenance record, generated
 PRIOR_WORK.md    what was already published, and what is still unsearched
-tests/           197 tests
+tests/           203 tests
 ```
 
 ## Install and run
@@ -322,8 +333,8 @@ tests/           197 tests
 ```bash
 pip install -e ".[dev]"
 python run_all.py            # all tracks, tables, figures
-pytest -q                    # 197 tests
-python tools/check_claims.py # 122 claims recomputed against the docs
+pytest -q                    # 203 tests
+python tools/check_claims.py # 126 claims recomputed against the docs
 python tools/check_source.py # diff the vendored panel against live EIA (skips offline)
 ```
 

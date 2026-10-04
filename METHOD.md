@@ -1,6 +1,6 @@
 # Method
 
-Fourteen rules this repository runs on. Each is here because it was learned during
+Fifteen rules this repository runs on. Each is here because it was learned during
 the build, usually by being violated first. Each says what went wrong, what the
 general rule is, and whether anything mechanically enforces it, because a rule
 nothing enforces is a hope.
@@ -224,6 +224,31 @@ nothing about whether each entity appears once.
 
 **Enforcement.** Yes. `test_utility_panel_key_is_unique_per_year` and
 `test_raw_rows_reconcile_to_pudl_expected_counts`.
+
+## 15. Find the observations that cannot vary, before testing anything
+
+**What happened.** Two results published here rested on reports that carried no
+measurement. Nearly a third of positive reports set actual exactly equal to
+potential, a contract recorded as a delivery, and 67 utilities did it every
+year. Those reports produced an apparently steep fall in utilization with program
+size, published in v0.4.0, which vanished within every customer class once they
+were set aside. And because a report fixed at 1.0 every year adds no variance and
+pulls every regional average toward zero, they biased the common-shock test
+toward a null, so attack F reported "no regional effect" where removing them
+shows one in some specifications.
+
+**The rule.** Before testing variation, find the observations that are fixed by
+convention rather than by the world: values equal to a bound, values identical
+year after year, a field equal to another field. They contribute nothing to a
+test of variation except a bias toward finding none, and they contribute a level
+effect to anything that averages them. Test with and without them, and report
+both.
+
+**Enforcement.** Yes. `test_t9_copied_reports_bias_the_common_shock_test_toward_null`
+pins the mechanism, `test_t9_common_shock_verdict_is_specification_dependent`
+keeps the verdict honest, and
+`test_t9_size_gradient_vanishes_within_every_class_on_measured_reports` pins the
+withdrawal.
 
 ---
 

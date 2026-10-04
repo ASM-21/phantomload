@@ -9,17 +9,21 @@ with the component it addresses and its share of the gap in 2018.
 
 | Component | Share of enrolled capacity, 2018 | Status |
 | --- | --- | --- |
-| Partial delivery | 34% | open: stable within a utility, mechanism unknown |
+| Partial delivery | 34% | open: response to system conditions is specification-dependent |
 | No actual reported | 15% | constrained: not wholesale bookkeeping, otherwise unknown |
 | Exact zero | 10% | largely explained: rotates, concentrates outside organised markets |
 
 ---
 
-## 1. Why is partial delivery stable? *Partial delivery, half the gap.*
+## 1. Does partial delivery respond to system conditions? *Partial delivery, half the gap.*
 
-The most important open question. Utilities that deliver some of their potential
-deliver about the same fraction every year, unmoved by regional conditions. Three
-explanations fit and they have opposite implications:
+The most important open question. Whether utilization moves with regional
+conditions depends on two analyst choices, which reports to include and how many
+utilities a footprint needs: across nine specifications the regional share beats
+chance in all nine and is significant in three (`t9_mechanisms.specification_grid()`).
+Excluding reports where actual simply equals potential tilts it toward a regional,
+dispatch-driven component. Three explanations fit and they have opposite
+implications:
 
 - **Definition.** Potential is a fixed multiple of what the program ever
   delivers, for example a contracted maximum against a typical event. Benign; a
@@ -45,18 +49,18 @@ Uniform Methods Project protocols. Ten programs would be enough to start.
 of the phantom reading true for the largest component, and the README's answer
 would have to change in place.
 
-## 2. Why do large programs realise less? *All components.*
+## 2. Who records a contract as a delivery, and why? *Reporting.*
 
-Median utilization falls from 96% in the smallest quarter of programs to 48% in
-the largest, and the largest quarter holds 87% of capacity. Candidates: large
-programs are reserve-style load management fleets that are called rarely; large
-programs define potential more generously; large programs have weaker per-device
-response. Each predicts something different about the zero mass, the regional
-reporting index and event-level response respectively, so this question is
-answerable by combining tests already in the repository with item 1's data.
+30% of positive reports set actual exactly equal to potential, 55% among the
+smallest programs, and 67 utilities do it every year. That convention produced a
+size gradient this repository published and withdrew. Whether those utilities
+meter response, count devices or simply restate the contract quantity is
+answerable from their filings, and the answer decides how much of the national
+realised figure is measured at all.
 
-**Entry point.** `t9_mechanisms.size_gradient()`. Adding program type, which
-EIA's detailed files carry in some years, would be the first step.
+**Entry point.** `t9_mechanisms.exact_equality()`, which lists the utilities.
+Adding the EIA-861 short-form flag, present from 2019, would test whether the
+convention follows filing type.
 
 ## 3. What is the unreported group? *No actual reported, a quarter of the gap.*
 

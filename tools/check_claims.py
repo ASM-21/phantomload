@@ -155,17 +155,27 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
          f"{s9['cs_share_explained_by_common_shocks']:.1%} of year-to-year variation"),
         ("t9 p value", f"p = {s9['cs_p_value']:.2f}"),
         ("t9 detectable", f"shock of SD {s9['cs_smallest_reliably_detected_sd']:.2f}"),
-        ("t9 sticky", f"within-utility SD of {s9['cs_within_utility_sd']:.3f}"),
-        ("t9 size median",
-         f"median utility realises {s9['size_median_utility_utilization']:.0%}"),
-        ("t9 size bands",
-         f"{s9['size_smallest_quarter_median']:.0%} of potential in the smallest quarter "
-         f"of programs and {s9['size_largest_quarter_median']:.0%} in the largest"),
+        ("t9 size bands raw",
+         f"from {s9['size_smallest_quarter_median']:.0%} of potential in the smallest "
+         f"quarter of programs to {s9['size_largest_quarter_median']:.0%} in the largest"),
         ("t9 size share",
          f"{s9['size_largest_quarter_share_of_capacity']:.0%} of enrolled capacity"),
-        ("t9 size rho",
-         f"rho = {s9['size_spearman_size_vs_utilization']:.2f}"),
-        ("t9 size n", f"across {s9['size_utilities']}"),
+        ("t9 exact share",
+         f"{s9['exact_share_of_positive_reports']:.0%} of reports set actual exactly "
+         "equal to potential"),
+        ("t9 exact small", f"{s9['exact_smallest_quarter_share']:.0%} of the smallest"),
+        ("t9 exact every year",
+         f"{s9['exact_exact_every_year']} utilities do it in every year"),
+        ("t9 measured rho", f"rho {s9['sizem_rho']:.2f}"),
+        ("t9 measured median",
+         f"{s9['sizem_median_utility_measured']:.0%} excluding those reports"),
+        ("t9 class measured",
+         f"no within-class correlation larger than "
+         f"{s9['cls_measured_rho_max_abs']:.2f} in magnitude"),
+        ("t9 spec significant",
+         f"{s9['spec_significant']} of {s9['spec_specifications']}"),
+        ("t9 spec range",
+         f"p ranging from {s9['spec_p_min']:.4f} to {s9['spec_p_max']:.2f}"),
         ("t9 partial share",
          f"{s9['partial_share_of_gap_min']:.0%} to {s9['partial_share_of_gap_max']:.0%} of the gap"),
         ("t1 regional floor",
@@ -397,6 +407,11 @@ RETIRED = [
     "94% of potential in the smallest quarter",
     "rho = -0.31",
     "p = 0.35",
+    # withdrawn in v0.4.2: most of the size gradient was a reporting convention
+    "statement about large programs",
+    "median utility realises 67%",
+    "reads as a stable property of each program",
+    "unmoved by regional conditions",
 ]
 HISTORICAL_MARKERS = ("retract", "earlier", "previous", "withdrawn", " was ",
                       "originally", "first version", "had been")

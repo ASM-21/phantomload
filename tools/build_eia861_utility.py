@@ -80,6 +80,51 @@ def parse_year(root: pathlib.Path, year: int) -> list[dict]:
     return rows
 
 
+CLASSES = ("Residential", "Commercial", "Industrial", "Transportation")
+
+
+def parse_year_by_class(root: pathlib.Path, year: int) -> list[dict]:
+    """Long format: one row per utility, state, balancing authority and class.
+
+    The totals file discards the class split, and two of the open questions in
+    ROADMAP turn on it: whether large programs realise less only because they
+    are industrial interruptible contracts, and whether partial delivery is
+    stable only within particular classes.
+    """
+    import pandas as pd
+
+    path = root / str(year) / f"Demand_Response_{year}.xlsx"
+    raw = pd.read_excel(path, sheet_name=SHEET, header=None)
+    section = raw.iloc[1].ffill()
+    klass = raw.iloc[2]
+    cols = [
+        f"{s}|{c}" if pd.notna(s) and str(s) != "nan" else str(c)
+        for s, c in zip(section, klass)
+    ]
+    body = raw.iloc[3:].copy()
+    body.columns = cols
+    rows = []
+
+    def clean(v):
+        return "" if v is None or str(v).strip() in {".", "", "nan"} else v
+
+    for _, r in body.iterrows():
+        for c in CLASSES:
+            rows.append(
+                {
+                    "year": year,
+                    "utility_number": str(r["Utility Number"]).split(".")[0],
+                    "state": str(r["State"]).strip(),
+                    "ba_code": str(r["BA Code"]).strip() if "BA Code" in body.columns else "",
+                    "customer_class": c.lower(),
+                    "customers_enrolled": clean(r.get(f"Number of Customers Enrolled|{c}")),
+                    "potential_peak_mw": clean(r.get(f"Potential Peak Demand Savings (MW)|{c}")),
+                    "actual_peak_mw": clean(r.get(f"Actual Peak Demand Savings (MW)|{c}")),
+                }
+            )
+    return rows
+
+
 def main() -> None:
     root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "EIA_861_Dataset")
     rows = [r for y in YEARS for r in parse_year(root, y)]
@@ -89,6 +134,14 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(rows)
     print(f"wrote {len(rows)} rows -> {out}")
+
+    by_class = [r for y in YEARS for r in parse_year_by_class(root, y)]
+    out2 = out.with_name("eia861_dr_utility_class_2016_2018.csv")
+    with out2.open("w", newline="") as fh:
+        writer = csv.DictWriter(fh, fieldnames=list(by_class[0]))
+        writer.writeheader()
+        writer.writerows(by_class)
+    print(f"wrote {len(by_class)} rows -> {out2}")
 
 
 if __name__ == "__main__":

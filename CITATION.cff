@@ -7,7 +7,7 @@ authors:
     given-names: Andrew
     orcid: "https://orcid.org/0009-0004-8758-2687"
     affiliation: "independent"
-version: 0.4.1
+version: 0.4.2
 repository-code: "https://github.com/ASM-21/phantomload"
 date-released: "2026-10-04"
 license: Apache-2.0
@@ -25,10 +25,11 @@ abstract: >-
   with different mechanisms. Capacity reported at exactly zero rotates between
   years and concentrates where utilities dispatch for themselves, which reads as
   available but uncalled. Capacity with no reported outcome is not wholesale
-  bookkeeping. Partial delivery, about half the gap, is stable within a utility
-  and unmoved by regional conditions, which leaves its mechanism open.
-  Utilization falls steeply with program size, so the national figure describes
-  large programs; the median utility realises about two thirds of its potential.
+  bookkeeping. Whether partial delivery, about half the gap, responds to system
+  conditions is specification-dependent. Nearly a third of positive reports set
+  actual exactly equal to potential, a convention that is concentrated in small
+  programs and persists within utilities, and that produced an apparent size
+  gradient this work first reported and then withdrew.
   Priced against PJM's published cost of new entry, demand response is cheaper
   in six of eight defensible pairings of accounting bases. The public record
   does not support reading the gap as waste, and the work states what data

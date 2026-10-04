@@ -11,20 +11,24 @@ a resource adequacy case, a journalist, or an advocate. Each question says why i
 matters, what this repository found, and how to answer it with data you are
 likely to have. None of them needs this repository's code.
 
-## 0. How big is the program?
+## 0. Is the delivered figure a measurement?
 
-**Why.** Every other question depends on it. The national shortfall is
-capacity-weighted, so it describes the largest programs, and utilization falls
-steeply with size.
+**Why.** Every other question assumes the reported actual figure measures how
+much load came off. Often it does not.
 
-**What the evidence says.** The median utility realises 67% of its potential.
-By program size the median runs from 96% of potential in the smallest quarter
-of programs and 48% in the largest, and the largest quarter holds 87% of
-enrolled capacity. A small program at 40% is in the bottom fifth of its peers; a
-large one at 40% is near the middle.
+**What the evidence says.** Among utilities reporting a positive actual figure,
+30% of reports set actual exactly equal to potential, rising to 55% of the
+smallest programs, and 67 utilities do it in every year. A program whose
+delivered figure equals its enrolled figure year after year is recording a
+contract or copying a field. That convention also manufactures an apparent size
+effect: small programs look as though they deliver almost everything they
+promise, but on reports that carry a measurement the median utility realises
+50% excluding those reports, close to the national figure.
 
-**How to answer it.** Compare against programs of similar size, never against
-the national figure: `python -m phantomload benchmark --potential <MW> --actual <MW>`.
+**How to answer it.** If actual equals potential, ask how the actual figure was
+determined: metered response against a baseline, a device count, or the contract
+quantity. Then compare against peers of similar size that report measurements:
+`python -m phantomload benchmark --potential <MW> --actual <MW>`.
 
 ## 1. Was the program called at all?
 
@@ -70,21 +74,23 @@ show which definitions are in use.
 quantity, a device count times an engineering estimate, or a measured
 historical maximum.
 
-## 4. Is the partial-delivery ratio stable from year to year?
+## 4. Does the shortfall move with system conditions?
 
 **Why.** This is the largest piece of the gap and the one this repository could
-not settle. If a program delivers a stable fraction of its potential every year
-regardless of conditions, that ratio is a property of the program, whether its
-definition, its protocol or a consistent shortfall in response.
+not settle. A shortfall that rises in mild years and falls in hard ones is
+dispatch responding to need. One that holds steady regardless is a property of
+the program, whether its definition, its protocol or a consistent shortfall in
+response.
 
-**What the evidence says.** Partial delivery is 49% to 57% of the gap. It is
-sticky within a utility, a within-utility SD of 0.076, and it does not move with
-regional conditions: footprint-wide shocks explain 6.0% of year-to-year
-variation, p = 0.36.
+**What the evidence says.** Partial delivery is 49% to 57% of the gap. Whether it
+moves with regional conditions depends on analyst choices: across nine
+specifications the regional share exceeds chance in all nine but is significant
+in 3 of 9. Excluding reports where actual equals potential, a modest regional
+component appears; including them, it does not.
 
-**How to answer it.** If the ratio is stable, ask why: what fraction of devices
-respond per event, and what share of enrolment is ever dispatched. Event-level
-evaluation reports usually contain both.
+**How to answer it.** Ask for several years of the program's events and realised
+reduction alongside the system peak in each year. Event-level evaluation reports
+usually contain all three.
 
 ## 5. Which basis is the cost being compared on?
 

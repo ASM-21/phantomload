@@ -201,6 +201,13 @@ summed across balancing authorities, so the key it groups on is unique.
 For other years see ROADMAP item 5: PUDL archives every release on Zenodo, which
 was not reachable here.
 
+`data/eia861_dr_utility_class_2016_2018.csv` is the same three files in long
+format, one row per utility, state, balancing authority and customer class, with
+potential and actual peak savings by class. Same source, same licence, built by
+the same script. Class values sum to the totals file to within EIA's rounding,
+under 1 MW a year. It is what showed that the apparent size gradient vanishes
+within every class once copied reports are set aside.
+
 ## 7. CarbonCast hourly generation by fuel
 
 `data/carboncast/CISO_direct_emissions.csv`,

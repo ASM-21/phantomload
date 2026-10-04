@@ -323,17 +323,27 @@ def fig_decomposition() -> pathlib.Path:
     ax1.set_title("The gap is three things", fontsize=11)
     ax1.legend(fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.09), ncol=2,
                frameon=False)
-    labels = [str(i).replace(" quarter", "") for i in size.index]
-    ax2.bar(labels, size.median_utilization, color=MEASURED, label="median program")
-    ax2.plot(labels, size.capacity_weighted_utilization, color=SIM, marker="o",
-             label="capacity-weighted")
-    for i, share in enumerate(size.share_of_enrolled_capacity):
-        ax2.text(i, 0.03, f"{share:.0%} of\ncapacity", ha="center", fontsize=8,
-                 color="white")
+    import numpy as np
+    import pandas as pd
+
+    pan = t9.panel()
+    pos = pan[pan.status != "not_reported"].copy()
+    pos["band"] = pd.qcut(pos.potential_peak_mw.rank(method="first"), 4,
+                          labels=["smallest", "second", "third", "largest"])
+    pos["copied"] = np.isclose(pos.actual_peak_mw, pos.potential_peak_mw) & (pos.actual_peak_mw > 0)
+    raw = pos.groupby("band", observed=True).utilization.median()
+    meas = pos[~pos.copied].groupby("band", observed=True).utilization.median()
+    copied = pos[pos.actual_peak_mw > 0].groupby("band", observed=True).copied.mean()
+    x = np.arange(len(raw))
+    ax2.bar(x - 0.2, raw.values, width=0.4, color=GREY, label="all reports")
+    ax2.bar(x + 0.2, meas.values, width=0.4, color=MEASURED, label="measured reports only")
+    ax2.plot(x, copied.values, color=SIM, marker="o", label="share with actual = potential")
+    ax2.set_xticks(list(x))
+    ax2.set_xticklabels(list(raw.index))
     ax2.set_ylim(0, 1)
     ax2.set_xlabel("program size, quartile of enrolled MW")
-    ax2.set_ylabel("dispatch utilization")
-    ax2.set_title("Large programs realise less, and hold the capacity", fontsize=11)
+    ax2.set_ylabel("median dispatch utilization / share")
+    ax2.set_title("Most of the size gradient is copied reports", fontsize=11)
     ax2.legend(fontsize=8)
     return _save(fig, "fig12_decomposition.png")
 

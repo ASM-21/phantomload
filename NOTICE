@@ -52,7 +52,8 @@ This repository redistributes third-party data.
    See PRIOR_WORK.md for what this work established before this repository did.
 
 6. EIA-861 utility-level demand response files, 2016 to 2018
-   File: data/eia861_dr_utility_2016_2018.csv
+   Files: data/eia861_dr_utility_2016_2018.csv,
+          data/eia861_dr_utility_class_2016_2018.csv
    Source: Form EIA-861 detailed data files, Demand_Response_<year>.xlsx,
            U.S. Energy Information Administration. Work of the U.S. Government,
            not subject to domestic copyright.

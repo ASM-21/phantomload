@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import math
 
+import numpy as np
+
 import pytest
 
 from phantomload.tracks import t1_utilization as t1
@@ -1207,17 +1209,19 @@ def test_t9_size_correlation_uses_one_row_per_utility():
     assert s["utilities"] == t9.panel().query("status != 'not_reported'").key.nunique()
 
 
-def test_benchmark_judges_against_size_peers():
-    """The same utilization reads differently for a small and a large program.
-    That is the whole reason the benchmark compares within size band."""
+def test_benchmark_no_longer_reproduces_the_withdrawn_size_effect():
+    """v0.4.0's benchmark called a small program at 40% bottom quartile, because
+    its small peers included programs reporting their contract as delivered.
+    Against measured peers the same program is unremarkable, as the corrected
+    finding says it should be."""
     from phantomload.__main__ import benchmark
 
-    large = benchmark(2000, 800, None)
     small = benchmark(5, 2, None)
-    assert large["your_utilization"] == small["your_utilization"]
-    assert small["your_percentile_within_size_band"] < large["your_percentile_within_size_band"]
-    assert "bottom quartile" in small["your_status"]
+    large = benchmark(2000, 800, None)
+    assert small["your_utilization"] == large["your_utilization"]
+    assert "usual range" in small["your_status"]
     assert "usual range" in large["your_status"]
+    assert abs(small["size_band_median_utilization"] - large["size_band_median_utilization"]) < 0.2
 
 
 def test_benchmark_flags_zero_and_unreported_without_judging():
@@ -1271,3 +1275,63 @@ def test_all_blank_groups_stay_not_reported():
     up = t1.utility_panel()
     assert (up.status == "not_reported").sum() > 0
     assert up[up.status == "not_reported"].actual_peak_mw.isna().all()
+
+
+# --- copied reports and the specification grid ------------------------------
+def test_t9_copied_reports_are_common_concentrated_and_persistent():
+    e = t9.exact_equality()
+    assert 0.25 < e["share_of_positive_reports"] < 0.35
+    assert e["smallest_quarter_share"] > 3 * e["largest_quarter_share"]
+    assert e["exact_every_year"] == 67
+    assert e["exact_every_year"] + e["never_exact"] < e["utilities_positive_every_year"]
+
+
+def test_t9_size_gradient_mostly_disappears_on_measured_reports():
+    """The v0.4.0 headline, withdrawn. If the measured-only gradient ever grew
+    back to the raw one, the withdrawal would need revisiting."""
+    raw = t9.size_summary()
+    m = t9.size_gradient_measured_only()
+    assert abs(m["rho"]) < abs(raw["spearman_size_vs_utilization"]) / 2
+    assert m["median_utility_raw"] - m["median_utility_measured"] > 0.1
+    assert m["smallest_quarter_median"] < raw["smallest_quarter_median"] - 0.25
+
+
+def test_t9_common_shock_verdict_is_specification_dependent():
+    """Attack F, rescoped. The grid must stay mixed: if every specification
+    agreed, the verdict would have to be restated in the docs."""
+    g = t9.specification_grid()
+    s = t9.specification_summary()
+    assert s["specifications"] == 9
+    assert 0 < s["significant"] < s["specifications"]
+    assert s["share_above_null_everywhere"] is True
+    assert s["published_spec_p"] > 0.05
+    dropped = g[(g["filter"] == "drop_ever_exact") & (g.min_utilities_per_footprint == 5)]
+    assert float(dropped.p_value.iloc[0]) < 0.05
+
+
+def test_t9_copied_reports_bias_the_common_shock_test_toward_null():
+    """The mechanism behind the reversal: observations fixed at 1.0 add no
+    within-utility variance at all."""
+    df = t9.partial_delivery_panel_unfiltered()
+    always = df.groupby("key").apply(
+        lambda g: bool(np.isclose(g.actual_peak_mw, g.potential_peak_mw).all()),
+        include_groups=False,
+    )
+    fixed = df[df.key.isin(always[always].index)]
+    assert len(fixed) > 0
+    assert fixed.groupby("key").utilization.std().max() == pytest.approx(0, abs=1e-12)
+
+
+def test_benchmark_flags_copied_reports_and_excludes_them_from_peers():
+    from phantomload.__main__ import benchmark
+
+    r = benchmark(10, 10, None)
+    assert "contract figure" in r["your_status"]
+    assert r["peers_exclude_copied_reports"] is True
+
+
+def test_t9_size_gradient_vanishes_within_every_class_on_measured_reports():
+    s = t9.class_gradient_summary()
+    assert s["classes"] == 3
+    assert s["raw_significant_in_every_class"] is True
+    assert s["measured_significant_in_any_class"] is False
