@@ -485,10 +485,10 @@ def test_t7_wholesale_exceeds_retail_and_is_not_additive():
     assert t7.retail_vs_wholesale().populations_disjoint.eq(False).all()
 
 
-def test_t7_pjm_event_realization_is_a_lower_bound_near_the_national_ratio():
-    ev = t7.pjm_event_realization()
+def test_t7_pjm_event_utilization_is_a_lower_bound_near_the_national_ratio():
+    ev = t7.pjm_event_utilization()
     assert ev["is_a_lower_bound"] is True
-    assert ev["realization_at_least"] == pytest.approx(0.469, abs=0.002)
+    assert ev["utilization_at_least"] == pytest.approx(0.469, abs=0.002)
     assert ev["same_order_of_magnitude"] is True
     assert ev["identification_resolved"] is False
 
@@ -916,10 +916,10 @@ def test_t1_missing_actuals_are_not_zeros():
 
 def test_t1_utility_distribution_is_left_skewed():
     d = t1.utility_dispersion()
-    assert d["median_realisation"] < d["mean_realisation"]
-    assert d["mw_weighted_realisation"] < 0.40
-    assert d["min_realisation"] == 0.0
-    assert d["max_realisation"] == 1.0
+    assert d["median_utilization"] < d["mean_utilization"]
+    assert d["mw_weighted_utilization"] < 0.40
+    assert d["min_utilization"] == 0.0
+    assert d["max_utilization"] == 1.0
 
 
 def test_t3_dlc_impact_is_now_cited():
@@ -951,8 +951,8 @@ def test_t3_dlc_floor_survives_the_new_parameters():
 
 
 # --- synthesis, accreditation the way the field does it ---------------------
-def test_synthesis_elcc_is_cited_and_distinct_from_realisation():
-    """ELCC and the realisation rate measure different things. Conflating them
+def test_synthesis_elcc_is_cited_and_distinct_from_dispatch_utilization():
+    """ELCC and the dispatch utilization measure different things. Conflating them
     is the error this correction exists to undo."""
     from phantomload import synthesis
     from phantomload.shared.calibration import DR_ELCC
@@ -961,8 +961,8 @@ def test_synthesis_elcc_is_cited_and_distinct_from_realisation():
     assert DR_ELCC.provenance is Provenance.LITERATURE
     assert "E3" in DR_ELCC.citation and "SPP" in DR_ELCC.citation
     s = synthesis.elcc_summary()
-    assert s["dr_elcc_central"] > s["realisation_ratio_used_elsewhere"]
-    assert s["elcc_over_realisation"] == pytest.approx(2.12, abs=0.03)
+    assert s["dr_elcc_central"] > s["dispatch_utilization_used_elsewhere"]
+    assert s["elcc_over_dispatch_utilization"] == pytest.approx(2.12, abs=0.03)
 
 
 def test_synthesis_elcc_basis_moves_the_cost_materially():
@@ -984,6 +984,20 @@ def test_synthesis_elcc_loses_only_the_winter_case():
     assert s["worst_case"] == "winter four-hour"
     assert s["dr_wins_all_gross"] is True
     assert s["dr_wins_all_net"] is False
+
+
+def test_synthesis_winter_case_uses_the_published_winter_value():
+    """Until v0.4.3 the winter four-hour case used 0.50, which is E3's figure
+    for four-hour programs at 6 GW of adoption, not its winter figure."""
+    from phantomload import synthesis
+    from phantomload.shared.calibration import DR_ELCC
+
+    assert DR_ELCC.lo == 0.55
+    assert "55% in winter" in DR_ELCC.citation
+    s = synthesis.elcc_summary()
+    assert s["worst_case"] == "winter four-hour"
+    assert s["worst_margin"] == pytest.approx(0.035, abs=0.002)
+    assert s["worst_elcc_to_win"] == pytest.approx(0.569, abs=0.002)
 
 
 def test_synthesis_elcc_splices_are_declared():
@@ -1036,13 +1050,135 @@ def test_utility_panel_keeps_not_reported_apart_from_zero():
     assert (up[up.status == "exact_zero"].actual_peak_mw == 0).all()
 
 
-def test_zero_mass_rotates_rather_than_persists():
+def test_published_rotation_statistic_is_reproduced():
+    """The number as first published. What it does and does not show is tested
+    below, under rotation_composition."""
     s = t1.utility_panel_summary()
     assert s["persist_utilities_reporting_every_year"] == 304
     assert s["persist_zero_every_year"] == 9
     assert s["persist_rotating_share_of_ever_zero_mw"] == pytest.approx(0.787, abs=0.01)
-    assert s["persist_favours_uncalled_for_most_zeros"] is True
+    assert s["persist_majority_of_zero_capacity_rotates"] is True
     assert s["persist_largest_persistent_key"] == "1167_MD"
+
+
+# --- the rotation result, varied and then read ------------------------------
+def test_rotation_share_defaults_reproduce_the_published_statistic():
+    r = t1.rotation_share()
+    p = t1.zero_persistence()
+    assert r["rotating_share"] == pytest.approx(p["rotating_share_of_ever_zero_mw"], abs=1e-12)
+    assert r["entities"] == p["utilities_reporting_every_year"]
+    assert r["zero_every_reported_year"] == p["zero_every_year"]
+    assert r["zero_mw_coverage"] == pytest.approx(0.472, abs=0.002)
+
+
+def test_rotation_grid_majority_is_robust_in_sign_but_not_everywhere():
+    s = t1.rotation_grid_summary()
+    assert s["specifications"] == 288
+    assert s["capacity_specifications"] == 216
+    assert s["capacity_above_half"] == 202
+    assert s["capacity_min"] == pytest.approx(0.436, abs=0.002)
+    assert s["capacity_max"] == pytest.approx(0.854, abs=0.002)
+    assert s["count_above_half"] == 37 and s["count_specifications"] == 72
+    g = t1.rotation_grid()
+    fails = g[(g.weight != "count") & (g.rotating_share <= 0.5)]
+    # every capacity-weighted failure combines the 1% zero rule with treating
+    # near-copies as missing: the two corrections that remove Toledo Edison's
+    # 0.5% year and Santee Cooper's 99.98% year
+    assert (fails.zero_rule == 0.01).all()
+    assert (fails.copies == "within_1pct_is_missing").all()
+
+
+def test_rotation_mostly_does_not_measure_availability():
+    """The finding that withdrew the headline reading. Pinned so it cannot
+    quietly revert."""
+    s = t1.rotation_summary()
+    assert s["comp_utilities"] == 26
+    assert s["comp_measured"] == pytest.approx(0.151, abs=0.002)
+    assert s["comp_zero_every_year"] == pytest.approx(0.213, abs=0.002)
+    assert s["comp_resized"] == pytest.approx(0.250, abs=0.002)
+    assert s["comp_near_copy"] == pytest.approx(0.189, abs=0.002)
+    assert s["comp_near_zero"] == pytest.approx(0.194, abs=0.002)
+    assert s["comp_rotating_not_measured"] == pytest.approx(0.636, abs=0.002)
+    assert s["comp_measured_if_near_copies_are_real"] == pytest.approx(0.340, abs=0.002)
+    assert s["comp_largest_near_copy"] == "South Carolina Public Service Authority"
+    assert s["comp_top3_share"] == pytest.approx(0.556, abs=0.002)
+    # the published statistic and the measured share are far apart
+    assert s["grid_published"] - s["comp_measured"] > 0.6
+    assert s["rotation_measures_availability"] is False
+    c = t1.rotation_composition()
+    assert c.share_of_ever_zero_mw.sum() == pytest.approx(1.0)
+    srp = c.set_index("key").loc["16572_AZ"]
+    assert srp["class"] == "resized" and srp.potential_spread > 20
+
+
+def test_rotation_at_the_near_zero_rule_is_carried_by_one_utility():
+    s = t1.rotation_summary()
+    assert s["comp5_utilities"] == 31
+    assert s["comp5_measured"] == pytest.approx(0.540, abs=0.002)
+    assert s["comp5_largest_measured"] == "Alabama Power Co"
+    assert s["comp5_largest_measured_share"] == pytest.approx(0.280, abs=0.002)
+
+
+def test_zero_capacity_followed_one_year_forward():
+    s = t1.rotation_summary()
+    assert s["follow_zero_delivery_first"] == pytest.approx(0.016, abs=0.001)
+    assert s["follow_zero_delivery_last"] == pytest.approx(0.404, abs=0.002)
+    assert s["follow_zero_delivery_last_without_largest"] == pytest.approx(0.240, abs=0.002)
+    assert s["follow_zero_last_largest_state"] == "SC"
+    assert s["follow_zero_last_largest_state_share"] == pytest.approx(0.707, abs=0.002)
+    assert s["follow_zero_last_largest_state_utilities"] == 3
+    assert s["follow_measured_delivery_min"] == pytest.approx(0.441, abs=0.002)
+    assert s["follow_measured_delivery_max"] == pytest.approx(0.449, abs=0.002)
+    assert s["follow_copied_delivery_min"] > 0.8
+    assert s["follow_zero_delivery_pooled"] == pytest.approx(0.153, abs=0.002)
+    assert s["follow_measured_delivery_pooled"] == pytest.approx(0.445, abs=0.002)
+
+
+def test_classifier_on_a_constructed_panel():
+    """One entity of each kind, built by hand, so the classes are tested on
+    cases where the right answer is not in doubt."""
+    import pandas as pd
+
+    rows = []
+    def add(key, pots, acts):
+        for year, (pot, act) in enumerate(zip(pots, acts), start=2020):
+            rows.append({"key": key, "year": year, "potential_peak_mw": pot,
+                         "actual_peak_mw": act})
+    add("persistent", [100, 100, 100], [0, 0, 0])
+    add("measured", [100, 100, 100], [0, 60, 0])
+    add("resized", [1000, 50, 50], [0, 40, 40])
+    add("copied", [100, 100, 100], [0, 100, 100])
+    add("near_copy", [500, 500, 500], [0, 0, 499.9])
+    add("near_zero", [200, 200, 200], [0, 2, 1])
+    add("never_zero", [100, 100, 100], [50, 50, 50])
+    add("gap_year", [100, 100, 100], [0, None, 50])
+    c = t1.classify_zero_capacity(pd.DataFrame(rows)).set_index("key")["class"]
+    assert c.to_dict() == {
+        "persistent": "zero_every_year",
+        "measured": "measured",
+        "resized": "resized",
+        "copied": "copied",
+        "near_copy": "near_copy",
+        "near_zero": "near_zero",
+    }
+
+
+def test_followup_on_a_constructed_panel():
+    import pandas as pd
+
+    rows = []
+    def add(key, pots, acts):
+        for year, (pot, act) in enumerate(zip(pots, acts), start=2020):
+            rows.append({"key": key, "year": year, "potential_peak_mw": pot,
+                         "actual_peak_mw": act})
+    add("a", [100, 100], [0, 30])     # zero, then 30
+    add("b", [100, 300], [0, 200])    # zero, then grew: capped at 100
+    add("c", [100, 100], [50, 40])    # measured, then 40
+    add("d", [100, 100], [100, 100])  # copied, then copied
+    f = t1.followup(pd.DataFrame(rows)).set_index("group_in_from_year")
+    assert f.loc["exact_zero", "next_year_delivery"] == pytest.approx(130 / 200)
+    assert f.loc["measured", "next_year_delivery"] == pytest.approx(0.4)
+    assert f.loc["copied", "next_year_delivery"] == pytest.approx(1.0)
 
 
 def test_zero_mass_analysis_refuses_a_degenerate_slice(monkeypatch):
@@ -1110,6 +1246,30 @@ def test_cli_reproduces_track_one_on_the_repos_own_data(tmp_path):
     assert r["rotating_share_of_zero_capacity"] == pytest.approx(
         s["persist_rotating_share_of_ever_zero_mw"]
     )
+    rot = t1.rotation_summary()
+    assert r["measured_rotation_share_of_zero_capacity"] == pytest.approx(rot["comp_measured"])
+    assert r["zero_every_year_share_of_zero_capacity"] == pytest.approx(
+        rot["comp_zero_every_year"]
+    )
+    assert r["zero_capacity_next_year_delivery"] == pytest.approx(
+        rot["follow_zero_delivery_pooled"]
+    )
+
+
+def test_cli_reading_does_not_turn_rotation_into_availability():
+    """The CLI's old message read any rotation as available capacity. The
+    reading now separates measured rotation from the rest and never treats
+    persistence as a verdict."""
+    from phantomload.__main__ import _reading, zero_mass
+
+    up = t1.utility_panel()
+    df = up.rename(
+        columns={"potential_peak_mw": "potential_mw", "actual_peak_mw": "actual_mw"}
+    )[["key", "year", "potential_mw", "actual_mw"]]
+    text = _reading(zero_mass(df))
+    assert "available-but-uncalled capacity looks like" not in text
+    assert "ambiguous" in text
+    assert "15%" in text and "64%" in text
 
 
 def test_cli_refuses_degenerate_input():
@@ -1155,14 +1315,48 @@ def test_t9_partial_delivery_is_the_largest_component():
     assert s["partial_share_of_gap_min"] > 0.45
 
 
-def test_t9_wholesale_accounting_is_refuted_not_assumed():
-    """This repository's own hypothesis, tested and rejected. It must stay
-    rejected unless the data changes, and the direction must be stated."""
+def test_t9_published_footprint_split_is_reproduced():
+    """The comparison as first run. It was read as ruling wholesale bookkeeping
+    out; the grid below shows why that reading was withdrawn."""
     w = t9.wholesale_accounting_test()
-    assert w["wholesale_accounting_refuted_as_general_explanation"] is True
+    assert w["zero_and_unreported_both_underrepresented_inside_rto"] is True
     assert w["zero_or_unreported_outside_rto"] > w["zero_or_unreported_inside_rto"]
     assert w["rto_share_of_exact_zero"] < w["rto_share_of_all_potential"]
     assert w["ba_coverage"] > 0.95
+
+
+def test_t9_footprint_result_rests_on_one_state():
+    """The state jackknife found that four Florida utilities carry the
+    published concentration outside RTO footprints. If new data or a fix moved
+    this, the withdrawn reading would need revisiting, so it is pinned."""
+    s = t9.footprint_grid_summary()
+    assert s["specifications"] == 96
+    assert s["outside_higher"] == 69
+    assert s["outside_higher_with_any_one_state_dropped"] == 48
+    assert s["most_influential_state"] == "FL"
+    assert s["published_ratio"] == pytest.approx(1.80, abs=0.01)
+    assert s["published_ratio_without_state"] == pytest.approx(1.13, abs=0.01)
+    assert s["state_share_of_outside_capacity"] == pytest.approx(0.254, abs=0.002)
+    assert s["state_share_of_outside_flagged"] == pytest.approx(0.533, abs=0.002)
+    assert s["state_flagged_every_year"] == 4
+    # without that state, unreported capacity is more common INSIDE footprints
+    assert s["without_state_unreported_inside"] > s["without_state_unreported_outside"]
+    assert s["exact_zero_years_inside_at_least_as_high"] == 2
+    assert s["wholesale_accounting_refuted"] is False
+
+
+def test_t9_footprint_jackknife_matches_a_direct_recomputation():
+    """The vectorised jackknife is an optimisation; it must agree with simply
+    dropping the state and recomputing."""
+    df = t9._footprint_frame("pooled", "keep")
+    full = t9._footprint_by_state(df, "zero_or_unreported", "capacity", t9.RTO_FOOTPRINTS)
+    jack = t9._jackknife(full)
+    for state in ("FL", "TX", "MD"):
+        i, o = t9._shares(
+            t9._footprint_by_state(df[df.state != state], "zero_or_unreported",
+                                   "capacity", t9.RTO_FOOTPRINTS)
+        )
+        assert jack[state] == pytest.approx(o / i, rel=1e-12)
 
 
 def test_t9_common_shock_null_is_reported_with_its_power():

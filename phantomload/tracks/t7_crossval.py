@@ -28,7 +28,7 @@ Three candidate second estimators, in ascending order of usefulness.
 
 3. Deployment during a real event. PJM registered 8,526 MW of demand response
    for 2024 and deployed more than 4,000 MW during the June 2025 heat event, at
-   the third-highest system peak in its history. That is a realization ratio in
+   the third-highest system peak in its history. That is a dispatch utilization in
    the same range as the national retail figure, reached by a different route.
 
 What none of them do is resolve the identification problem from track 1. The
@@ -163,7 +163,7 @@ def retail_vs_wholesale() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def pjm_event_realization() -> dict:
+def pjm_event_utilization() -> dict:
     """Deployment against registration, from the one event FERC quantifies."""
     reg = ferc.PJM_JUNE_2025["registered_dr_mw_2024"]
     deployed = ferc.PJM_JUNE_2025["dr_deployed_mw_at_least"]
@@ -176,7 +176,7 @@ def pjm_event_realization() -> dict:
         "market": "PJM",
         "registered_mw": reg,
         "deployed_mw_at_least": deployed,
-        "realization_at_least": deployed / reg,
+        "utilization_at_least": deployed / reg,
         "is_a_lower_bound": True,
         "national_retail_utilization_2024": national_u,
         "same_order_of_magnitude": abs(deployed / reg - national_u) < 0.15,
@@ -256,7 +256,7 @@ def summary() -> dict:
     df = implied_hours_table()
     nat = df[df.sector == "total"]
     rv = retail_vs_wholesale().set_index("year")
-    pjm = pjm_event_realization()
+    pjm = pjm_event_utilization()
     enf = enforcement_cases()
     wholesale_2024 = wholesale_table().query(
         "year == 2024 and market != 'All RTO/ISO'"
@@ -290,7 +290,7 @@ def summary() -> dict:
         ),
         "markets_counted": int(len(wholesale_2024)),
         "totals_may_be_added": False,
-        "pjm_realization_at_least": pjm["realization_at_least"],
+        "pjm_utilization_at_least": pjm["utilization_at_least"],
         "pjm_registered_mw": pjm["registered_mw"],
         "estimators_agree_in_magnitude": pjm["same_order_of_magnitude"],
         "identification_resolved": False,

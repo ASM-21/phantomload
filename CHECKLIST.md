@@ -37,23 +37,31 @@ whether or not it would have performed. Zero is what an unneeded reserve looks
 like in a mild year.
 
 **What the evidence says.** Across every utility reporting to EIA from 2016 to
-2018, exact zeros held 10.0% to 17.8% of enrolled capacity a year, and of the
-capacity ever reported at zero, 79% of the capacity moved between zero and
-positive across those years. Only 9 of 304 utilities reported zero every year.
+2018, exact zeros held 10.0% to 17.8% of enrolled capacity a year. Only 9 of 304
+utilities reported zero every year, but that does not mean the rest showed their
+capacity was there: 15% of the capacity ever reported at exactly zero belongs to
+utilities with a measured delivery in another year. The rest stayed at zero or
+moved only to a copied figure, a delivery under 5% of potential, or a program
+that changed size several-fold.
 
-**How to answer it.** Ask for the number of events called each year. A zero
-with no events is a dispatch decision, not a performance failure.
+**How to answer it.** Ask for the number of events called each year, and for
+the measured response in any year the program was called. A zero with no events
+is a dispatch decision, not a performance failure; a zero followed by a measured
+delivery shows the capacity can perform; a zero followed by the enrolled figure
+copied into the delivered field shows nothing.
 
 ## 2. Is the utility long on capacity?
 
 **Why.** A utility that does not need its demand response has no reason to call
 it, and the program will look idle however well it works.
 
-**What the evidence says.** Zero and unreported actuals concentrate in
-utilities that dispatch for themselves: 39% outside RTO footprints against 22%
-inside, the reverse of what wholesale bookkeeping would produce. That fits the
-long-on-capacity explanation ACEEE proposed in 2017, though this repository
-cannot test it directly.
+**What the evidence says.** Pooled, zero and unreported actuals are more
+common outside RTO footprints, 39% against 22% inside, but that difference is
+mostly Florida, where the regulator describes FPL's residential load management
+as used in system emergencies. Without Florida it is 25% against 22%. The
+long-on-capacity explanation ACEEE proposed in 2017 may fit an emergency-only
+program; this repository cannot test it directly, and cannot show it applies
+more widely.
 
 **How to answer it.** Compare the program's dispatch record against the
 utility's reserve margin in the same years.
@@ -104,9 +112,9 @@ same basis to each side. It loses only when demand response is haircut and the
 peaker is not.
 
 **How to answer it.** Confirm that the same netting, accreditation and
-realization treatment is applied to both sides before comparing.
+dispatch-utilization treatment is applied to both sides before comparing.
 
-## 6. Is the haircut a realization rate or an accreditation?
+## 6. Is the haircut a dispatch utilization or an accreditation?
 
 **Why.** These are different quantities and are routinely confused. The share of
 enrolled capacity that was realised in a year counts years when nothing was
@@ -125,11 +133,11 @@ dispatch statistics for questions about dispatch.
 **Why.** Winter peaks are long, and a program designed for four-hour summer
 afternoons may not cover them.
 
-**What the evidence says.** This is the most robust result in the repository,
-reached three independent ways: hourly net load reaches 91% of its annual
-maximum in ERCO and 85% in PJM in winter months; the winter four-hour case is the
-only accreditation pairing demand response loses; and PJM's own seasonal
-aggregation was limited by a shortage of winter-capable resource.
+**What the evidence says.** Three independent routes agree, two of them firmly:
+hourly net load reaches 91% of its annual maximum in ERCO and 85% in PJM in
+winter months, and PJM's own seasonal aggregation was limited by a shortage of
+winter-capable resource. The third agrees narrowly: the winter four-hour case is
+the only accreditation pairing demand response loses, by 3.5%.
 
 **How to answer it.** Ask for the program's seasonal call window and its winter
 event record.

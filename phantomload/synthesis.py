@@ -21,7 +21,7 @@ the public record aligns none of them:
                 by dividing its net CONE in ICAP dollars per MW-year by its net
                 CONE in UCAP dollars per MW-day.
 
-  REALIZATION   Demand response can be priced per enrolled kW or per delivered
+  UTILIZATION   Demand response can be priced per enrolled kW or per delivered
                 kW, and track 1 shows the data cannot say which is right,
                 because it cannot separate capacity that was never called from
                 capacity that would not have delivered.
@@ -194,7 +194,7 @@ def breakeven_energy_price() -> dict:
 def elcc_comparison() -> pd.DataFrame:
     """Accredit both sides the way the field accredits them.
 
-    The verdict grid above haircuts demand response by its realisation ratio,
+    The verdict grid above haircuts demand response by its dispatch utilization,
     which this repository reached on its own and which the resource adequacy
     literature does not use. That literature accredits supply-side resources by
     effective load carrying capability or a performance-based derate, and
@@ -203,9 +203,9 @@ def elcc_comparison() -> pd.DataFrame:
     asymmetry the synthesis identified, and it is a named and litigated problem
     rather than a new one. See PRIOR_WORK.md.
 
-    Applying an ELCC to demand response instead of its realisation ratio matters
+    Applying an ELCC to demand response instead of its dispatch utilization matters
     a great deal, because they are different quantities. ELCC asks what fraction
-    of enrolled capacity is dependable during critical hours. The realisation
+    of enrolled capacity is dependable during critical hours. The dispatch utilization
     ratio also counts the years nothing was called, so it is systematically
     harsher, and the gap between 39% and roughly 83% is the size of that
     difference.
@@ -239,7 +239,7 @@ def elcc_comparison() -> pd.DataFrame:
                     "comparator_cost_per_kw": comparator,
                     "ratio": dr_accredited / comparator,
                     "dr_wins": dr_accredited < comparator,
-                    "vs_realisation_basis_ratio": dr_delivered / comparator,
+                    "vs_delivered_basis_ratio": dr_delivered / comparator,
                     "provenance": "measured_cost_literature_accreditation",
                 }
             )
@@ -249,7 +249,7 @@ def elcc_comparison() -> pd.DataFrame:
 def elcc_summary() -> dict:
     df = elcc_comparison()
     central = df[df.dr_elcc_case == "summer four-hour"]
-    realisation = float(
+    delivered_cost = float(
         dr_bases().set_index("dr_basis").loc["per kW delivered", "cost_per_kw_yr"]
     )
     enrolled = float(
@@ -257,13 +257,13 @@ def elcc_summary() -> dict:
     )
     return {
         "dr_elcc_central": DR_ELCC.central,
-        "realisation_ratio_used_elsewhere": enrolled / realisation,
-        "elcc_over_realisation": DR_ELCC.central / (enrolled / realisation),
+        "dispatch_utilization_used_elsewhere": enrolled / delivered_cost,
+        "elcc_over_dispatch_utilization": DR_ELCC.central / (enrolled / delivered_cost),
         "dr_cost_per_accredited_kw_central": float(
             central.dr_cost_per_accredited_kw.iloc[0]
         ),
-        "dr_cost_per_delivered_kw": realisation,
-        "accreditation_choice_moves_cost_by": realisation
+        "dr_cost_per_delivered_kw": delivered_cost,
+        "accreditation_choice_moves_cost_by": delivered_cost
         / float(central.dr_cost_per_accredited_kw.iloc[0]),
         "cells": int(len(df)),
         "dr_wins_cells": int(df.dr_wins.sum()),
@@ -273,6 +273,16 @@ def elcc_summary() -> dict:
         "dr_wins_all_net": bool(df[df.comparator.str.startswith("net")].dr_wins.all()),
         "worst_case": str(df.loc[df.ratio.idxmax(), "dr_elcc_case"]),
         "worst_ratio": float(df.ratio.max()),
+        # how narrowly the one lost cell is lost, and the ELCC that would win it
+        "worst_margin": float(df.ratio.max() - 1.0),
+        "worst_elcc_to_win": float(
+            enrolled / df.loc[df.ratio.idxmax(), "comparator_cost_per_kw"]
+        ),
+        # the same cell at 0.50, the value used under the winter label until
+        # v0.4.3, which is E3's four-hour figure at 6 GW of adoption
+        "worst_margin_at_superseded_value": float(
+            enrolled / 0.50 / df.loc[df.ratio.idxmax(), "comparator_cost_per_kw"] - 1.0
+        ),
         "splices": ["SPP ELCC applied to national cost", "2025 adoption level"],
     }
 

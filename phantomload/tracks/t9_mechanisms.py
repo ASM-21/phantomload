@@ -4,8 +4,9 @@ MEASURED, EIA-861 utility files 2016 to 2018, with balancing-authority codes
 from 2017 and 2018 carried back to 2016 by utility, which is valid because a
 utility's balancing authority does not change year to year.
 
-Track 1 showed the zero mass rotates between years, which reads as capacity
-available and not called. That covers 10% to 18% of enrolled capacity. It says
+Track 1 found that exact zeros look like non-dispatch rather than failed
+dispatch, and that whether the zero-year capacity was available is shown for
+only a minority of it. That covers 10% to 18% of enrolled capacity. It says
 nothing about the largest piece of the gap, utilities that delivered some of
 their potential but not all, and nothing about why zeros arise. This track tests
 two candidate mechanisms and reports what each test can and cannot see.
@@ -13,7 +14,10 @@ two candidate mechanisms and reports what each test can and cannot see.
 1. WHOLESALE ACCOUNTING. If zero or missing actuals reflected reductions booked
    in an RTO's wholesale settlement rather than the retail filing, they would
    concentrate inside RTO footprints. Test: compare the share of capacity at
-   zero or unreported inside and outside the seven RTO and ISO footprints.
+   zero or unreported inside and outside the seven RTO and ISO footprints. As
+   first run, the share was higher outside, which was read as ruling the
+   mechanism out. The specification grid and state jackknife below show that
+   difference is mostly four Florida utilities, so the test decides nothing.
 
 2. SYSTEM-DRIVEN DISPATCH. If partial delivery reflected how hard each year's
    system conditions pushed utilities to call their programs, utilization would
@@ -26,6 +30,7 @@ two candidate mechanisms and reports what each test can and cannot see.
 from __future__ import annotations
 
 import functools
+import itertools
 
 import numpy as np
 import pandas as pd
@@ -42,6 +47,11 @@ SEED = 20260920
 
 
 def panel() -> pd.DataFrame:
+    return _panel_cached().copy()
+
+
+@functools.lru_cache(maxsize=1)
+def _panel_cached() -> pd.DataFrame:
     df = t1.utility_panel()
     df = df[df.potential_peak_mw > 0].copy()
     ba = (
@@ -88,8 +98,8 @@ def wholesale_accounting_test() -> dict:
         "zero_or_unreported_outside_rto": outside,
         "outside_over_inside": outside / inside,
         "hypothesis_predicts": "concentration inside RTO footprints",
-        "observed": "concentration outside RTO footprints",
-        "wholesale_accounting_refuted_as_general_explanation": bool(
+        "observed": "concentration outside RTO footprints, mostly one state",
+        "zero_and_unreported_both_underrepresented_inside_rto": bool(
             by_status.get("exact_zero", 1) < rto_share_all
             and by_status.get("not_reported", 1) < rto_share_all
         ),
@@ -98,6 +108,191 @@ def wholesale_accounting_test() -> dict:
             "to call, and not calling when long on capacity, the mechanism Nadel "
             "proposed in 2017. Consistent with, not shown: reserve margins by "
             "utility would be needed to test it"
+        ),
+    }
+
+
+# --- does the footprint result survive its own choices -----------------------
+# The test above was run once: pooled years, capacity weights, zero and
+# unreported together, seven footprints. The grid below varies each of those,
+# and for every specification it also drops each state in turn. States are the
+# right unit to drop because utilities in one state share a regulator, a climate
+# and usually a reporting habit, so three utilities in one state are closer to
+# one observation than three. The jackknife found what the single run hid: the
+# published concentration outside RTO footprints is mostly four utilities in
+# one state, and without them the footprint comparison does not point either
+# way.
+CAPACITY_MARKET_FOOTPRINTS = frozenset({"PJM", "MISO", "NYIS", "ISNE"})
+FOOTPRINT_SETS = {"seven": RTO_FOOTPRINTS, "capacity_markets": CAPACITY_MARKET_FOOTPRINTS}
+FOOTPRINT_STATUSES = ("zero_or_unreported", "exact_zero", "not_reported")
+FOOTPRINT_WEIGHTS = ("capacity", "count")
+FOOTPRINT_YEARS = ("pooled", 2016, 2017, 2018)
+FOOTPRINT_RESIZED = ("keep", "drop")
+PUBLISHED_FOOTPRINT_SPEC = {
+    "footprints": "seven",
+    "status": "zero_or_unreported",
+    "weight": "capacity",
+    "years": "pooled",
+    "resized": "keep",
+}
+
+
+def _flagged(df: pd.DataFrame, status: str) -> pd.Series:
+    if status == "zero_or_unreported":
+        return df.status != "positive"
+    return df.status == status
+
+
+def _footprint_frame(years, resized: str) -> pd.DataFrame:
+    df = panel().dropna(subset=["ba"])
+    if years != "pooled":
+        df = df[df.year == years]
+    if resized == "drop":
+        by_key = panel().groupby("key").potential_peak_mw
+        df = df[df.key.map(by_key.max() / by_key.min()) <= t1.RESIZE_FACTOR]
+    return df
+
+
+def _footprint_by_state(df: pd.DataFrame, status: str, weight: str, footprints) -> pd.DataFrame:
+    """Flagged and total weight by state and side of the footprint line."""
+    w = df.potential_peak_mw if weight == "capacity" else pd.Series(1.0, index=df.index)
+    frame = pd.DataFrame(
+        {
+            "state": df.state,
+            "inside": df.ba.isin(footprints),
+            "flagged": w * _flagged(df, status),
+            "total": w,
+        }
+    )
+    g = frame.groupby(["state", "inside"])[["flagged", "total"]].sum().unstack(fill_value=0.0)
+    for col in ("flagged", "total"):
+        for side in (True, False):
+            if (col, side) not in g.columns:
+                g[(col, side)] = 0.0
+    return g
+
+
+def _shares(g: pd.DataFrame) -> tuple[float, float]:
+    inside = g[("flagged", True)].sum() / g[("total", True)].sum()
+    outside = g[("flagged", False)].sum() / g[("total", False)].sum()
+    return float(inside), float(outside)
+
+
+def _jackknife(g: pd.DataFrame) -> pd.Series:
+    """outside/inside ratio with each state left out in turn, vectorised."""
+    fi, ti = g[("flagged", True)].to_numpy(), g[("total", True)].to_numpy()
+    fo, to = g[("flagged", False)].to_numpy(), g[("total", False)].to_numpy()
+    with np.errstate(divide="ignore", invalid="ignore"):
+        inside = (fi.sum() - fi) / (ti.sum() - ti)
+        outside = (fo.sum() - fo) / (to.sum() - to)
+        ratio = np.where(inside > 0, outside / inside, np.inf)
+    return pd.Series(ratio, index=g.index)
+
+
+@functools.lru_cache(maxsize=1)
+def footprint_grid() -> pd.DataFrame:
+    rows = []
+    for (fname, fset), status, weight, years, resized in itertools.product(
+        FOOTPRINT_SETS.items(),
+        FOOTPRINT_STATUSES,
+        FOOTPRINT_WEIGHTS,
+        FOOTPRINT_YEARS,
+        FOOTPRINT_RESIZED,
+    ):
+        g = _footprint_by_state(_footprint_frame(years, resized), status, weight, fset)
+        inside, outside = _shares(g)
+        jack = _jackknife(g)
+        worst, best = jack.idxmin(), jack.idxmax()
+        rows.append(
+            {
+                "footprints": fname,
+                "status": status,
+                "weight": weight,
+                "years": str(years),
+                "resized": resized,
+                "inside": inside,
+                "outside": outside,
+                "ratio": outside / inside if inside > 0 else float("inf"),
+                "jackknife_min_ratio": jack[worst],
+                "jackknife_min_state": worst,
+                "jackknife_max_ratio": jack[best],
+                "provenance": Provenance.MEASURED.value,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def footprint_grid_summary() -> dict:
+    g = footprint_grid()
+    spec = {**PUBLISHED_FOOTPRINT_SPEC, "years": str(PUBLISHED_FOOTPRINT_SPEC["years"])}
+    pub = g[(g[list(spec)] == pd.Series(spec)).all(axis=1)].iloc[0]
+    state = pub.jackknife_min_state
+    df = _footprint_frame("pooled", "keep")
+    outside = df[~df.ba.isin(RTO_FOOTPRINTS)]
+    flagged = _flagged(outside, "zero_or_unreported")
+    in_state = outside.state == state
+    without = df[df.state != state]
+    split = {}
+    for status in FOOTPRINT_STATUSES:
+        inside_share, outside_share = _shares(
+            _footprint_by_state(without, status, "capacity", RTO_FOOTPRINTS)
+        )
+        split[status] = (inside_share, outside_share)
+    exact_by_year = g[
+        (g.footprints == "seven") & (g.status == "exact_zero") & (g.weight == "capacity")
+        & (g.resized == "keep") & (g.years != "pooled")
+    ].set_index("years").ratio
+    state_flagged_utilities = outside[in_state & flagged].utility.nunique()
+    statuses = outside[in_state].groupby("utility").status.agg(set)
+    switchers = int(statuses.map(lambda s: {"exact_zero", "not_reported"} <= s).sum())
+    every_year = (
+        outside[in_state].assign(f=flagged[in_state]).groupby("utility").f.agg(["all", "size"])
+    )
+    state_flagged_every_year = int(
+        (every_year["all"] & (every_year["size"] == df.year.nunique())).sum()
+    )
+    return {
+        "specifications": int(len(g)),
+        "outside_higher": int((g.ratio > 1).sum()),
+        "outside_higher_with_any_one_state_dropped": int((g.jackknife_min_ratio > 1).sum()),
+        "published_inside": float(pub.inside),
+        "published_outside": float(pub.outside),
+        "published_ratio": float(pub.ratio),
+        "most_influential_state": str(state),
+        "published_ratio_without_state": float(pub.jackknife_min_ratio),
+        "state_share_of_outside_capacity": float(
+            outside[in_state].potential_peak_mw.sum() / outside.potential_peak_mw.sum()
+        ),
+        "state_share_of_outside_flagged": float(
+            outside[in_state & flagged].potential_peak_mw.sum()
+            / outside[flagged].potential_peak_mw.sum()
+        ),
+        "state_flagged_utilities": int(state_flagged_utilities),
+        "state_flagged_every_year": state_flagged_every_year,
+        # utilities that report zero in some years and nothing in others
+        "state_zero_blank_switchers": switchers,
+        "state_flagged_every_year_share_of_outside_flagged": float(
+            outside[in_state & flagged & outside.utility.isin(
+                every_year.index[every_year["all"] & (every_year["size"] == df.year.nunique())]
+            )].potential_peak_mw.sum()
+            / outside[flagged].potential_peak_mw.sum()
+        ),
+        "without_state_combined_inside": split["zero_or_unreported"][0],
+        "without_state_combined_outside": split["zero_or_unreported"][1],
+        "without_state_exact_inside": split["exact_zero"][0],
+        "without_state_exact_outside": split["exact_zero"][1],
+        "without_state_unreported_inside": split["not_reported"][0],
+        "without_state_unreported_outside": split["not_reported"][1],
+        "exact_zero_ratio_min_single_year": float(exact_by_year.min()),
+        "exact_zero_ratio_max_single_year": float(exact_by_year.max()),
+        "exact_zero_years_inside_at_least_as_high": int((exact_by_year <= 1.0).sum()),
+        "wholesale_accounting_refuted": False,
+        "verdict": (
+            "not decided. The published concentration outside RTO footprints is "
+            "mostly one state's utilities. Without them the combined share is "
+            "close to equal on both sides, unreported capacity is more common "
+            "inside, and exact zeros were no more common outside in two of the "
+            "three years"
         ),
     }
 
@@ -508,6 +703,7 @@ def summary() -> dict:
     gap = dec[["gap_zero_mass", "gap_unreported", "gap_partial_delivery"]].sum(axis=1)
     return {
         **{f"ws_{k}": v for k, v in w.items()},
+        **{f"fp_{k}": v for k, v in footprint_grid_summary().items()},
         **{f"cs_{k}": v for k, v in s.items()},
         "partial_share_of_gap_min": float((dec.gap_partial_delivery / gap).min()),
         "partial_share_of_gap_max": float((dec.gap_partial_delivery / gap).max()),
@@ -524,6 +720,7 @@ def summary() -> dict:
 def run() -> dict:
     return {
         "footprint_split": footprint_split().reset_index(names="footprint"),
+        "footprint_grid": footprint_grid(),
         "decomposition": decomposition(),
         "size_gradient": size_gradient().reset_index(),
         "specification_grid": specification_grid(),

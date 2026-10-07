@@ -16,7 +16,7 @@ reporting utilities, reproduces the vendored national panel for 2015 to the
 digit, which a test asserts.
 
 WHY THIS MATTERS MORE THAN ITS SIZE SUGGESTS. Every other dataset here is an
-aggregate. ROADMAP item 1 asked whether a national realisation rate near 40%
+aggregate. ROADMAP item 1 asked whether a national dispatch utilization near 40%
 means every utility lands near 40%, or whether a large share of the fleet
 delivers nothing while the rest delivers most of what it promised. Those two
 worlds imply completely different policy and the aggregates cannot tell them

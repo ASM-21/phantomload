@@ -1,4 +1,4 @@
-utility,state,potential_peak_mw,actual_peak_mw,system_peak_mw,reported_actual,realisation,potential_share_of_own_peak,provenance
+utility,state,potential_peak_mw,actual_peak_mw,system_peak_mw,reported_actual,utilization,potential_share_of_own_peak,provenance
 "Duke Energy Florida, Inc",FL,1039,0.0,9475,True,0.0,0.10965699208443272,measured
 Interstate Power and Light Co,IA,301,0.0,3005,True,0.0,0.10016638935108153,measured
 South Carolina Public Service Authority,SC,523,0.0,5869,True,0.0,0.08911228488669279,measured

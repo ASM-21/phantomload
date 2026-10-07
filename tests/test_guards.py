@@ -208,6 +208,47 @@ def test_readme_test_count_matches_reality():
     )
 
 
+def test_readme_structural_counts_match_the_tree():
+    """Counts in prose drift silently. In v0.4.2 the README said twelve METHOD
+    rules when there were fifteen and four data builders when there were six;
+    nothing failed because nothing checked."""
+    readme = re.sub(r"\s+", " ", (ROOT / "README.md").read_text())
+    method = (ROOT / "METHOD.md").read_text()
+    rules = len(re.findall(r"^## \d+\. ", method, flags=re.M))
+    assert f"the {rules} rules the repo runs on" in readme
+    words = {15: "Fifteen", 16: "Sixteen", 17: "Seventeen", 18: "Eighteen",
+             19: "Nineteen", 20: "Twenty"}
+    assert method.startswith("# Method") and f"{words[rules]} rules" in method
+    figures = len(list((ROOT / "figures").glob("fig*.png")))
+    assert f"{figures} figures" in readme
+    builders = len(list((ROOT / "tools").glob("build_*.py")))
+    words_lower = {5: "five", 6: "six", 7: "seven", 8: "eight"}
+    assert f"{words_lower[builders]} data builders" in readme
+
+
+def test_every_figure_is_drawn_by_make_all_and_shown_somewhere():
+    """A figure file nobody draws is stale; a figure nobody shows is dead weight."""
+    src = (ROOT / "phantomload" / "shared" / "plotting.py").read_text()
+    on_disk = {p.name for p in (ROOT / "figures").glob("fig*.png")}
+    drawn = set(re.findall(r'_save\(fig, "(fig\d+_\w+\.png)"\)', src))
+    assert on_disk == drawn
+    docs = " ".join((ROOT / n).read_text() for n in ("README.md", "FINDINGS.md",
+                                                      "FALSIFICATION.md", "MODELED.md"))
+    shown = set(re.findall(r"figures/(fig\d+_\w+\.png)", docs))
+    assert {"fig12_decomposition.png", "fig13_rotation.png"} <= shown
+
+
+def test_citation_and_package_versions_agree():
+    cff = (ROOT / "CITATION.cff").read_text()
+    toml = (ROOT / "pyproject.toml").read_text()
+    v_cff = re.search(r"^version: ([\d.]+)$", cff, flags=re.M).group(1)
+    v_pkg = re.search(r'^version = "([\d.]+)"$', toml, flags=re.M).group(1)
+    assert v_cff == v_pkg
+    # a citation pointing at a URL that does not resolve is worse than none;
+    # repository-code is added after the remote exists (ROADMAP, before pushing)
+    assert "repository-code" not in cff
+
+
 def test_no_placeholder_text_left_in_docs():
     for name in ("README.md", "FINDINGS.md", "FALSIFICATION.md", "DATA.md"):
         body = (ROOT / name).read_text()
@@ -365,15 +406,19 @@ def test_docs_state_the_question_before_the_answer():
 
 
 def test_literature_gap_is_disclosed():
-    """No literature review was done. That is the first thing a reviewer would
-    raise, so it has to stay stated rather than drift out during an edit."""
-    readme = (ROOT / "README.md").read_text()
-    assert "No systematic literature review has been performed" in readme
-    assert "should be presented as novel" in readme
+    """The literature search reached grey literature, not journals. That is the
+    first thing a reviewer would raise, so it has to stay stated rather than
+    drift out during an edit. (Until v0.4.3 the README said no systematic
+    review had been done, which had stopped being true when the search in
+    PRIOR_WORK.md was run.)"""
+    readme = re.sub(r"\s+", " ", (ROOT / "README.md").read_text())
+    assert "reached grey literature and open papers, not journals" in readme
+    assert "no prior published treatment was located" in readme
     roadmap = (ROOT / "ROADMAP.md").read_text()
     assert "A literature review" in roadmap
-    prior = (ROOT / "PRIOR_WORK.md").read_text()
+    prior = re.sub(r"\s+", " ", (ROOT / "PRIOR_WORK.md").read_text())
     assert "still unsearched" in prior
+    assert "should be presented as novel" in prior
 
 
 def test_findings_sections_are_questions():

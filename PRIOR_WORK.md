@@ -122,7 +122,10 @@ pairing.
 **The one cell it still loses is the winter four-hour case**, which is track 4's
 seasonal finding arriving by a third independent route: hourly generation data,
 PJM's market rules and the scarcity of winter-capable bids, and now the
-accreditation literature's own metric. Three methods, one conclusion.
+accreditation literature's own metric. It arrives narrowly, losing by 3.5% at
+E3's 55%. Until v0.4.3 the repository used 50% for this cell under the winter
+label; 50% is E3's four-hour figure at 6 GW of adoption, so the label and the
+value disagreed and the loss looked larger than the source supports.
 
 ## The rare-event statistics literature
 
@@ -220,7 +223,35 @@ prevent double registration. Those three remain this repository's contribution,
 stated as "no prior published treatment located" rather than as "does not
 exist", which is the honest form.
 
-## What all four earlier searches together imply
+The first of them needs a qualification the search could not supply. The search
+described the zero-mass decomposition as this repository then stated it, with
+most of the zero mass shown to be available. v0.4.3 withdrew that: the point
+mass identifies non-dispatch, and availability is shown for 15% of the capacity
+ever reported at exactly zero. What is new is the decomposition and the
+classification, including how little of the gap they can identify, not an
+answer to the uncalled-versus-absent question.
+
+## Specification grids and influential clusters
+
+Searched after the v0.4.3 re-examination, to name what this repository had been
+doing. Running every reasonable combination of analyst choices and reporting
+the distribution rather than one result is a specification curve in the sense
+of Simonsohn, Simmons and Nelson ("Specification curve analysis", *Nature Human
+Behaviour* 4, 1208 to 1214, 2020), and a multiverse analysis in the sense of
+Steegen, Tuerlinckx, Gelman and Vanpaemel ("Increasing transparency through a
+multiverse analysis", *Perspectives on Psychological Science* 11(5), 2016). Both
+present it as protection against selective reporting. Neither presents it as
+protection against a statistic that measures the wrong thing, which is what the
+rotation grid ran into: 202 of 216 capacity-weighted specifications agreed, and
+the agreement was about a number whose meaning failed when the cases behind it
+were read (METHOD rule 16).
+
+Dropping each state in turn is the leave-one-cluster-out diagnostic that
+MacKinnon, Nielsen and Webb recommend reporting whenever a few clusters may
+dominate an estimate ("Cluster-robust inference: a guide to empirical
+practice", arXiv:2205.03285, 2022). Their setting is regression standard
+errors; the logic carries over unchanged to a ratio of shares, and here it
+found that one state carried the footprint result (METHOD rule 17).
 
 ## Corrections are invited
 
@@ -235,27 +266,28 @@ rescoped in place.
 
 ## What is still unsearched
 
-Nothing here has been checked against the peer-reviewed literature. The
-environment this was built in reaches government data portals, market monitor
-reports and open web pages, not journals. Four literatures are likely to contain
-some of this already, roughly in descending order of likelihood:
+The searches above reached government and market monitor reports, evaluation
+archives, preprints and open-access papers. They did not reach paywalled
+journals except through abstracts. Three gaps are worth naming, in descending
+order of how likely they are to change something here:
 
-1. **Capacity accreditation and effective load carrying capability.** Resource **Capacity accreditation and effective load carrying capability.** Resource
-   adequacy modellers have certainly written about netting and accreditation
-   asymmetries, which is the whole content of the synthesis.
-2. **Reliability statistics on rare events.** Track 1's bound is estimating the
-   frequency of a rare event from a short record, an old problem with a large
-   literature. The closed form is elementary enough that it will have one.
-3. **Survey methodology and administrative data quality.** The mix-adjusted
-   index in attack D is a shift-share construction under another name.
-4. **The rest of the demand response evaluation literature.** One search
-   reached four evaluations and changed a parameter. A systematic pass through
-   the DOE Uniform Methods Project protocols and the CALMAC and state
-   evaluation archives would likely reach several more, and would also supply
-   the dispatch utilization-rate terminology this repository reinvented.
+1. **Peer-reviewed resource adequacy work on accreditation asymmetries.** The
+   synthesis rests on the accounting-basis asymmetry not having been named in a
+   cost comparison. Journal work on demand-side accreditation is the likeliest
+   place for that claim to be wrong.
+2. **Survey methodology and administrative data quality.** The mix-adjusted
+   index in attack D is a shift-share construction under another name, and the
+   copied-report convention and the zero-or-blank switching in section 11 are
+   item-response problems that survey statisticians have vocabulary for.
+3. **Utility filings to state commissions.** Not a literature, but the place
+   the answers live. Event counts, dispatch logs and evaluation reports for the
+   programs named in FINDINGS sections 1 and 11, starting with Florida's four
+   load management utilities and Santee Cooper's 2018 interruptible curtailment,
+   would settle questions no amount of reading can.
 
-Until that search happens, nothing here should be presented as novel. It should
-be presented as computed, checked and reproducible, which it is.
+Until a journal search happens, nothing here should be presented as novel
+without the "no prior published treatment located" qualifier. It should be
+presented as computed, checked and reproducible, which it is.
 
 ## The lesson worth carrying
 

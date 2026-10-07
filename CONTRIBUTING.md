@@ -50,17 +50,19 @@ revision shows up as a code diff.
 Each of these is scoped, needs no blocked data, and has a finish line. The first
 is the most valuable by a wide margin.
 
-**1. Test the headline on data this repo has never seen.** *Most valuable.* The
-central result, that most zero-reported capacity rotates between years rather
-than persisting, rests on EIA-861 for 2016 to 2018 only. Run it on other years,
-another country's reporting, or one utility's program-level records:
+**1. Run the zero-mass classification on data this repo has never seen.**
+*Most valuable.* The utility-level results, that exact zeros read as
+non-dispatch and that only 15% of the capacity ever reported at exactly zero
+shows a measured delivery in another year, rest on EIA-861 for 2016 to 2018
+only. Run it on other years, another country's reporting, or one utility's
+program-level records:
 
     python -m phantomload zero-mass your_data.csv
 
 The docstring in `phantomload/__main__.py` gives the input format. Finish line:
-open an issue with the output and the source of the data. A result where the
-zero mass persists rather than rotates would cut against this repository's
-reading and is just as welcome.
+open an issue with the output and the source of the data. A longer panel is the
+only thing that can move the persistent and undetermined shares toward reserve
+or toward non-performance, and a result in either direction is welcome.
 
 **2. Extend the utility panel by file name.** Search for
 `Demand_Response_2019.xlsx` and its neighbours, as described in METHOD.md rule
@@ -70,10 +72,12 @@ new years and `zero_persistence()` runs on the longer panel.
 
 **3. Explain the not-reported group.** Utilities reporting potential but no
 actual figure hold 15% to 17% of enrolled capacity every year and nothing here
-explains them. Start in `phantomload/tracks/t1_utilization.py`, function
-`utility_panel()`; the 2017 and 2018 files carry a balancing-authority column.
-Finish line: a table of the not-reported group by balancing authority, and a
-sentence saying whether it concentrates in RTO footprints.
+explains them. Its apparent concentration outside RTO footprints turned out to
+be Florida, and all four Florida utilities involved switch between reporting
+zero and reporting nothing from year to year. Start in
+`phantomload/tracks/t9_mechanisms.py`, function `footprint_grid_summary()`.
+Finish line: a count of utilities nationwide that switch between a zero and a
+blank across years, and the share of not-reported capacity they hold.
 
 **4. Pin the DLC denominator.** One utility evaluation that reports both kW per
 controlled device and devices per enrolled customer would move a modeled result
@@ -81,7 +85,16 @@ in MODELED.md into the citable findings. Start in
 `phantomload/shared/calibration.py`, parameter `DEVICES_PER_ENROLLED_CUSTOMER`.
 Finish line: the parameter moves to LITERATURE with a citation.
 
-**5. Build the PJM price duration curve.** PJM Data Miner hourly LMP, paired with
+**5. Find out whether Florida called its load management.** Four Florida
+utilities hold most of the zero and unreported capacity outside RTO footprints,
+and the Public Service Commission describes FPL's residential program as used
+in system emergencies. Their demand-side management filings and ten-year site
+plans may record whether load management was activated in 2016 to 2018. Finish
+line: a table of activations by utility and year with the source document for
+each, which tests the long-on-capacity explanation in the one place the data
+points to.
+
+**6. Build the PJM price duration curve.** PJM Data Miner hourly LMP, paired with
 the net-load ranking track 4 already computes, would replace the last swept
 parameter in the repository with a measured one. Start in
 `phantomload/tracks/t2_cost.py`, function `netting_bound()`. Finish line:

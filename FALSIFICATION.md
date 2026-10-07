@@ -1,7 +1,10 @@
 # Falsification
 
-Three attacks on this repo's own headline. Two bounced. One landed and changed
-what the repo is allowed to say.
+Seven attacks on this repository's own claims, A to G. Two bounced off the
+headline. Two landed on it and changed what the repository is allowed to say.
+The last three were aimed at mechanisms rather than the headline, and each ended
+less certain than it began: two readings first reported as settled are now
+open, and one is specification-dependent.
 
 Run them with `python -c "from phantomload.tracks import t8_falsification as t; import json; print(json.dumps(t.run()['summary'], indent=2, default=str))"`.
 
@@ -135,15 +138,26 @@ wholesale settlement and reported as zero in the retail filing. If that were the
 general mechanism, zero and unreported actuals would concentrate inside RTO
 footprints.
 
-**Result: REFUTED as a general explanation.** Both concentrate outside. Zero
-reports carry 37% of their capacity inside RTO footprints, and unreported ones
-48%, against 57% of all enrolled capacity. Outside RTO footprints 39% of
-capacity sits at zero or unreported, against 22% inside. BGE may still be a case
-of it; the pattern is not.
+**First result, now withdrawn: REFUTED as a general explanation.** Pooled,
+both concentrate outside. Zero reports carry 37% of their capacity inside RTO
+footprints, and unreported ones 48%, against 57% of all enrolled capacity.
+Outside RTO footprints 39% of capacity sits at zero or unreported, against 22%
+inside. That was read as ruling the mechanism out, and the zero mass as a
+feature of utilities that dispatch for themselves.
 
-What the refutation leaves standing is more interesting than the hypothesis: the
-zero mass is a feature of utilities that dispatch for themselves, which is where
-a long capacity position would show up as a program nobody calls.
+**What attacking the attack found.** The comparison was run once, pooled,
+weighted by capacity. Varied over footprint definition, status, weighting, year
+and the treatment of resized programs, with each state dropped in turn, the
+outside share is higher in 69 of 96 specifications and stays higher whichever
+single state is dropped in only 48. The state that carries it is Florida: 25% of
+the capacity outside RTO footprints and 53% of the zero-or-unreported capacity
+there, in four utilities that reported zero or nothing in every year. Without
+Florida the combined shares are 25% against 22%, and unreported capacity is
+more common inside footprints than outside.
+
+**Result: UNDECIDED.** Wholesale bookkeeping is neither supported nor ruled out
+as a general explanation. BGE may still be a case of it. The long-capacity
+reading may describe Florida and is not shown to describe anything wider.
 
 ## Attack F: does partial delivery follow system conditions?
 
@@ -170,11 +184,37 @@ aside, is slightly toward a regional, dispatch-driven component, which is the
 opposite of the first reading. This attack is kept in full because the first
 version of it was itself an untested analyst choice presented as a finding.
 
+## Attack G: does rotation show the capacity was there?
+
+**Hypothesis.** This repository's own reading, and from v0.3.0 to v0.4.2 its
+strongest evidence. A program that was not needed in a mild year reports zero
+then and something in a hard year; a program that does not work reports zero
+every year. Of the capacity ever reported at exactly zero in 2016 to 2018, 79%
+belonged to utilities that reported something positive in another year, which
+was read as most of the zero mass being available and not called.
+
+**What attacking it found.** Varying the six choices behind the statistic 288
+ways left it a majority in 202 of 216 capacity-weighted specifications, so the
+number held. Reading the 26 utilities behind it did not. 15% of the capacity
+ever reported at exactly zero belongs to utilities with a measured delivery in
+another year; 21% stayed at zero; and 64% rotated only into a program resized
+twentyfold, a report within 0.02% of enrolled capacity, or positive years under
+4% of potential. Followed one year forward, capacity at zero that reported again
+delivered 15% of its potential the next year, against 45% for capacity that had
+delivered a measured amount.
+
+**Result: WITHDRAWN for most of the zero mass.** Exact zeros remain evidence of
+non-dispatch rather than failed dispatch. Availability is shown for 15% of the
+zero mass, 34% if one ambiguous report is a real curtailment, and for the rest
+three years cannot separate a rarely called reserve from a program that does not
+operate. The falsification criterion in FINDINGS that this attack tested was
+itself rewritten afterwards, and both versions are kept there, because a
+criterion changed after the data arrive deserves suspicion.
+
 ## Retractions
 
-Two claims in this repo have been withdrawn after looking harder. Both are
-recorded here rather than quietly edited out, because the pattern in them is the
-same and it is worth naming.
+Claims in this repository that were withdrawn after looking harder, recorded here
+rather than quietly edited out, because the patterns in them are worth naming.
 
 1. **Track 2's assumed comparator range.** Swept 80 to 150 dollars per kW-year
    as "the commonly quoted CT range". PJM's published planning parameters put
@@ -201,6 +241,27 @@ practical fix adopted here: any sentence asserting that something is not
 publicly available now names the specific sources checked, so the claim is
 falsifiable by someone who knows a source this repo missed.
 
+Later withdrawals have a different shape, and it is the more dangerous one,
+because each was a positive claim backed by a computed, pinned, tested number.
+
+3. **The size gradient** (v0.4.0, withdrawn in v0.4.2). An apparently steep fall
+   in utilization with program size, which reports copying enrolled capacity
+   into the delivered field produced. METHOD rule 15.
+4. **Rotation as evidence of availability** (v0.3.0, withdrawn in v0.4.3).
+   Attack G. The number was right and robust; it did not measure what the prose
+   said it measured. METHOD rule 16.
+5. **The footprint split as ruling out wholesale bookkeeping** (v0.4.0,
+   withdrawn in v0.4.3). Attack E. The number was right; one state carried it.
+   METHOD rule 17.
+6. **The winter accreditation value** (present by v0.3.0, corrected in v0.4.3). The winter
+   four-hour cell was computed at 50% while labelled with E3's winter figure,
+   which is 55%. The cell is still lost, by 3.5% instead of 14%.
+
+In each of the first three a guard was green throughout, because the guard
+checks that the prose quotes the number, not that the number means what the
+prose says. What caught them was reading the observations behind the number one
+at a time.
+
 ## What would settle it
 
 Any one of these would break the tie, and none is reachable from public
@@ -219,8 +280,11 @@ aggregates:
 
 Stated so the absence is not mistaken for a clean bill of health.
 
-- No jackknife over utilities. The panel is already aggregated to national by
-  sector, so utility-level influence cannot be tested here.
+- No jackknife over utilities for the rotation statistic. With 26 utilities
+  behind it the case-by-case table in FINDINGS section 1 shows more than a
+  jackknife would; the footprint comparison, which pools hundreds of utilities,
+  is jackknifed by state instead (attack E). The national aggregates in attacks
+  A to D cannot be jackknifed at all, since they are already summed.
 - No attempt to estimate the retail-wholesale overlap. Both populations are
   measured, neither reporter publishes the intersection, and this repo does not
   guess at it.

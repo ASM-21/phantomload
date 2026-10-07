@@ -147,7 +147,7 @@ DR_ELCC_CITATION = (
 
 DR_ELCC = Param(
     name="dr_elcc",
-    lo=0.50,
+    lo=0.55,
     central=0.83,
     hi=1.00,
     units="fraction_of_enrolled_capacity",
@@ -156,14 +156,17 @@ DR_ELCC = Param(
         "Effective load carrying capability of curtailment demand response: the "
         "share of enrolled capacity that counts as dependable for reliability. "
         "This is what the resource adequacy field uses to accredit demand "
-        "response, and it is NOT the realisation ratio. ELCC measures "
-        "contribution during critical hours; the realisation ratio also counts "
+        "response, and it is NOT the dispatch utilization. ELCC measures "
+        "contribution during critical hours; the dispatch utilization also counts "
         "years in which nothing was called. Using the latter as an accreditation "
         "factor over-penalises demand response by construction. "
         "TWO SPLICES, both stated because neither is resolvable here: the ELCC "
         "figures are SPP-specific and 2025-specific, and they are applied to "
         "national EIA cost data, so this is a cross-footprint comparison. The "
-        "range spans the winter four-hour case to the summer ten-hour case."
+        "range spans the winter four-hour case (55%) to the summer ten-hour case "
+        "(100%). Until v0.4.3 the low end was 0.50 under the winter four-hour "
+        "label; 0.50 is E3's four-hour figure at 6 GW of adoption, not its "
+        "winter figure, so the label and the value disagreed."
     ),
     citation=DR_ELCC_CITATION,
 )

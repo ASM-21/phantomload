@@ -30,10 +30,18 @@ Modeled analyses are excluded from this file by rule and live in
 The central claim is that the unrealised gap cannot be read as waste. Three
 results would overturn it, and each is a test someone could run:
 
-1. **The zero mass persisting.** If utility-level data for other years showed
-   zero-reported capacity staying at zero year after year, rather than rotating
-   as 79% of it does in 2016 to 2018, the uncalled reading would fail for that
-   share. `python -m phantomload zero-mass` runs exactly this test.
+1. **The zero mass never delivering.** If utility-level data over a window long
+   enough to matter showed capacity reported at zero almost never delivering a
+   measured amount in its other years, the uncalled reading would fail for that
+   share. The criterion first written here was different, and wrong in a way
+   worth recording: it counted any rotation as support and persistence as
+   refutation. Over three years persistence refutes nothing, since a reserve
+   called once a decade also stays at zero, and most of the rotation turned out
+   to be reports that measure nothing. On 2016 to 2018 data, 15% of the capacity
+   ever reported at exactly zero shows a measured delivery in another year.
+   Changing a criterion after the data arrive is exactly when a reader should be
+   suspicious, so both versions stay stated. `python -m phantomload zero-mass`
+   runs the corrected test.
 2. **Event-level performance failures.** If program evaluations with event
    counts showed called capacity routinely delivering well below enrolment, the
    gap would be non-performance rather than non-dispatch, whatever the
@@ -43,8 +51,9 @@ results would overturn it, and each is a test someone could run:
    than partly definitional, the reporting explanation in section 10 would
    close, and the remaining gap would have to be accounted for by the other two.
 
-None of these has been run against data this repository can reach. Each
-section's numbered claims depend only on the sections above it.
+Only the first has been run against data this repository can reach, on three
+years, and it came back weaker for the uncalled reading than it was first
+reported. Each section's numbered claims depend only on the sections above it.
 
 Each section below opens with the question it answers. One file, every result,
 with the provenance attached. Numbers are produced by `run_all.py` and pinned by
@@ -53,8 +62,10 @@ with the provenance attached. Numbers are produced by `run_all.py` and pinned by
 ## 1. What share of enrolled capacity actually shows up, and can we tell why?
 
 **Answer.** 39.2% shows up. The aggregates cannot say why, and the panel needed
-to settle it is longer than the panel that exists. Utility-level data settles
-part of it anyway, through the shape of the distribution rather than its level.
+to settle it is longer than the panel that exists. Utility-level data narrows it
+through the shape of the distribution, by less than this repository first
+reported: exact zeros read as non-dispatch, and for most of them the data cannot
+say whether the capacity would have delivered.
 
 This section's headline figure is a reproduction. ACEEE published the same
 result from the same series in 2017, and also named the identification problem.
@@ -153,9 +164,10 @@ actual figure, five reported exactly zero, including Florida Power & Light at
 MW. Three more reported potential and no actual value at all. Together those
 eight hold 14.3% of national enrolled capacity.
 
-That zero mass is evidence for the uncalled mechanism, and it is the first
-direct evidence in this repository on the question rather than an argument about
-identifiability. Nadel proposed the mechanism in 2017: utilities long on
+That zero mass is evidence that this part of the shortfall was not dispatched,
+rather than dispatched and failed, and it is the first direct evidence in this
+repository on the question rather than an argument about identifiability. It
+answers half of it: not dispatched is not the same as available. Nadel proposed the mechanism in 2017: utilities long on
 capacity are less likely to call demand response. Two large Florida load
 management programs reporting zero in a mild year is what that looks like.
 
@@ -164,20 +176,86 @@ Above zero the distribution is continuous, 0.5% to 100% with no gap wider than
 partial performance are indistinguishable there. The verdict is a split one and
 is reported as such.
 
-### The full population, three years, and the test that decides it
+### The full population, three years, and what persistence can and cannot decide
 
 ACEEE's table is one year and the 28 largest programs. EIA's utility-level files
 for 2016 to 2018 cover every reporting utility, and they reconcile to the
-national panel to the megawatt in all three years. They also allow the test the
+national panel to the megawatt in all three years. They also allow a test the
 level never could: persistence.
 
 A program that was not needed in a mild year reports zero that year and
 something in a hard one. A program that does not work reports zero every year.
 Among the 304 utilities reporting an actual figure in all three years, 278 never
 reported zero and only 9 reported zero every year. Of the capacity ever reported
-at exactly zero, 79% rotated between zero and positive across the three years.
-Most of the zero mass is therefore capacity that was available and not called,
-which is the reserve reading rather than the phantom one.
+at exactly zero, 79% belonged to utilities that reported something positive in
+another year. Earlier versions concluded from that that most of the zero mass
+was available and not called. That conclusion is withdrawn, for the reasons
+below, and the number stays because it is what was published.
+
+**The number is not fragile.** It rests on six choices: what counts as zero,
+whether a report equal to enrolled capacity counts as a delivery, which
+utilities form the panel, how they are weighted, the unit of analysis, and
+whether a program whose enrolled figure moved more than threefold is still the
+same program. Varying all six gives 288 specifications. Weighted by capacity,
+the rotating share runs from 44% to 85% and is a majority in 202 of 216
+capacity-weighted specifications; counting utilities instead, it is a majority
+in 37 of 72. The fourteen capacity-weighted failures all combine the same two
+corrections, a 1% zero rule and treating near-copies as unreported. The
+published panel sees 47% of the capacity reported at zero across the three
+years, because it requires a report in every year.
+
+**Its meaning is.** The statistic counts a utility as rotating if it reported
+anything above zero in another year, and with 26 utilities behind it, three of
+which hold 56% of the capacity, what each one reported matters more than any
+specification. Classified by what their other years actually say:
+
+| Capacity ever reported at exactly zero | Share | What it shows |
+| --- | --- | --- |
+| A measured delivery of at least 5% of potential in another year | 15% | the capacity can deliver; its zero years read as not called |
+| Zero in every year | 21% | ambiguous over three years |
+| Enrolled capacity moved more than threefold | 25% | the capacity at zero is not the capacity that later delivered |
+| Another year within 1% of enrolled capacity | 19% | a full curtailment or a copied figure; the data cannot tell |
+| Positive years all below 5% of potential | 19% | the program operates, at a small fraction of its enrolment |
+
+The resized case is Salt River Project, which reported 1,844 MW of potential and
+nothing delivered in 2016, about one megawatt per enrolled customer, then 86 MW
+and 99 MW of potential in the next two years. The near-copy is Santee Cooper,
+which after two years at zero reported 520.4 MW delivered against 520.5 MW
+enrolled in 2018: either all 20 of its interruptible customers curtailed or a
+copied field. Counting it as a real delivery raises the measured share to 34%.
+The near-zero group is Ohio Edison, Toledo Edison and Appalachian Power in West
+Virginia, all PJM members, whose positive years run from 0.5% to 3.5% of
+potential.
+
+Loosening the zero rule to anything at or below 5% of potential changes the
+picture and shows how lumpy it is: 54% of that broader zero mass belongs to
+utilities with a measured delivery elsewhere, and Alabama Power alone is 28% of
+it.
+
+**Followed forward, zero capacity mostly stays dark.** The rotation statistic
+classifies utilities over three years. The more direct question is what happens
+to the megawatts: of the capacity at exactly zero in one year that reported a
+figure the next, how much delivered? Between 69% and 77% of it did report
+again. Pooled over both transitions, it delivered 15% of its potential, against
+45% for
+capacity that delivered a measured amount the year before, and more than 80%
+for capacity whose report simply copied enrolment. The two transitions differ
+sharply. Capacity at zero in 2016 delivered 1.6% of its potential in 2017.
+Capacity at zero in 2017 delivered 40% in 2018, but 71% of that came from three
+South Carolina utilities, led by Santee Cooper's near-full report, and without
+that one report it is 24%.
+
+**What survives.** Exact zeros are non-dispatch rather than failed dispatch. For
+about a sixth of them, a third if Santee Cooper's report is real, the data
+shows the capacity can deliver. For the rest it shows nothing either way, which
+is what three years can be expected to show about a resource that may be called
+once a decade. One lead is worth following: whether the South Carolina
+deliveries fell in the January 2018 cold snap, when neighbouring Duke Energy
+Carolinas set a [peak demand record](https://www.greenvillebusinessmag.com/2018/01/09/164451/duke-energy-carolinas-peak-record)
+on January 5. If they did, that is the uncalled-then-called pattern seen
+directly, in the one place the data shows it.
+
+![rotation](figures/fig13_rotation.png)
 
 Two categories are kept apart throughout because conflating them is the error
 that would matter most. Exact zeros held 10.0% to 17.8% of enrolled capacity per
@@ -514,7 +592,7 @@ national figure for demand response capacity on its own.
 **Deployment during a real event is the closest thing to a direct check.** PJM
 registered 8,526 MW for 2024 and deployed more than 4,000 MW during the June
 2025 heat event, at the third-highest system peak in its history. That is a
-realization of at least 46.9%, a lower bound because the source says "more
+dispatch utilization of at least 46.9%, a lower bound because the source says "more
 than", against a national retail figure of 39.2%. Two accountings, two
 reporters, one annual aggregate and one event, landing in the same range.
 
@@ -574,11 +652,11 @@ the public record aligns none of them.
   That factor is not assumed here: it is recovered from PJM's own table by
   dividing net CONE in ICAP dollars per MW-year by net CONE in UCAP dollars per
   MW-day.
-- **Realization.** Demand response can be priced per enrolled or per delivered
+- **Dispatch utilization.** Demand response can be priced per enrolled or per delivered
   kW, and track 1 shows the data cannot say which is right.
 
 Two bases each on three axes, with the demand response accreditation question
-collapsed into its realization basis, gives eight pairings. Demand response wins
+collapsed into its dispatch-utilization basis, gives eight pairings. Demand response wins
 6 of 8. Both losses are the same pairing, delivered basis against net CONE, and
 both carry at least one basis mismatch. Only two cells mix nothing, gross to
 gross at nameplate and gross to gross at accredited, and demand response wins
@@ -629,8 +707,12 @@ the splice; the magnitude does.
 The single cell demand response still loses is the winter four-hour case. That
 is the seasonal finding from track 4 arriving by a third independent route,
 after hourly generation data and after PJM's market rules and its shortage of
-winter-capable bids. Three methods, one conclusion, and it is the most robust
-result in this repository.
+winter-capable bids. It arrives narrowly. At the published 55% demand response
+costs 3.5% more than the accredited net CONE comparator, and an ELCC of 57%
+would win the cell. Until v0.4.3 the cell was computed at 50%, which is E3's
+four-hour figure at 6 GW of adoption rather than its winter figure, and the
+margin looked wider than it is. So the third route agrees with the other two,
+weakly, and the seasonal finding rests mainly on the first two.
 
 Push it further and it terminates somewhere useful. The fully aligned cell nets
 both sides and accredits both sides: demand response per delivered kW, less
@@ -658,11 +740,14 @@ interpretation of it, and this repo can close none of them with public data.
    and under persistent extreme conditions even that is optimistic. Against
    gross CONE no reserve credit is needed at all, the required share being
    -8.8%; against net CONE 56.8% of the shortfall would have to be genuine
-   reserve. The utility panel now speaks to this directly: 79% of zero-reported
-   capacity rotates between years, which is what reserve looks like.
+   reserve. The utility panel speaks to this only in part. Exact zeros read as
+   non-dispatch rather than failed dispatch, and 15% of the capacity ever
+   reported at exactly zero shows a measured delivery in another year. For the
+   rest, three years cannot separate reserve from non-performance, which is the
+   bound above at utility scale.
 
 2. **Which accounting bases** (synthesis). Netting, accreditation and
-   realization each move the comparison, the public record aligns none of them,
+   dispatch utilization each move the comparison, the public record aligns none of them,
    and demand response wins 6 of 8 pairings including both internally consistent
    ones.
 
@@ -683,8 +768,9 @@ event counts. That is roadmap items 1 and 2, and it is the whole shopping list.
 
 ## 11. What produces each part of the gap?
 
-**Answer.** The gap is three things with different mechanisms. One is
-explained, one is constrained, and the largest is open.
+**Answer.** The gap is three things that behave differently, and none is
+explained. The zero mass is non-dispatch of mostly undetermined availability,
+the unreported share is not accounted for, and the largest piece is open.
 
 MEASURED, EIA-861 utility files 2016 to 2018, every reporting utility, with
 balancing-authority codes carried back from 2017 and 2018 to 2016 by utility.
@@ -692,25 +778,51 @@ balancing-authority codes carried back from 2017 and 2018 to 2016 by utility.
 | Component of enrolled capacity | 2016 | 2017 | 2018 | What it behaves like |
 | --- | --- | --- | --- | --- |
 | Realised | 33.0% | 38.9% | 40.5% | |
-| Partial delivery | 32.7% | 34.3% | 34.1% | sticky within a utility, not regionally driven |
-| No actual reported | 16.6% | 16.9% | 15.3% | concentrated outside organised markets |
-| Exact zero | 17.8% | 10.0% | 10.2% | rotates between years, concentrated outside organised markets |
+| Partial delivery | 32.7% | 34.3% | 34.1% | sticky within a utility; any regional component is specification-dependent |
+| No actual reported | 16.6% | 16.9% | 15.3% | more common outside organised markets only because of Florida |
+| Exact zero | 17.8% | 10.0% | 10.2% | non-dispatch; a measured delivery elsewhere for 15% of it |
 
-**The zero mass is explained, as far as public data allows.** It rotates (track
-1), which is what uncalled capacity looks like. It concentrates outside the
-seven RTO and ISO footprints, which rules out the obvious alternative: if zero
-and unreported actuals were reductions booked in a wholesale settlement rather
-than the retail filing, they would cluster inside RTO footprints. Instead 39% of
-capacity outside RTO footprints is at zero or unreported, against 22% inside, a
-ratio of 1.8. That fits the mechanism Nadel proposed in 2017: utilities outside
-organised markets decide for themselves whether to call, and a utility long on
-capacity has little reason to. Testing it directly needs reserve margins by
-utility.
+**The zero mass is non-dispatch, and mostly unexplained beyond that.** Track 1
+shows exact zeros look like programs not called rather than called and failed,
+and that the capacity has shown it can deliver for a minority of them. Earlier
+versions also read the footprint split as ruling out the obvious alternative,
+that zeros and blanks are reductions booked in a wholesale settlement rather
+than the retail filing, which would make them cluster inside RTO footprints.
+Pooled, they cluster outside: 39% of capacity outside RTO footprints is at zero
+or unreported, against 22% inside, a ratio of 1.8.
 
-**The unreported share is constrained but not explained.** It also concentrates
-outside RTO footprints, which rules out wholesale bookkeeping as its general
-cause. What it is instead, non-response, exemption or a reporting convention, is
-not answerable from these files.
+That comparison was then varied 96 ways, over the footprint definition (all
+seven RTOs and ISOs, or only the four with capacity markets), the status
+counted, the weighting, each year alone and the treatment of resized programs,
+and in every specification each state was dropped in turn. States are the right
+unit to drop, because utilities in one state share a regulator, a climate and
+usually a reporting habit. The outside share is higher in 69 of 96, and stays
+higher whichever single state is dropped in 48 of 96. The state that matters is
+Florida. Florida Power & Light, Duke Energy Florida, Tampa Electric and the City
+of Tallahassee reported zero or nothing in every year, and Florida holds 25% of
+the capacity outside RTO footprints and 53% of the zero-or-unreported capacity
+there. Without it the combined shares are 25% outside against 22% inside, exact
+zeros are still more common outside (15% against 8%), and unreported capacity
+is more common inside (14% against 9%). Taken one year at a time, exact zeros
+were at least as common inside footprints as outside in 2 of 3 years.
+
+So wholesale bookkeeping is neither supported nor ruled out as a general
+explanation. Nadel's mechanism, utilities long on capacity not calling, may
+describe Florida, where the Public Service Commission's own
+[description](https://floridapsc.com/pscfiles/website-files/PDF/Publications/Reports/ElectricGas/AnnualReport/2018.pdf)
+of FPL's residential load management says it is used during periods of extreme
+demand, capacity shortages or system emergencies, an emergency-only design that
+would report zero in most years at the annual peak. It is not shown to describe
+anything wider. All four of those Florida utilities also move between reporting
+zero and reporting nothing from one year to the next, which says that for some
+filers the distinction this repository keeps most carefully, between a zero and
+a blank, is not a stable one.
+
+**The unreported share is not accounted for.** It looked concentrated outside
+RTO footprints, which was read as ruling out wholesale bookkeeping; without
+Florida it is more common inside. What it is, non-response, exemption, a
+reporting convention or bookkeeping in another accounting, is not answerable
+from these files.
 
 **Partial delivery is the largest piece and the open question.** Utilities that
 delivered some but not all of their potential account for 49% to 57% of the gap

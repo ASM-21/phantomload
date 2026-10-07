@@ -29,6 +29,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 DOCS = ["README.md", "FINDINGS.md", "FALSIFICATION.md", "PRIOR_WORK.md", "MODELED.md",
         "CHECKLIST.md"]
 CITABLE = ["README.md", "FINDINGS.md", "FALSIFICATION.md", "PRIOR_WORK.md", "CHECKLIST.md"]
+# Files that carry claims in prose without being where figures are pinned. A
+# withdrawn reading survived in exactly these places in v0.4.2: the citation
+# abstract, the research agenda and the contributor guide. They are scanned for
+# retired values, overclaiming and dead links, not matched for pinned figures.
+SCANNED = DOCS + ["ROADMAP.md", "METHOD.md", "CONTRIBUTING.md", "DATA.md",
+                  "CITATION.cff", "pyproject.toml"]
 
 # Claims whose value depends on a simulation, a swept grid or an assumed central
 # parameter. The publication standard refuses to assemble generated results into
@@ -78,6 +84,7 @@ def _load_summaries() -> dict:
         "su": t1_utilization.utility_dispersion(),
         "sz": t1_utilization.zero_mass_test(),
         "sup": t1_utilization.utility_panel_summary(),
+        "srot": t1_utilization.rotation_summary(),
         "s2": t2_cost.summary(),
         "s3": t3_behavioral.inversion_summary(),
         "s4": t4_curtailment.summary(),
@@ -95,6 +102,23 @@ def _load_summaries() -> dict:
     }
 
 
+NUMBER_WORDS = {
+    1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven",
+    8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
+    14: "fourteen", 15: "fifteen", 16: "sixteen", 17: "seventeen",
+    18: "eighteen", 19: "nineteen", 20: "twenty",
+}
+STATE_NAMES = {"FL": "Florida", "SC": "South Carolina", "NC": "North Carolina",
+               "AZ": "Arizona", "TX": "Texas", "MD": "Maryland", "CA": "California",
+               "AR": "Arkansas", "MO": "Missouri", "NE": "Nebraska", "IA": "Iowa"}
+
+
+def _word(n: int) -> str:
+    """Counts the prose spells out. A count outside the table fails loudly
+    rather than quietly matching a numeral somewhere else in the docs."""
+    return NUMBER_WORDS[int(n)]
+
+
 def build_claims(m: dict) -> list[tuple[str, str]]:
     """(label, exact string that must appear somewhere in the docs)."""
     s1, s2, s3, s4 = m["s1"], m["s2"], m["s3"], m["s4"]
@@ -103,6 +127,7 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
     s5, s6, s7 = m["s5"], m["s6"], m["s7"]
     s8a, s8b, s8c, s8d = m["s8a"], m["s8b"], m["s8c"], m["s8d"]
     s9 = m["s9"]
+    sr2 = m["srot"]
     t1 = m["t1"]
     return [
         ("t1 mean utilization", f"{s1['mean_utilization']:.1%}"),
@@ -134,7 +159,7 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
         ("t1 utility zero share",
          f"{su['zero_or_missing_share_of_national']:.1%} of national enrolled capacity"),
         ("t1 utility median",
-         f"median {su['median_realisation']:.0%}"),
+         f"median {su['median_utilization']:.0%}"),
         ("t1 largest zero",
          f"{su['largest_zero_utility']} reported {su['largest_zero_mw']:,.0f} MW"),
         ("t1 panel exact zero",
@@ -259,7 +284,7 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
          f"{s5['highest_exposure_ratio']:.2f}"),
         ("t7 wholesale mw", f"{s7['wholesale_registered_mw_2024']:,.0f} MW"),
         ("t7 wholesale over retail", f"{s7['wholesale_over_retail_2023']:.2f}x"),
-        ("t7 pjm realization", f"{s7['pjm_realization_at_least']:.1%}"),
+        ("t7 pjm utilization", f"{s7['pjm_utilization_at_least']:.1%}"),
         ("t7 enforcement",
          f"${s7['enforcement_total_penalties_usd'] / 1e6:.1f}M in civil penalties"),
         ("t2 enrolled cost", f"${s2['cost_per_kw_enrolled']:.2f}"),
@@ -341,7 +366,109 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
          f"{s7['industrial_implied_hours_2022']:.0f} for industrial"),
         ("t8a best year", f"{s8a['best_year_over_full_panel']:.1%}"),
         ("t8b delivered", f"${s8b['dr_cost_per_kw_delivered']:.2f}"),
-
+        # --- v0.4.3: the rotation statistic, varied and then read case by case
+        ("t1 rotation grid",
+         f"majority in {sr2['grid_capacity_above_half']} of "
+         f"{sr2['grid_capacity_specifications']} capacity-weighted specifications"),
+        ("t1 rotation specs", f"gives {sr2['grid_specifications']} specifications"),
+        ("t1 rotation range",
+         f"runs from {sr2['grid_capacity_min']:.0%} to {sr2['grid_capacity_max']:.0%}"),
+        ("t1 rotation count",
+         f"majority in {sr2['grid_count_above_half']} of {sr2['grid_count_specifications']}"),
+        ("t1 rotation failures",
+         f"The {_word(sr2['grid_capacity_specifications'] - sr2['grid_capacity_above_half'])} "
+         "capacity-weighted failures"),
+        ("t1 rotation coverage",
+         f"sees {sr2['grid_published_zero_mw_coverage']:.0%} of the capacity reported at zero"),
+        ("t1 rotation utilities", f"with {sr2['comp_utilities']} utilities behind it"),
+        ("t1 rotation measured",
+         f"{sr2['comp_measured']:.0%} of the capacity ever reported at exactly zero"),
+        ("t1 rotation persistent", f"stayed at zero ({sr2['comp_zero_every_year']:.0%})"),
+        ("t1 rotation unmeasured",
+         f"availability ({sr2['comp_rotating_not_measured']:.0%})"),
+        ("t1 rotation top three", f"hold {sr2['comp_top3_share']:.0%} of the capacity"),
+        ("t1 rotation row measured",
+         f"in another year | {sr2['comp_measured']:.0%} |"),
+        ("t1 rotation row persistent",
+         f"Zero in every year | {sr2['comp_zero_every_year']:.0%} |"),
+        ("t1 rotation row resized",
+         f"moved more than threefold | {sr2['comp_resized']:.0%} |"),
+        ("t1 rotation row near copy",
+         f"within 1% of enrolled capacity | {sr2['comp_near_copy']:.0%} |"),
+        ("t1 rotation row near zero",
+         f"below 5% of potential | {sr2['comp_near_zero']:.0%} |"),
+        ("t1 rotation if near copy real",
+         f"raises the measured share to {sr2['comp_measured_if_near_copies_are_real']:.0%}"),
+        ("t1 rotation resized case",
+         f"reported {sr2['comp_largest_resized_potentials'][0]:,.0f} MW of potential and "
+         f"nothing delivered in {sr2['comp_largest_resized_first_year']}"),
+        ("t1 rotation resized later",
+         f"then {sr2['comp_largest_resized_potentials'][1]:,.0f} MW and "
+         f"{sr2['comp_largest_resized_potentials'][2]:,.0f} MW of potential"),
+        ("t1 rotation near copy case",
+         f"reported {sr2['comp_near_copy_actual']:.1f} MW delivered against "
+         f"{sr2['comp_near_copy_potential']:.1f} MW enrolled in {sr2['comp_near_copy_year']}"),
+        ("t1 rotation near zero range",
+         f"run from {sr2['comp_near_zero_min']:.1%} to {sr2['comp_near_zero_max']:.1%} of"),
+        ("t1 rotation near-zero rule",
+         f"{sr2['comp5_measured']:.0%} of that broader zero mass"),
+        ("t1 rotation near-zero leader",
+         f"{sr2['comp5_largest_measured'].removesuffix(' Co')} alone is "
+         f"{sr2['comp5_largest_measured_share']:.0%} of it"),
+        ("t1 rotation follow pooled",
+         f"{sr2['follow_zero_delivery_pooled']:.0%} of its potential"),
+        ("t1 rotation follow baseline",
+         f"against {sr2['follow_measured_delivery_pooled']:.0%} for capacity that"),
+        ("t1 rotation follow first",
+         f"delivered {sr2['follow_zero_delivery_first']:.1%} of its potential in "
+         f"{sr2['follow_first_year']}"),
+        ("t1 rotation follow last",
+         f"delivered {sr2['follow_zero_delivery_last']:.0%} in {sr2['follow_last_year']}, "
+         f"but {sr2['follow_zero_last_largest_state_share']:.0%} of that came from "
+         f"{_word(sr2['follow_zero_last_largest_state_utilities'])} "
+         f"{STATE_NAMES[sr2['follow_zero_last_largest_state']]} utilities"),
+        ("t1 rotation follow reported again",
+         f"Between {1 - sr2['follow_zero_next_unreported_max']:.0%} and "
+         f"{1 - sr2['follow_zero_next_unreported_min']:.0%} of it did report again"),
+        ("t1 rotation follow without",
+         f"without that one report it is "
+         f"{sr2['follow_zero_delivery_last_without_largest']:.0%}"),
+        # --- v0.4.3: the footprint comparison, varied and jackknifed by state
+        ("t9 footprint grid",
+         f"higher in {s9['fp_outside_higher']} of {s9['fp_specifications']}"),
+        ("t9 footprint jackknife",
+         f"whichever single state is dropped in "
+         f"{s9['fp_outside_higher_with_any_one_state_dropped']} of {s9['fp_specifications']}"),
+        ("t9 footprint state share",
+         f"{s9['fp_state_share_of_outside_flagged']:.0%} of the zero-or-unreported capacity"),
+        ("t9 footprint state capacity",
+         f"{s9['fp_state_share_of_outside_capacity']:.0%} of the capacity outside RTO footprints"),
+        ("t9 footprint without",
+         f"{s9['fp_without_state_combined_outside']:.0%} outside and "
+         f"{s9['fp_without_state_combined_inside']:.0%} inside"),
+        ("t9 footprint without table",
+         f"{s9['fp_without_state_combined_outside']:.0%} against "
+         f"{s9['fp_without_state_combined_inside']:.0%} without "
+         f"{STATE_NAMES[s9['fp_most_influential_state']]}"),
+        ("t9 footprint exact without",
+         f"({s9['fp_without_state_exact_outside']:.0%} against "
+         f"{s9['fp_without_state_exact_inside']:.0%})"),
+        ("t9 footprint unreported without",
+         f"({s9['fp_without_state_unreported_inside']:.0%} against "
+         f"{s9['fp_without_state_unreported_outside']:.0%})"),
+        ("t9 footprint single years",
+         f"in {s9['fp_exact_zero_years_inside_at_least_as_high']} of 3 years"),
+        ("t9 footprint utilities",
+         f"{_word(s9['fp_state_flagged_every_year'])} utilities that reported zero or "
+         "nothing in every year"),
+        ("t9 footprint switchers",
+         f"All {_word(s9['fp_state_zero_blank_switchers'])} of those"),
+        # --- v0.4.3: the winter accreditation cell, at the published value
+        ("synthesis winter margin", f"by {sy['elcc_worst_margin']:.1%}"),
+        ("synthesis winter elcc", f"an ELCC of {sy['elcc_worst_elcc_to_win']:.0%}"),
+        ("synthesis winter superseded",
+         f"by {sy['elcc_worst_margin']:.1%} instead of "
+         f"{sy['elcc_worst_margin_at_superseded_value']:.0%}"),
     ]
 
 
@@ -374,6 +501,10 @@ REQUIRED = [
     "the inversion is not informative",
     # the falsification result must stay in the headline area
     "only a small share of the shortfall has to be genuine reserve",
+    # the literature search reached grey literature, not journals
+    "reached grey literature and open papers, not journals",
+    # v0.4.3: what the zero mass does and does not show
+    "not dispatched is not the same as available",
 ]
 
 FORBIDDEN = [
@@ -412,6 +543,24 @@ RETIRED = [
     "median utility realises 67%",
     "reads as a stable property of each program",
     "unmoved by regional conditions",
+    # withdrawn in v0.4.3: rotation does not show availability for most of the
+    # zero mass, and one state carries the footprint split
+    "signature of capacity that was available and not called",
+    "zero mass is therefore capacity that was available",
+    "which is what reserve looks like",
+    "zero mass is explained, as far as public data allows",
+    "rules out wholesale bookkeeping as its general cause",
+    "which rules out the obvious alternative",
+    "is not wholesale bookkeeping",
+    "largely explained: rotates",
+    "settles more of it than any other evidence here",
+    "favouring uncalled over absent",
+    "available-but-uncalled capacity looks like",
+    "most robust result in",
+    "rotates between years and concentrates where utilities dispatch",
+    "not regionally driven",
+    "most unrealised capacity was available and not called",
+    "Utility-level data settles part of it anyway",
 ]
 HISTORICAL_MARKERS = ("retract", "earlier", "previous", "withdrawn", " was ",
                       "originally", "first version", "had been")
@@ -425,6 +574,10 @@ def main() -> int:
             print(f"FAIL missing doc: {name}")
             return 1
         text[name] = path.read_text()
+    scanned = dict(text)
+    for name in SCANNED:
+        if name not in scanned and (ROOT / name).exists():
+            scanned[name] = (ROOT / name).read_text()
     # Prose gets rewrapped constantly, and a required phrase or a quoted figure
     # that straddles a line break is still present in the document. Matching on
     # whitespace-normalised text stops the guard from failing for a reason that
@@ -460,7 +613,7 @@ def main() -> int:
         if re.sub(r"\s+", " ", phrase) not in blob:
             failures.append(f"missing required caveat: {phrase!r}")
 
-    for name, body in text.items():
+    for name, body in scanned.items():
         for i, line in enumerate(body.splitlines(), 1):
             if line.startswith(EXEMPT_PREFIX):
                 continue
@@ -472,12 +625,14 @@ def main() -> int:
                     )
 
     link = re.compile(r"\]\((?!https?://|#)([^)]+)\)")
-    for name, body in text.items():
+    for name, body in scanned.items():
+        if not name.endswith(".md"):
+            continue
         for target in link.findall(body):
             if not (ROOT / target.split("#")[0]).exists():
                 failures.append(f"dead link in {name}: {target}")
 
-    for name, body in text.items():
+    for name, body in scanned.items():
         for i, line in enumerate(body.splitlines(), 1):
             if line.startswith(EXEMPT_PREFIX):
                 continue

@@ -7,9 +7,8 @@ authors:
     given-names: Andrew
     orcid: "https://orcid.org/0009-0004-8758-2687"
     affiliation: "independent"
-version: 0.4.2
-repository-code: "https://github.com/ASM-21/phantomload"
-date-released: "2026-10-04"
+version: 0.4.3
+date-released: "2026-10-07"
 license: Apache-2.0
 keywords:
   - demand response
@@ -22,18 +21,19 @@ abstract: >-
   they report as available, a gap that has held for twelve years. Using
   EIA-861 utility-level files for 2016 to 2018, which reconcile to the national
   series to the megawatt, this work decomposes that gap into three components
-  with different mechanisms. Capacity reported at exactly zero rotates between
-  years and concentrates where utilities dispatch for themselves, which reads as
-  available but uncalled. Capacity with no reported outcome is not wholesale
-  bookkeeping. Whether partial delivery, about half the gap, responds to system
-  conditions is specification-dependent. Nearly a third of positive reports set
-  actual exactly equal to potential, a convention that is concentrated in small
-  programs and persists within utilities, and that produced an apparent size
-  gradient this work first reported and then withdrew.
-  Priced against PJM's published cost of new entry, demand response is cheaper
-  in six of eight defensible pairings of accounting bases. The public record
-  does not support reading the gap as waste, and the work states what data
-  would settle it.
+  that behave differently. Capacity reported at exactly zero reads as
+  non-dispatch rather than failed dispatch, but only 15 percent of it belongs
+  to utilities with a measured delivery in another year, so whether it was
+  available is mostly undetermined. Its apparent concentration outside
+  organised markets, and that of capacity with no reported outcome, rests
+  mostly on four Florida utilities. Whether partial delivery, about half the
+  gap, responds to system conditions is specification-dependent. Nearly a
+  third of positive reports set actual exactly equal to potential, a
+  convention that produced an apparent size gradient this work first reported
+  and then withdrew. Priced against PJM's published cost of new entry, demand
+  response is cheaper in six of eight defensible pairings of accounting bases.
+  The public record does not support reading the gap as waste, nor does it
+  establish the opposite, and the work states what data would settle it.
 references:
   - type: data
     title: "Form EIA-861, Annual Electric Power Industry Report"

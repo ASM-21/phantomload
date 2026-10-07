@@ -9,7 +9,12 @@ import pathlib
 import matplotlib
 
 matplotlib.use("Agg")
+# Pinned so a figure rebuilt on another machine matches the committed one. A
+# site matplotlibrc can change the default family, and one did in the
+# environment v0.4.3 was built in; DejaVu Sans ships with matplotlib itself.
+matplotlib.rcParams["font.family"] = "DejaVu Sans"
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.ticker import PercentFormatter  # noqa: E402
 
 from ..tracks import t1_utilization as t1  # noqa: E402
 from ..tracks import t2_cost as t2  # noqa: E402
@@ -25,13 +30,16 @@ FIG_DIR = pathlib.Path(__file__).resolve().parents[2] / "figures"
 MEASURED = "#1f4e79"
 SIM = "#a34b2a"
 GREY = "#7a7a7a"
+ZERO = "#c9a227"        # exact zero, the same colour in every figure
+UNINFORMATIVE = "#c4c4c4"  # reports that say nothing about the question asked
 
 
 def _save(fig, name: str) -> pathlib.Path:
     FIG_DIR.mkdir(exist_ok=True)
     path = FIG_DIR / name
     fig.tight_layout()
-    fig.savefig(path, dpi=140)
+    # no Software stamp, so the bytes do not change with the matplotlib version
+    fig.savefig(path, dpi=140, metadata={"Software": None})
     plt.close(fig)
     return path
 
@@ -312,7 +320,7 @@ def fig_decomposition() -> pathlib.Path:
         ("realised", "realised", MEASURED),
         ("gap_partial_delivery", "partial delivery (open)", SIM),
         ("gap_unreported", "no actual reported", GREY),
-        ("gap_zero_mass", "exact zero (rotates)", "#c9a227"),
+        ("gap_zero_mass", "exact zero (non-dispatch)", ZERO),
     ]
     bottom = None
     for col, label, colour in parts:
@@ -348,6 +356,86 @@ def fig_decomposition() -> pathlib.Path:
     return _save(fig, "fig12_decomposition.png")
 
 
+def fig_rotation() -> pathlib.Path:
+    """What the published rotation statistic was made of, and what zero
+    capacity did the following year. Both panels label every bar, so no reading
+    depends on colour."""
+    import numpy as np
+
+    comp = t1.rotation_composition()
+    by = comp.groupby("class").share_of_ever_zero_mw.sum()
+    rows = [
+        ("measured delivery in another year", by.get("measured", 0.0), MEASURED),
+        ("zero in every year", by.get("zero_every_year", 0.0), ZERO),
+        ("enrolled capacity moved over threefold", by.get("resized", 0.0), UNINFORMATIVE),
+        ("other year within 1% of enrolment",
+         by.get("near_copy", 0.0) + by.get("copied", 0.0), UNINFORMATIVE),
+        ("positive years all under 5%", by.get("near_zero", 0.0), UNINFORMATIVE),
+    ]
+    fu = t1.zero_followup()
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12.5, 4.8),
+                                   gridspec_kw={"width_ratios": [1.05, 1]})
+    y = np.arange(len(rows))[::-1]
+    for yi, (label, share, colour) in zip(y, rows):
+        ax1.barh(yi, share, color=colour, height=0.62, edgecolor="white", linewidth=2)
+        ax1.text(share + 0.008, yi, f"{share:.0%}", va="center", fontsize=9)
+    ax1.set_yticks(y)
+    ax1.set_yticklabels([r[0] for r in rows], fontsize=9)
+    ax1.set_xlim(0, 0.40)
+    ax1.xaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+    ax1.set_xlabel("share of capacity ever reported at exactly zero, 2016 to 2018")
+    rotating = 1 - by.get("zero_every_year", 0.0)
+    ax1.set_title(
+        f"The published {rotating:.0%} rotation, by what the other years show.\n"
+        "Only the blue bar shows the capacity could deliver",
+        fontsize=10,
+    )
+    for side in ("top", "right"):
+        ax1.spines[side].set_visible(False)
+
+    groups = [("exact_zero", "zero", ZERO), ("measured", "measured", MEASURED),
+              ("copied", "copied", GREY)]
+    transitions = list(fu.groupby(["from_year", "to_year"]).groups)
+    ticks, labels = [], []
+    for k, (a, b) in enumerate(transitions):
+        base = k * (len(groups) + 1)
+        for j, (key, name, colour) in enumerate(groups):
+            row = fu[(fu.from_year == a) & (fu.to_year == b)
+                     & (fu.group_in_from_year == key)].iloc[0]
+            x = base + j
+            ax2.bar(x, row.next_year_delivery, color=colour, width=0.8,
+                    edgecolor="white", linewidth=2)
+            value = row.next_year_delivery
+            ax2.text(x, value + 0.02, f"{value:.1%}" if value < 0.1 else f"{value:.0%}",
+                     ha="center", fontsize=9)
+            ticks.append(x)
+            labels.append(name)
+        ax2.text(base + 1, -0.17, f"in {a}, followed into {b}", ha="center",
+                 fontsize=9, transform=ax2.get_xaxis_transform())
+    last = fu[(fu.to_year == transitions[-1][1]) & (fu.group_in_from_year == "exact_zero")].iloc[0]
+    ax2.annotate(
+        f"{last.largest_state_share:.0%} of this from\n"
+        f"{last.utilities_in_largest_state} utilities in {last.largest_state}",
+        xy=(len(groups) + 0.7, last.next_year_delivery), xytext=(len(groups) - 0.45, 0.6),
+        fontsize=8, arrowprops={"arrowstyle": "-", "color": GREY, "lw": 0.8},
+    )
+    ax2.set_xticks(ticks)
+    ax2.set_xticklabels(labels, fontsize=8.5)
+    ax2.set_ylim(0, 1)
+    ax2.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+    ax2.set_ylabel("next-year delivery, share of first-year potential")
+    ax2.set_title("Capacity grouped by what it reported first,\nfollowed one year on",
+                  fontsize=10)
+    for side in ("top", "right"):
+        ax2.spines[side].set_visible(False)
+    fig.suptitle(
+        "EIA-861 utility files: zero-reported capacity mostly stays dark, and most of "
+        "its rotation measures nothing",
+        fontsize=11,
+    )
+    return _save(fig, "fig13_rotation.png")
+
+
 def make_all() -> list[pathlib.Path]:
     return [
         fig_utilization(),
@@ -362,4 +450,5 @@ def make_all() -> list[pathlib.Path]:
         fig_reporting(),
         fig_targeting(),
         fig_decomposition(),
+        fig_rotation(),
     ]

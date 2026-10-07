@@ -1,6 +1,6 @@
-dr_elcc_case,dr_elcc,dr_cost_per_accredited_kw,comparator,comparator_cost_per_kw,ratio,dr_wins,vs_realisation_basis_ratio,provenance
-winter four-hour,0.5,100.77590422660442,"gross CONE, accredited",193.37795101760136,0.5211344090486911,True,0.665924512065912,measured_cost_literature_accreditation
-winter four-hour,0.5,100.77590422660442,"net CONE, accredited",88.5198,1.1384560767941683,False,1.454760603567812,measured_cost_literature_accreditation
+dr_elcc_case,dr_elcc,dr_cost_per_accredited_kw,comparator,comparator_cost_per_kw,ratio,dr_wins,vs_delivered_basis_ratio,provenance
+winter four-hour,0.55,91.6144583878222,"gross CONE, accredited",193.37795101760136,0.47375855368062825,True,0.665924512065912,measured_cost_literature_accreditation
+winter four-hour,0.55,91.6144583878222,"net CONE, accredited",88.5198,1.0349600698128802,False,1.454760603567812,measured_cost_literature_accreditation
 summer four-hour,0.83,60.70837604012315,"gross CONE, accredited",193.37795101760136,0.31393639099318743,True,0.665924512065912,measured_cost_literature_accreditation
 summer four-hour,0.83,60.70837604012315,"net CONE, accredited",88.5198,0.6858169137314267,True,1.454760603567812,measured_cost_literature_accreditation
 summer ten-hour,1.0,50.38795211330221,"gross CONE, accredited",193.37795101760136,0.26056720452434556,True,0.665924512065912,measured_cost_literature_accreditation

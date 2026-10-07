@@ -10,8 +10,8 @@ with the component it addresses and its share of the gap in 2018.
 | Component | Share of enrolled capacity, 2018 | Status |
 | --- | --- | --- |
 | Partial delivery | 34% | open: response to system conditions is specification-dependent |
-| No actual reported | 15% | constrained: not wholesale bookkeeping, otherwise unknown |
-| Exact zero | 10% | largely explained: rotates, concentrates outside organised markets |
+| No actual reported | 15% | open: its apparent concentration outside RTO footprints is Florida |
+| Exact zero | 10% | partly explained: non-dispatch, with a measured delivery elsewhere for 15% of it |
 
 ---
 
@@ -65,25 +65,51 @@ convention follows filing type.
 ## 3. What is the unreported group? *No actual reported, a quarter of the gap.*
 
 Utilities reporting potential but no actual hold 15% to 17% of capacity every
-year. It is not wholesale bookkeeping, since it concentrates outside RTO
-footprints. Candidates: small utilities exempt from the field, programs that
-existed on paper and were never run, or plain non-response to the survey item.
-The EIA-861 form instructions and its short-form exemptions would settle the
-first.
+year. It looked concentrated outside RTO footprints, which was read as ruling
+out wholesale bookkeeping; without Florida it is more common inside, so that
+reading is withdrawn (FALSIFICATION attack E). Candidates: small utilities
+exempt from the field, programs that existed on paper and were never run,
+reductions recorded only in a wholesale settlement, or plain non-response to the
+survey item. The EIA-861 form instructions and its short-form exemptions would
+settle the first.
 
-**Entry point.** `t9_mechanisms.footprint_split()`, extended by utility size and
-by whether the utility files the short form.
+One fact narrows it. All four Florida utilities that carry the outside-RTO
+result move between reporting zero and reporting nothing from year to year, so
+for some filers a blank and a zero are the same answer entered two ways. A
+first step is to count how many utilities switch between the two anywhere in the
+country, which bounds how much of this component is the zero mass under another
+label.
 
-## 4. Is the zero mass a capacity-surplus effect? *Exact zero, a sixth of the gap.*
+**Entry point.** `t9_mechanisms.footprint_grid_summary()` for the Florida case,
+and `t9_mechanisms.footprint_split()` extended by utility size and by whether
+the utility files the short form.
 
-The proposed mechanism, from ACEEE in 2017, is that utilities long on capacity do
-not call demand response. The data fit it: zeros rotate and concentrate where
-utilities dispatch for themselves. The direct test pairs each utility's zero
-years with its reserve margin, which state integrated resource plans and FERC
-Form 1 report.
+## 4. Was the zero mass available? *Exact zero, a sixth of the gap.*
 
-**Entry point.** `t1_utilization.zero_persistence()`; join a reserve-margin
-column by utility and year.
+Exact zeros read as non-dispatch. Whether the capacity would have delivered is
+shown for 15% of it, the share held by utilities with a measured delivery in
+another year, and is undetermined for the rest (FALSIFICATION attack G). Three
+tests would move that number, each scoped to a named place:
+
+- **Florida.** The proposed mechanism, from ACEEE in 2017, is that utilities
+  long on capacity do not call demand response. Florida is where it would show,
+  since four Florida utilities hold most of the zero and unreported capacity
+  outside RTO footprints, and the Public Service Commission describes FPL's
+  residential program as used in system emergencies. The Commission's annual
+  FEECA report describes the programs but not whether they were called; the
+  utilities' own demand-side management filings and ten-year site plans are
+  where event records may be.
+- **South Carolina, January 2018.** Of what 2017's zero capacity delivered in
+  2018, 71% came from three South Carolina utilities, and Duke Energy Carolinas
+  set a peak demand record on January 5, 2018. If those deliveries were at a
+  winter peak, it is the uncalled-then-called pattern seen directly. EIA-930
+  hourly demand by balancing authority would date their 2018 peaks.
+- **Reserve margins.** Pair each utility's zero years with its reserve margin,
+  which state integrated resource plans and FERC Form 1 report.
+
+**Entry point.** `t1_utilization.rotation_composition()` lists every utility
+behind the zero mass with its class; `t1_utilization.zero_followup()` names the
+utilities and the state carrying each year's follow-up.
 
 ## 5. More years. *All components.*
 
@@ -130,8 +156,9 @@ measured figure would settle it.
 
 ## 7. Winter callability of retail programs. *Cross-cutting.*
 
-The most robust result here is that summer-shaped programs cannot reach winter
-stress, reached three independent ways. PJM's wholesale market already requires
+The firmest result here is that summer-shaped programs cannot reach winter
+stress, reached three independent ways, two of them firmly and the accreditation
+route by a margin of 3.5%. PJM's wholesale market already requires
 year-round availability. What is missing is the retail side: what share of
 utility-administered programs can be called in January. Utility tariff sheets
 carry it.
@@ -172,14 +199,16 @@ there are no git credentials here. The repo is committed and tagged locally.
 - [ ] Decide the name before creating the remote. "Phantom load" already means
       standby draw in this field, an exact-name repository exists on GitHub, and
       the name claims more than the findings support. `tools/rename.sh` does the
-      whole rename in one command and re-runs the tests and the claims guard;
-      `benchstrength` and `dispatchgap` are free on PyPI and under ASM-21;
-      `dr-realization`, recommended earlier, would have named the wrong
-      quantity and is withdrawn. Renaming after
-      publication costs far more than renaming now.
-- [ ] Create the remote and push, including the `findings-2026-09` tag.
-- [ ] Add `[project.urls]` to `pyproject.toml` once the remote exists. It was
-      left out rather than shipped with a placeholder URL.
+      whole rename in one command and re-runs the tests and the claims guard.
+      `dispatchgap` is free on PyPI and under ASM-21 and names the measurement
+      without presuming its meaning. `benchstrength`, also free, presumes the
+      capacity was available, which v0.4.3 no longer supports. `dr-realization`,
+      recommended earlier, would have named the wrong quantity and is
+      withdrawn. Renaming after publication costs far more than renaming now.
+- [ ] Create the remote and push, including the version tags.
+- [ ] Add `[project.urls]` to `pyproject.toml` and `repository-code` to
+      `CITATION.cff` once the remote exists. Both were left out rather than
+      shipped with a URL that does not resolve.
 - [ ] Set repo topics: `demand-response`, `grid-reliability`,
       `utility-economics`, `capacity-market`.
 - [ ] Set the social preview to `figures/fig1_utilization.png`.

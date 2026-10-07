@@ -19,6 +19,8 @@ than the panel. That is the finding.
 
 from __future__ import annotations
 
+import functools
+import itertools
 import math
 import pathlib
 
@@ -520,7 +522,7 @@ def regional_summary(year: int = 2023) -> dict:
 
 # --- utility level ----------------------------------------------------------
 # Everything above is an aggregate, and an aggregate cannot say whether a
-# national realisation rate near 40% means every utility lands near 40% or
+# national dispatch utilization near 40% means every utility lands near 40% or
 # whether a large part of the fleet delivers nothing while the rest delivers
 # most of what it promised. ACEEE published the utility cut for 2015, which
 # settles the shape question for the largest programs in one year.
@@ -549,10 +551,10 @@ NEAR_FULL = 0.80
 
 def utility_table() -> pd.DataFrame:
     df = pd.read_csv(ACEEE_UTILITIES)
-    df["realisation"] = df.actual_peak_mw / df.potential_peak_mw
+    df["utilization"] = df.actual_peak_mw / df.potential_peak_mw
     df["potential_share_of_own_peak"] = df.potential_peak_mw / df.system_peak_mw
     df["provenance"] = Provenance.MEASURED.value
-    return df.sort_values("realisation", na_position="last")
+    return df.sort_values("utilization", na_position="last")
 
 
 def utility_dispersion() -> dict:
@@ -560,11 +562,11 @@ def utility_dispersion() -> dict:
     reported = df[df.reported_actual]
     total_potential = float(df.potential_peak_mw.sum())
     bands = {
-        "near_zero": reported[reported.realisation <= NEAR_ZERO],
+        "near_zero": reported[reported.utilization <= NEAR_ZERO],
         "middle": reported[
-            (reported.realisation > NEAR_ZERO) & (reported.realisation < NEAR_FULL)
+            (reported.utilization > NEAR_ZERO) & (reported.utilization < NEAR_FULL)
         ],
-        "near_full": reported[reported.realisation >= NEAR_FULL],
+        "near_full": reported[reported.utilization >= NEAR_FULL],
     }
     national = ACEEE_NATIONAL_2015["potential_mw"]
     exact_zero = reported[reported.actual_peak_mw == 0]
@@ -574,13 +576,13 @@ def utility_dispersion() -> dict:
         "utilities": int(len(df)),
         "utilities_with_actual": int(len(reported)),
         "coverage_share_of_national_potential": total_potential / national,
-        "median_realisation": float(reported.realisation.median()),
-        "mean_realisation": float(reported.realisation.mean()),
-        "mw_weighted_realisation": float(
+        "median_utilization": float(reported.utilization.median()),
+        "mean_utilization": float(reported.utilization.mean()),
+        "mw_weighted_utilization": float(
             reported.actual_peak_mw.sum() / reported.potential_peak_mw.sum()
         ),
-        "min_realisation": float(reported.realisation.min()),
-        "max_realisation": float(reported.realisation.max()),
+        "min_utilization": float(reported.utilization.min()),
+        "max_utilization": float(reported.utilization.max()),
         **{
             f"{name}_n": int(len(g)) for name, g in bands.items()
         },
@@ -615,15 +617,15 @@ def zero_mass_test() -> dict:
     reported = df[df.reported_actual]
     zeros = reported[reported.actual_peak_mw == 0]
     above = reported[reported.actual_peak_mw > 0]
-    gaps = above.realisation.sort_values().diff().dropna()
+    gaps = above.utilization.sort_values().diff().dropna()
     return {
         "zero_mass_utilities": int(len(zeros)),
         "zero_mass_share_of_utilities": float(len(zeros) / len(reported)),
         "zero_mass_share_of_sample_potential": float(
             zeros.potential_peak_mw.sum() / reported.potential_peak_mw.sum()
         ),
-        "spread_above_zero_min": float(above.realisation.min()),
-        "spread_above_zero_max": float(above.realisation.max()),
+        "spread_above_zero_min": float(above.utilization.min()),
+        "spread_above_zero_max": float(above.utilization.max()),
         "largest_gap_above_zero": float(gaps.max()),
         "spread_is_continuous": bool(gaps.max() < 0.20),
         "favours_uncalled_for_the_zero_mass": True,
@@ -631,9 +633,10 @@ def zero_mass_test() -> dict:
         "verdict": (
             "split: a point mass at exactly zero is what not calling an event "
             "looks like and is not what partial non-performance looks like, so "
-            "that part of the shortfall is uncalled capacity rather than absent "
-            "capacity. Above zero the distribution is continuous and separates "
-            "nothing"
+            "that part of the shortfall reads as uncalled rather than as failed "
+            "delivery. Whether uncalled capacity would have delivered is a "
+            "separate question the shape cannot answer. Above zero the "
+            "distribution is continuous and separates nothing"
         ),
     }
 
@@ -646,8 +649,12 @@ def zero_mass_test() -> dict:
 # zero every year, or does the zero mass move around?
 #
 # A structurally dead program reports zero every year. A reserve program that
-# was not needed reports zero in a mild year and something in a hard one. So
-# persistence separates them where the level could not.
+# was not needed reports zero in a mild year and something in a hard one. That
+# asymmetry is real but weaker than it first looked, for two reasons recorded
+# below rotation_grid(). Over three years a reserve called once a decade also
+# reports zero every year, so persistence does not identify a dead program.
+# And rotation only shows the zero-year capacity was available when the other
+# year carries a measured delivery, which most of the rotation here does not.
 
 UTILITY_PANEL = (
     pathlib.Path(__file__).resolve().parents[2]
@@ -688,6 +695,13 @@ def utility_panel_raw() -> pd.DataFrame:
 
 
 def utility_panel() -> pd.DataFrame:
+    # built once per process and copied out, because the specification grids
+    # below call it hundreds of times and callers are free to mutate the copy
+    return _utility_panel_cached().copy()
+
+
+@functools.lru_cache(maxsize=1)
+def _utility_panel_cached() -> pd.DataFrame:
     raw = utility_panel_raw()
     raw["key"] = raw.utility_number + "_" + raw.state
     dominant = (
@@ -732,8 +746,11 @@ def zero_mass_by_year() -> pd.DataFrame:
 
 def zero_persistence() -> dict:
     """Among utilities reporting an actual value in every year, how persistent
-    is a zero. Rotation favours uncalled capacity; persistence favours a
-    program that does not operate or does not report its dispatch here."""
+    is a zero. This is the statistic as first published. Rotation into a
+    measured delivery favours uncalled capacity, but this statistic counts any
+    positive report as rotation; rotation_composition() separates the two. Over
+    three years persistence is ambiguous: a rarely called reserve and a program
+    that does not operate both stay at zero."""
     df = utility_panel()
     df = df[df.potential_peak_mw > 0]
     years = sorted(df.year.unique())
@@ -764,8 +781,476 @@ def zero_persistence() -> dict:
         ),
         "largest_persistent_key": str(largest_always.index[0]),
         "largest_persistent_mw": float(largest_always.iloc[0]),
-        "favours_uncalled_for_most_zeros": bool(
+        "majority_of_zero_capacity_rotates": bool(
             1 - mean_mw.loc[always].sum() / mean_mw.loc[ever].sum() > 0.5
+        ),
+    }
+
+
+# --- does the rotation result survive its own choices -----------------------
+# zero_persistence() rests on six choices made once: what counts as zero, what
+# to do with reports where actual simply equals potential, which utilities form
+# the panel, how to weight them, what the unit of analysis is, and whether a
+# program whose enrolled figure changed several-fold is still the same program.
+# rotation_grid() varies all six. That answers whether the number is fragile.
+#
+# It cannot answer whether the number measures what the prose said it measures,
+# and that turned out to be the real problem. The statistic counts a utility as
+# rotating if it reported anything above the zero rule in any other year.
+# Reading the utilities behind it showed that most of the rotating capacity
+# rotates into reports that say nothing about whether the zero-year capacity
+# was available: a program whose enrolled figure fell twentyfold, a report
+# within 0.02% of enrolled capacity, and positive years under 4% of potential.
+# rotation_composition() classifies every case, and zero_followup() asks the
+# question the rotation statistic only gestures at: when capacity reports zero
+# in one year, how much of it delivers in the next.
+
+ROTATION_ZERO_RULES = (0.0, 0.01, NEAR_ZERO)
+ROTATION_COPY_RULES = ("count_as_delivery", "exact_is_missing", "within_1pct_is_missing")
+ROTATION_PANELS = ("complete", "two_or_more")
+ROTATION_WEIGHTS = ("mean", "median", "max", "count")
+ROTATION_ENTITIES = ("utility_state", "utility")
+ROTATION_RESIZED = ("keep", "drop")
+COPY_TOLERANCE = 0.01   # a report within 1% of enrolled capacity
+RESIZE_FACTOR = 3.0     # enrolled capacity moving more than threefold in three years
+PUBLISHED_ROTATION_SPEC = {
+    "zero_rule": 0.0,
+    "copies": "count_as_delivery",
+    "panel": "complete",
+    "weight": "mean",
+    "entity": "utility_state",
+    "resized": "keep",
+}
+ROTATION_CLASSES = (
+    "zero_every_year",  # persistent: zero in every reported year
+    "measured",         # some other year delivered at least 5% and was not a copy
+    "resized",          # enrolled capacity moved more than threefold
+    "copied",           # every positive year equals enrolled capacity exactly
+    "near_copy",        # every positive year within 1% of enrolled capacity
+    "near_zero",        # every positive year below 5% of enrolled capacity
+    "mixed",            # positive years that are copies and near zeros together
+)
+
+
+@functools.lru_cache(maxsize=2)
+def _entity_panel_cached(entity: str) -> pd.DataFrame:
+    df = utility_panel()
+    cols = ["year", "key", "potential_peak_mw", "actual_peak_mw"]
+    if entity == "utility_state":
+        out = df[cols].copy()
+    elif entity == "utility":
+        # one row per utility, summed across states; the actual is kept only
+        # when every state filed one, so a blank state is not turned into a
+        # partial delivery
+        out = (
+            df.groupby(["year", "utility_number"])
+            .agg(
+                potential_peak_mw=("potential_peak_mw", "sum"),
+                actual_peak_mw=("actual_peak_mw", "sum"),
+                rows=("actual_peak_mw", "size"),
+                filed=("actual_peak_mw", "count"),
+            )
+            .reset_index()
+            .rename(columns={"utility_number": "key"})
+        )
+        out.loc[out.filed < out.rows, "actual_peak_mw"] = np.nan
+        out = out[cols]
+    else:
+        raise ValueError(f"unknown entity {entity!r}")
+    return out[out.potential_peak_mw > 0].reset_index(drop=True)
+
+
+def _entity_panel(entity: str) -> pd.DataFrame:
+    return _entity_panel_cached(entity).copy()
+
+
+def _is_copy(actual: pd.Series, potential: pd.Series, tolerance: float = 0.0) -> pd.Series:
+    """A positive report equal to enrolled capacity, exactly or within tolerance."""
+    if tolerance == 0.0:
+        same = pd.Series(np.isclose(actual, potential), index=actual.index)
+    else:
+        same = (actual / potential - 1.0).abs() <= tolerance
+    return (actual > 0) & same
+
+
+def rotation_share(
+    zero_rule: float = 0.0,
+    copies: str = "count_as_delivery",
+    panel: str = "complete",
+    weight: str = "mean",
+    entity: str = "utility_state",
+    resized: str = "keep",
+) -> dict:
+    """The rotation statistic under one specification.
+
+    Defaults reproduce zero_persistence(), which a test asserts.
+    """
+    if weight not in ROTATION_WEIGHTS:
+        raise ValueError(f"unknown weight {weight!r}")
+    out = _rotation_all_weights(zero_rule, copies, panel, entity, resized)
+    return {
+        "entities": out["entities"],
+        "ever_zero": out["ever_zero"],
+        "zero_every_reported_year": out["zero_every_reported_year"],
+        "rotating_share": out[f"rotating_share_{weight}"],
+        "zero_mw_coverage": out["zero_mw_coverage"],
+    }
+
+
+@functools.lru_cache(maxsize=128)
+def _rotation_all_weights(
+    zero_rule: float, copies: str, panel: str, entity: str, resized: str
+) -> dict:
+    df = _entity_panel(entity)
+    n_years = df.year.nunique()
+    if copies != "count_as_delivery":
+        tol = {"exact_is_missing": 0.0, "within_1pct_is_missing": COPY_TOLERANCE}[copies]
+        df.loc[_is_copy(df.actual_peak_mw, df.potential_peak_mw, tol), "actual_peak_mw"] = np.nan
+    by_key = df.groupby("key").potential_peak_mw
+    spread = by_key.max() / by_key.min()
+    rep = df[df.actual_peak_mw.notna()].copy()
+    rep["zero"] = rep.actual_peak_mw / rep.potential_peak_mw <= zero_rule
+    zero_mw = rep.loc[rep.zero, "potential_peak_mw"].sum()
+    filed = rep.groupby("key").year.nunique()
+    keep = filed[filed >= (n_years if panel == "complete" else 2)].index
+    if resized == "drop":
+        keep = keep.intersection(spread[spread <= RESIZE_FACTOR].index)
+    rep = rep[rep.key.isin(keep)]
+    if rep.key.nunique() < MIN_UTILITIES:
+        raise InsufficientData(f"{rep.key.nunique()} entities in the rotation panel")
+    g = rep.groupby("key")
+    per = pd.DataFrame(
+        {
+            "zero_years": g.zero.sum(),
+            "years": g.zero.size(),
+            "mean": g.potential_peak_mw.mean(),
+            "median": g.potential_peak_mw.median(),
+            "max": g.potential_peak_mw.max(),
+        }
+    )
+    per["count"] = 1.0
+    ever = per[per.zero_years >= 1]
+    always = ever[ever.zero_years == ever.years]
+    return {
+        "entities": int(len(per)),
+        "ever_zero": int(len(ever)),
+        "zero_every_reported_year": int(len(always)),
+        **{
+            f"rotating_share_{w}": float(1.0 - always[w].sum() / ever[w].sum())
+            for w in ROTATION_WEIGHTS
+        },
+        # how much of the zero-reported capacity the panel can see at all
+        "zero_mw_coverage": float(rep.loc[rep.zero, "potential_peak_mw"].sum() / zero_mw),
+    }
+
+
+@functools.lru_cache(maxsize=1)
+def rotation_grid() -> pd.DataFrame:
+    rows = []
+    for zr, cp, pn, en, rs in itertools.product(
+        ROTATION_ZERO_RULES,
+        ROTATION_COPY_RULES,
+        ROTATION_PANELS,
+        ROTATION_ENTITIES,
+        ROTATION_RESIZED,
+    ):
+        for wt in ROTATION_WEIGHTS:
+            spec = {"zero_rule": zr, "copies": cp, "panel": pn, "weight": wt,
+                    "entity": en, "resized": rs}
+            rows.append({**spec, **rotation_share(**spec),
+                         "provenance": Provenance.MEASURED.value})
+    return pd.DataFrame(rows)
+
+
+def rotation_grid_summary() -> dict:
+    g = rotation_grid()
+    cap = g[g.weight != "count"]
+    cnt = g[g.weight == "count"]
+    published = g[
+        (g[list(PUBLISHED_ROTATION_SPEC)] == pd.Series(PUBLISHED_ROTATION_SPEC)).all(axis=1)
+    ]
+    pub_cov = published.zero_mw_coverage.iloc[0]
+    return {
+        "specifications": int(len(g)),
+        "published": float(published.rotating_share.iloc[0]),
+        "capacity_specifications": int(len(cap)),
+        "capacity_min": float(cap.rotating_share.min()),
+        "capacity_median": float(cap.rotating_share.median()),
+        "capacity_max": float(cap.rotating_share.max()),
+        "capacity_above_half": int((cap.rotating_share > 0.5).sum()),
+        "count_specifications": int(len(cnt)),
+        "count_min": float(cnt.rotating_share.min()),
+        "count_max": float(cnt.rotating_share.max()),
+        "count_above_half": int((cnt.rotating_share > 0.5).sum()),
+        "published_zero_mw_coverage": float(pub_cov),
+        "coverage_min": float(g.zero_mw_coverage.min()),
+        "coverage_max": float(g.zero_mw_coverage.max()),
+    }
+
+
+def classify_zero_capacity(frame: pd.DataFrame, zero_rule: float = 0.0) -> pd.DataFrame:
+    """Classify every entity that ever reported zero by what its other years say.
+
+    Generic: `frame` needs key, year, potential_peak_mw and actual_peak_mw, with
+    actual blank where nothing was reported. Only entities that reported an
+    actual figure in every year are classified, as in the published statistic.
+    The command line tool runs this same function on other people's data.
+
+    Rotation is only evidence that zero-year capacity was available when the
+    other year carries a measurement of a real delivery. So the classes, in
+    order of precedence, are: zero in every year; resized, where enrolled
+    capacity moved more than RESIZE_FACTOR, so the capacity at zero is not the
+    capacity that later delivered; measured, where some other year delivered
+    at least NEAR_ZERO of potential and was not within COPY_TOLERANCE of it;
+    and the rotations that show nothing about availability, which are copies,
+    near-copies and near-zero deliveries.
+    """
+    df = frame[frame.potential_peak_mw > 0].copy()
+    n_years = df.year.nunique()
+    df["u"] = df.actual_peak_mw / df.potential_peak_mw
+    rep = df[df.actual_peak_mw.notna()]
+    filed = rep.groupby("key").year.nunique()
+    rep = rep[rep.key.isin(filed[filed == n_years].index)].copy()
+    rep["zero"] = rep.u <= zero_rule
+    rep = rep[rep.key.map(rep.groupby("key").zero.any())]
+    rows = []
+    for key, g in rep.groupby("key"):
+        pos = g[~g.zero]
+        spread = float(g.potential_peak_mw.max() / g.potential_peak_mw.min())
+        exact = _is_copy(pos.actual_peak_mw, pos.potential_peak_mw, 0.0)
+        near = _is_copy(pos.actual_peak_mw, pos.potential_peak_mw, COPY_TOLERANCE)
+        measured = (pos.u >= NEAR_ZERO) & ~near
+        if pos.empty:
+            cls = "zero_every_year"
+        elif spread > RESIZE_FACTOR:
+            cls = "resized"
+        elif measured.any():
+            cls = "measured"
+        elif exact.all():
+            cls = "copied"
+        elif near.all():
+            cls = "near_copy"
+        elif (pos.u < NEAR_ZERO).all():
+            cls = "near_zero"
+        else:
+            cls = "mixed"
+        rows.append(
+            {
+                "key": key,
+                "class": cls,
+                "mean_potential_mw": float(g.potential_peak_mw.mean()),
+                "potential_spread": spread,
+                "zero_years": int(g.zero.sum()),
+                "max_nonzero_utilization": float(pos.u.max()) if len(pos) else float("nan"),
+            }
+        )
+    out = pd.DataFrame(
+        rows,
+        columns=["key", "class", "mean_potential_mw", "potential_spread", "zero_years",
+                 "max_nonzero_utilization"],
+    )
+    out["share_of_ever_zero_mw"] = out.mean_potential_mw / out.mean_potential_mw.sum()
+    out.attrs["zero_rule"] = zero_rule
+    return out.sort_values("mean_potential_mw", ascending=False).reset_index(drop=True)
+
+
+def rotation_composition(zero_rule: float = 0.0) -> pd.DataFrame:
+    """Every utility behind the rotation statistic, classified by what its
+    non-zero years actually report. Published panel and weighting."""
+    out = classify_zero_capacity(_entity_panel("utility_state"), zero_rule)
+    names = utility_panel().drop_duplicates("key").set_index("key").utility
+    out.insert(1, "utility", out.key.map(names))
+    out["provenance"] = Provenance.MEASURED.value
+    return out
+
+
+FOLLOWUP_STATUSES = ("exact_zero", "measured", "copied")
+
+
+def followup(frame: pd.DataFrame) -> pd.DataFrame:
+    """Capacity followed one reporting year forward, by what it reported first.
+
+    Generic: `frame` needs key, year, potential_peak_mw and actual_peak_mw, and
+    may carry a state column. Groups in the first year are exact zero, measured
+    (positive and not equal to potential) and copied (positive and equal to
+    potential). Next-year delivery is capped at the first year's potential, so
+    a program that grew cannot count new capacity as the old capacity
+    delivering. Each row names the entity, and the state when there is one,
+    that contributed most, because with a few dozen entities a single filing
+    can carry a row.
+    """
+    df = frame[frame.potential_peak_mw > 0].copy()
+    copied = _is_copy(df.actual_peak_mw, df.potential_peak_mw, 0.0)
+    df["group"] = np.where(df.actual_peak_mw.isna(), "not_reported",
+                           np.where(df.actual_peak_mw == 0, "exact_zero", "measured"))
+    df.loc[copied, "group"] = "copied"
+    df["status"] = df.group.where(df.group != "copied", "measured").replace(
+        {"measured": "positive"}
+    )
+    state = df.drop_duplicates("key").set_index("key").state if "state" in df else None
+    pot = df.pivot_table(index="key", columns="year", values="potential_peak_mw", aggfunc="first")
+    act = df.pivot_table(index="key", columns="year", values="actual_peak_mw", aggfunc="first")
+    grp = df.pivot_table(index="key", columns="year", values="group", aggfunc="first")
+    sts = df.pivot_table(index="key", columns="year", values="status", aggfunc="first")
+    years = sorted(df.year.unique())
+    rows = []
+    for t, n in zip(years[:-1], years[1:]):
+        for group in FOLLOWUP_STATUSES:
+            keys = grp.index[grp[t] == group]
+            mw = pot.loc[keys, t]
+            seen = keys[act.loc[keys, n].notna()]
+            if mw.sum() <= 0 or len(seen) == 0:
+                continue
+            nxt = sts.loc[keys, n].fillna("absent")
+            delivered = np.minimum(act.loc[seen, n], pot.loc[seen, t])
+            base = pot.loc[seen, t].sum()
+            row = {
+                "from_year": int(t),
+                "to_year": int(n),
+                "group_in_from_year": group,
+                "potential_mw": float(mw.sum()),
+                "next_positive": float(mw[nxt == "positive"].sum() / mw.sum()),
+                "next_exact_zero": float(mw[nxt == "exact_zero"].sum() / mw.sum()),
+                "next_not_reported": float(mw[nxt == "not_reported"].sum() / mw.sum()),
+                "next_absent": float(mw[nxt == "absent"].sum() / mw.sum()),
+                "next_year_delivery": float(delivered.sum() / base),
+                "followed_mw": float(base),
+                "delivered_mw": float(delivered.sum()),
+            }
+            if delivered.sum() > 0:
+                top = delivered.idxmax()
+                rest = base - pot.loc[top, t]
+                row.update(
+                    {
+                        "largest_contributor": str(top),
+                        "largest_contributor_share": float(delivered.max() / delivered.sum()),
+                        "next_year_delivery_without_largest": float(
+                            (delivered.sum() - delivered.max()) / rest
+                        ) if rest > 0 else float("nan"),
+                    }
+                )
+                if state is not None:
+                    where = state.reindex(delivered.index)
+                    by_state = delivered.groupby(where).sum()
+                    row.update(
+                        {
+                            "largest_state": str(by_state.idxmax()),
+                            "largest_state_share": float(by_state.max() / by_state.sum()),
+                            "utilities_in_largest_state": int(
+                                (delivered[where == by_state.idxmax()] > 0).sum()
+                            ),
+                        }
+                    )
+            rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def zero_followup() -> pd.DataFrame:
+    """Capacity at exactly zero in one year, followed into the next, on the
+    published panel.
+
+    The rotation statistic classifies utilities over three years. This follows
+    megawatts one year forward, which is what the uncalled reading actually
+    turns on: when capacity reports zero, does it deliver the next time the
+    data looks? Capacity that delivered a measured amount in the first year is
+    the comparison; capacity whose report simply equalled its potential mostly
+    does so again, and is shown separately so it does not flatter the baseline.
+    """
+    up = utility_panel()
+    out = followup(up[["key", "year", "state", "potential_peak_mw", "actual_peak_mw"]])
+    out["provenance"] = Provenance.MEASURED.value
+    return out
+
+
+def rotation_summary() -> dict:
+    grid = rotation_grid_summary()
+    comp = rotation_composition()
+    comp5 = rotation_composition(NEAR_ZERO)
+    by = comp.groupby("class").share_of_ever_zero_mw.sum()
+    by5 = comp5.groupby("class").share_of_ever_zero_mw.sum()
+    fu = zero_followup()
+    z = fu[fu.group_in_from_year == "exact_zero"].set_index("to_year")
+    m = fu[fu.group_in_from_year == "measured"].set_index("to_year")
+    c = fu[fu.group_in_from_year == "copied"].set_index("to_year")
+    top3 = comp.mean_potential_mw.iloc[:3].sum() / comp.mean_potential_mw.sum()
+    near_copy = comp[comp["class"] == "near_copy"]
+    first, last = int(z.index.min()), int(z.index.max())
+    # the named cases the prose describes, read from the panel rather than typed
+    panel = _entity_panel("utility_state").sort_values("year")
+    resized_key = comp[comp["class"] == "resized"].key.iloc[0]
+    resized_rows = panel[panel.key == resized_key]
+    copy_key = near_copy.key.iloc[0]
+    copy_rows = panel[(panel.key == copy_key) & (panel.actual_peak_mw > 0)]
+    near_zero_keys = comp[comp["class"] == "near_zero"].key
+    nz = panel[panel.key.isin(near_zero_keys) & (panel.actual_peak_mw > 0)]
+    nz_u = nz.actual_peak_mw / nz.potential_peak_mw
+    return {
+        **{f"grid_{k}": v for k, v in grid.items()},
+        **{f"comp_{k}": float(by.get(k, 0.0)) for k in ROTATION_CLASSES},
+        **{f"comp5_{k}": float(by5.get(k, 0.0)) for k in ROTATION_CLASSES},
+        "comp_utilities": int(len(comp)),
+        "comp5_utilities": int(len(comp5)),
+        "comp_top3_share": float(top3),
+        "comp_rotating_not_measured": float(
+            by.drop(["zero_every_year", "measured"], errors="ignore").sum()
+        ),
+        # the one judgment call that moves the measured share most: whether a
+        # report within 1% of enrolled capacity is a full curtailment or a copy
+        "comp_measured_if_near_copies_are_real": float(
+            by.get("measured", 0.0) + by.get("near_copy", 0.0)
+        ),
+        "comp_largest_near_copy": str(near_copy.utility.iloc[0]) if len(near_copy) else "",
+        "comp_near_copy_actual": float(copy_rows.actual_peak_mw.iloc[0]),
+        "comp_near_copy_potential": float(copy_rows.potential_peak_mw.iloc[0]),
+        "comp_near_copy_year": int(copy_rows.year.iloc[0]),
+        "comp_largest_resized": str(comp[comp.key == resized_key].utility.iloc[0]),
+        "comp_largest_resized_potentials": [float(v) for v in resized_rows.potential_peak_mw],
+        "comp_largest_resized_first_year": int(resized_rows.year.iloc[0]),
+        "comp_near_zero_min": float(nz_u.min()),
+        "comp_near_zero_max": float(nz_u.max()),
+        "comp5_largest_measured": str(
+            comp5[comp5["class"] == "measured"].utility.iloc[0]
+        ),
+        "comp5_largest_measured_share": float(
+            comp5[comp5["class"] == "measured"].share_of_ever_zero_mw.iloc[0]
+        ),
+        "follow_first_year": first,
+        "follow_last_year": last,
+        "follow_zero_delivery_first": float(z.loc[first, "next_year_delivery"]),
+        "follow_zero_delivery_last": float(z.loc[last, "next_year_delivery"]),
+        "follow_zero_delivery_last_without_largest": float(
+            z.loc[last, "next_year_delivery_without_largest"]
+        ),
+        "follow_zero_last_largest_state": str(z.loc[last, "largest_state"]),
+        "follow_zero_last_largest_state_share": float(z.loc[last, "largest_state_share"]),
+        "follow_zero_last_largest_state_utilities": int(
+            z.loc[last, "utilities_in_largest_state"]
+        ),
+        "follow_zero_first_largest_share": float(z.loc[first, "largest_contributor_share"]),
+        "follow_zero_delivery_pooled": float(z.delivered_mw.sum() / z.followed_mw.sum()),
+        "follow_measured_delivery_pooled": float(m.delivered_mw.sum() / m.followed_mw.sum()),
+        "follow_measured_delivery_min": float(m.next_year_delivery.min()),
+        "follow_measured_delivery_max": float(m.next_year_delivery.max()),
+        "follow_copied_delivery_min": float(c.next_year_delivery.min()),
+        "follow_copied_delivery_max": float(c.next_year_delivery.max()),
+        "follow_zero_next_positive_min": float(z.next_positive.min()),
+        "follow_zero_next_positive_max": float(z.next_positive.max()),
+        "follow_zero_next_zero_min": float(z.next_exact_zero.min()),
+        "follow_zero_next_zero_max": float(z.next_exact_zero.max()),
+        "follow_zero_next_unreported_min": float((z.next_not_reported + z.next_absent).min()),
+        "follow_zero_next_unreported_max": float((z.next_not_reported + z.next_absent).max()),
+        "majority_rotates_by_capacity_in_every_spec": bool(
+            grid["capacity_above_half"] == grid["capacity_specifications"]
+        ),
+        "rotation_measures_availability": False,
+        "verdict": (
+            "robust in sign, overstated in meaning. Most capacity ever reported "
+            "at zero belongs to utilities that report something in another year "
+            "in most specifications, but most of that something does not show "
+            "the zero-year capacity was available. Utilities with a measured "
+            "delivery in another year hold a minority of it, and followed one "
+            "year forward the zero capacity stayed dark in one transition and "
+            "delivered in the other, each carried by a few utilities"
         ),
     }
 
@@ -828,6 +1313,10 @@ def run() -> dict[str, pd.DataFrame | dict]:
         "regional_mix_floor": regional_mix_floor().reset_index(names="division"),
         "utility_table": utility_table(),
         "zero_mass_by_year": zero_mass_by_year(),
+        "rotation_grid": rotation_grid(),
+        "rotation_composition": rotation_composition(),
+        "rotation_composition_near_zero": rotation_composition(NEAR_ZERO),
+        "zero_followup": zero_followup(),
         "summary": {
             **national_summary(),
             "composition": composition_summary(),
@@ -836,5 +1325,6 @@ def run() -> dict[str, pd.DataFrame | dict]:
             "utility_dispersion": utility_dispersion(),
             "zero_mass": zero_mass_test(),
             "utility_panel": utility_panel_summary(),
+            "rotation": rotation_summary(),
         },
     }

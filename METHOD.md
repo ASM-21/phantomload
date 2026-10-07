@@ -1,6 +1,6 @@
 # Method
 
-Fifteen rules this repository runs on. Each is here because it was learned during
+Seventeen rules this repository runs on. Each is here because it was learned during
 the build, usually by being violated first. Each says what went wrong, what the
 general rule is, and whether anything mechanically enforces it, because a rule
 nothing enforces is a hope.
@@ -62,7 +62,7 @@ by editing. A guard that cries wolf teaches people to bypass it, at which point
 it protects nothing.
 
 **Enforcement.** Yes. Matching is whitespace-normalised and
-`test_guard_tolerates_line_wrapping_but_not_drift` proves reflowed prose passes
+`test_guard_tolerates_line_wrapping_but_not_drift` checks that reflowed prose passes
 while a changed number still fails.
 
 ## 4. Check whether your finding is already addressed
@@ -110,7 +110,7 @@ the whole plausible range settles the matter as firmly as a measurement.
 ## 7. When a comparison needs basis alignment, enumerate the pairings
 
 **What happened.** Comparing demand response cost to a peaker needs three
-separate alignments: netting, accreditation and realization. Picking one
+separate alignments: netting, accreditation and dispatch utilization. Picking one
 combination and reporting it would have produced a confident answer that a
 different, equally defensible combination reverses.
 
@@ -219,7 +219,7 @@ one higher than PUDL's independently published expected count.
 
 **The rule.** Reconcile counts as well as totals, against a third party's
 processing where one exists, and assert that every key you group on is unique
-before grouping on it. A total that matches proves the values are right; it says
+before grouping on it. A total that matches shows the values sum correctly; it says
 nothing about whether each entity appears once.
 
 **Enforcement.** Yes. `test_utility_panel_key_is_unique_per_year` and
@@ -250,6 +250,56 @@ keeps the verdict honest, and
 `test_t9_size_gradient_vanishes_within_every_class_on_measured_reports` pins the
 withdrawal.
 
+## 16. A robust number can still be the wrong number: read the cases
+
+**What happened.** From v0.3.0 to v0.4.2 the README's strongest evidence was that
+79% of the capacity ever reported at zero rotated: zero one year, positive
+another, read as capacity that was available and not called. When the six
+choices behind that statistic were varied 288 ways it held as a majority in 202
+of 216 capacity-weighted specifications, which looked like a clean bill of
+health. Then the 26 utilities behind it were read one at a time. Most of the
+rotating capacity rotated into reports that show nothing about availability: a
+program whose enrolled figure fell twentyfold, a report within 0.02% of enrolled
+capacity, positive years under 4% of potential. Utilities with a measured
+delivery in another year held 15% of it. The grid had tested whether the number
+was fragile; nobody had tested whether it measured the claim.
+
+**The rule.** A specification grid answers "would a different analyst get a
+different number?" It cannot answer "does this number mean what the sentence
+says?" When a statistic summarises a few dozen units, or when a few units carry
+most of its weight, list them with what each actually reported, and write down
+for each one whether it supports the sentence. Do that before the grid, because
+a grid that agrees with itself makes a misread number more convincing, not
+less.
+
+**Enforcement.** Partial. `t1_utilization.rotation_composition()` classifies
+every case, `test_rotation_mostly_does_not_measure_availability` pins the
+classes and the gap between the published number and the measured share, and
+`test_classifier_on_a_constructed_panel` checks the classifier on cases built by
+hand. Nothing can make someone read the cases of the next statistic.
+
+## 17. Drop clusters, not observations, and see what moves
+
+**What happened.** Zero and unreported capacity was 39% of capacity outside RTO
+footprints against 22% inside, and that was read as ruling out wholesale
+bookkeeping. Dropping each state in turn showed the gap was mostly Florida,
+where four utilities with large load management programs reported zero or
+nothing in every year: without Florida the shares were 25% and 22%, and
+unreported capacity was more common inside footprints. Utilities in one state
+share a regulator, a climate and often a reporting habit, so they are closer to
+one observation than several, and a comparison over hundreds of utilities can
+rest on one state.
+
+**The rule.** When observations cluster, by state, regulator, parent company or
+reporting form, report the result with each cluster dropped in turn and name
+the cluster whose removal moves it most. A conclusion that one cluster can
+reverse is a statement about that cluster.
+
+**Enforcement.** Yes for this comparison. `t9_mechanisms.footprint_grid()`
+jackknifes every specification by state, `test_t9_footprint_result_rests_on_one_state`
+pins the result, and `test_t9_footprint_jackknife_matches_a_direct_recomputation`
+checks the vectorised jackknife against dropping the state and recomputing.
+
 ---
 
 ## What is not on this list
@@ -257,9 +307,11 @@ withdrawal.
 Rules that sound good and did nothing here. Precision about uncertainty
 intervals never mattered, because sampling variability was never the binding
 uncertainty: reporting practice, accounting basis and identification were. More
-tests never caught anything a first well-chosen test missed. And every
-significant correction in this repository came from finding a second source or a
-second definition, never from analysing the first one harder.
+tests never caught anything a first well-chosen test missed. And until v0.4.3
+every significant correction in this repository came from finding a second
+source or a second definition, never from analysing the first one harder. The
+two corrections in v0.4.3 broke that pattern, and both came from the same move:
+reading the first source's cases one at a time (rules 16 and 17).
 
 One operational rule that belongs in the same spirit. `verify.sh` built its
 virtual environment in a temp directory and never removed it, leaking about

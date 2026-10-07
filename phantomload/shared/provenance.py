@@ -105,6 +105,17 @@ def _utility_panel_positive() -> pd.DataFrame:
     ]
 
 
+def _utility_panel_footprint() -> pd.DataFrame:
+    """The same panel with the state and balancing-authority columns the
+    footprint comparison and its state jackknife read."""
+    from ..tracks import t1_utilization as t1
+
+    up = t1.utility_panel()
+    return up[up.potential_peak_mw > 0][
+        ["year", "key", "state", "ba_code", "potential_peak_mw", "actual_peak_mw"]
+    ]
+
+
 def _utility_class() -> pd.DataFrame:
     from ..tracks import t9_mechanisms as t9
 
@@ -147,6 +158,7 @@ SLICES: dict[str, Callable[[], pd.DataFrame]] = {
     "eia_national_by_sector": _national_by_sector,
     "eia_cost_years": _cost_years,
     "eia_utility_2016_2018_positive": _utility_panel_positive,
+    "eia_utility_2016_2018_footprint": _utility_panel_footprint,
     "eia_utility_class_2016_2018": _utility_class,
     "aceee_2015_28_utilities": _aceee_2015,
     "pjm_cone_2027_28": _pjm_cone_latest,
