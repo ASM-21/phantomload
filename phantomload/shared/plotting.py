@@ -9,9 +9,11 @@ import pathlib
 import matplotlib
 
 matplotlib.use("Agg")
-# Pinned so a figure rebuilt on another machine matches the committed one. A
-# site matplotlibrc can change the default family, and one did in the
-# environment v0.4.3 was built in; DejaVu Sans ships with matplotlib itself.
+# Pinned so a figure rebuilt on another machine uses the same font as the
+# committed one. A site matplotlibrc can change the default family, and one did
+# in the environment v0.4.3 was built in; DejaVu Sans ships with matplotlib
+# itself. Antialiasing still differs slightly between matplotlib builds, so a
+# rebuilt figure matches the committed one visually, not byte for byte.
 matplotlib.rcParams["font.family"] = "DejaVu Sans"
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.ticker import PercentFormatter  # noqa: E402
@@ -38,7 +40,7 @@ def _save(fig, name: str) -> pathlib.Path:
     FIG_DIR.mkdir(exist_ok=True)
     path = FIG_DIR / name
     fig.tight_layout()
-    # no Software stamp, so the bytes do not change with the matplotlib version
+    # no Software stamp, so the file does not record which matplotlib drew it
     fig.savefig(path, dpi=140, metadata={"Software": None})
     plt.close(fig)
     return path

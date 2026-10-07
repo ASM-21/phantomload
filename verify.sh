@@ -15,7 +15,19 @@ python3 -m venv --copies "$VENV"
 "$VENV/bin/pip" install -q -e "$HERE[dev]"
 cd "$HERE"
 echo "--- tests"; "$VENV/bin/python" -m pytest -q
+cp -r results "$TMPROOT/committed_results"
 echo "--- tracks"; "$VENV/bin/python" run_all.py
+# Informative, never failing: library versions can move a last digit, and a
+# check that false-fails gets ignored (METHOD rule 3). The claims guard below is
+# the binding check on every figure the prose quotes.
+echo "--- reproducibility"
+changed=$( { diff -rq "$TMPROOT/committed_results" results || true; } \
+  | { grep -v claim_ledger.csv || true; } | wc -l )
+if [ "$changed" -eq 0 ]; then
+  echo "every committed file in results/ except the claim ledger reproduced byte for byte"
+else
+  echo "$changed result files differ from the committed copies at the byte level"
+fi
 echo "--- claims"; "$VENV/bin/python" tools/check_claims.py
 echo "--- ledger"; "$VENV/bin/python" tools/claim_ledger.py
 echo "--- cli"; "$VENV/bin/python" -m phantomload zero-mass <("$VENV/bin/python" -c "
