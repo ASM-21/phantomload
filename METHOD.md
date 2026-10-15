@@ -1,6 +1,6 @@
 # Method
 
-Seventeen rules this repository runs on. Each is here because it was learned during
+Eighteen rules this repository runs on. Each is here because it was learned during
 the build, usually by being violated first. Each says what went wrong, what the
 general rule is, and whether anything mechanically enforces it, because a rule
 nothing enforces is a hope.
@@ -300,6 +300,33 @@ jackknifes every specification by state, `test_t9_footprint_result_rests_on_one_
 pins the result, and `test_t9_footprint_jackknife_matches_a_direct_recomputation`
 checks the vectorised jackknife against dropping the state and recomputing.
 
+## 18. Read the form's definition of the number, then check the reports against it
+
+**What happened.** Through v0.4.3 this repository described EIA's actual peak
+demand savings as the reduction realised during the year, and every
+interpretation was built on that. The form's instructions say something
+narrower: the reduction "measured at the time of the company's annual system
+peak hour", against a potential defined in the same hour. The instructions had
+been read once, for whether an event count is collected, and not for what the
+numerator is. Read for the definition, they also made the reports checkable.
+Savings in the peak hour cannot exceed the load in that hour, and the same form
+asks each utility for its peak: 18 utility-years report more potential than
+that. The file holding those peaks had been sitting beside the demand response
+workbook in the same mirrored directory since the first utility file was found.
+
+**The rule.** Before interpreting a reported quantity, find the instruction that
+defines it and quote it, not paraphrase it. Then check the reports against
+whatever else the same respondent reports on the same form, because a
+respondent's own figures are the one comparison no definitional mismatch
+between reporters can explain away. And when a source is found, list what else
+sits beside it before leaving.
+
+**Enforcement.** Partly. The definitions are held verbatim in
+`phantomload/shared/eia861.py` and `test_definition_is_quoted_from_the_form`
+fails if the single-hour wording leaves the code or DATA.md;
+`test_t10_impossible_potential_rule_on_a_constructed_utility` pins the
+consistency rule. Reading the instruction in the first place is not enforceable.
+
 ---
 
 ## What is not on this list
@@ -311,7 +338,9 @@ tests never caught anything a first well-chosen test missed. And until v0.4.3
 every significant correction in this repository came from finding a second
 source or a second definition, never from analysing the first one harder. The
 two corrections in v0.4.3 broke that pattern, and both came from the same move:
-reading the first source's cases one at a time (rules 16 and 17).
+reading the first source's cases one at a time (rules 16 and 17). The v0.5.0
+correction came from a third move, reading the source's own instructions for
+what its numbers mean (rule 18).
 
 One operational rule that belongs in the same spirit. `verify.sh` built its
 virtual environment in a temp directory and never removed it, leaking about

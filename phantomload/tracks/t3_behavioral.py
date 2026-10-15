@@ -149,6 +149,7 @@ def inversion_summary() -> dict:
         **{f"bound_{k}": v for k, v in pure_tou_ruled_out().items()},
         **{f"infeas_{k}": v for k, v in infeasible_share().items()},
         **{f"denom_{k}": v for k, v in denominator_reconciliation().items()},
+        **{f"mix_{k}": v for k, v in measured_mix_summary().items()},
     }
 
 
@@ -339,6 +340,121 @@ def denominator_reconciliation() -> dict:
     }
 
 
+# --- the mix, measured where the form counts it --------------------------------
+# Everything above infers the program mix from one national ratio. The form
+# itself counts part of it. Schedule 6 Part D, line 8, asks every utility filing
+# the long form for "the number of customers with direct load control, by
+# customer class", on the same form and in the same year as the demand response
+# enrolment. Divided into residential enrolment it measures the direct load
+# control share of the residential fleet, bounded rather than pinned because
+# many utilities leave the line blank: a blank is counted as no direct load
+# control for the floor and as all direct load control for the ceiling. Counts
+# above a utility's own enrolment are capped at it, which is itself a sign that
+# the two lines are not always filled on the same basis.
+
+MIX_YEARS = (2016, 2017, 2018)
+DLC_BANDS = ((0.0, 0.1, "under 10%"), (0.1, 0.9, "10% to 90%"), (0.9, 1.01, "90% or more"))
+
+
+def _mix_frame() -> pd.DataFrame:
+    from ..shared import eia861
+
+    dr = eia861.demand_response_by_class()
+    res = dr[dr.customer_class == "residential"]
+    g = res.groupby(["year", "utility_number"])
+    out = pd.DataFrame(
+        {
+            "enrolled": g.customers_enrolled.sum(),
+            "potential_mw": g.potential_peak_mw.sum(min_count=1),
+            "actual_mw": g.actual_peak_mw.sum(min_count=1),
+        }
+    )
+    m = eia861.meters()
+    dlc = m.groupby(["year", "utility_number"]).dlc_residential.sum(min_count=1)
+    out = out.join(dlc.rename("dlc_customers")).reset_index()
+    return out[out.enrolled > 0]
+
+
+def measured_dlc_share() -> pd.DataFrame:
+    df = _mix_frame()
+    rows = []
+    for year, f in df.groupby("year"):
+        total = f.enrolled.sum()
+        reported = f.dlc_customers.notna()
+        # skipna=False: a blank line must stay blank here, not fall back to the
+        # enrolment it is being compared with
+        counted = f[["dlc_customers", "enrolled"]].min(axis=1, skipna=False).fillna(0).sum()
+        rows.append(
+            {
+                "year": int(year),
+                "residential_enrolled": float(total),
+                "dlc_customers_reported": float(f.dlc_customers.sum()),
+                "enrolment_where_line_is_filled": float(f[reported].enrolled.sum() / total),
+                "utilities_reporting_more_dlc_than_enrolled": int(
+                    (f.dlc_customers > f.enrolled).sum()
+                ),
+                "dlc_share_floor": float(counted / total),
+                "dlc_share_ceiling": float((counted + f[~reported].enrolled.sum()) / total),
+                "provenance": Provenance.MEASURED.value,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def kw_by_dlc_share() -> pd.DataFrame:
+    """Delivered kW per enrolled residential customer, by how much of each
+    utility's residential enrolment is direct load control. Positive reports
+    only, and not those copying potential into actual, which are not
+    measurements."""
+    df = _mix_frame()
+    df = df[(df.actual_mw > 0) & df.dlc_customers.notna() & (df.enrolled >= 100)]
+    df = df[~np.isclose(df.actual_mw, df.potential_mw)].copy()
+    df["dlc_share"] = (df.dlc_customers / df.enrolled).clip(upper=1.0)
+    df["kw_per_enrolled"] = df.actual_mw * 1_000 / df.enrolled
+    rows = []
+    for lo, hi, label in DLC_BANDS:
+        b = df[(df.dlc_share >= lo) & (df.dlc_share < hi)]
+        rows.append(
+            {
+                "dlc_share_band": label,
+                "utility_years": int(len(b)),
+                "utilities": int(b.utility_number.nunique()),
+                "median_kw_per_enrolled": float(b.kw_per_enrolled.median()),
+                "provenance": Provenance.MEASURED.value,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def measured_mix_summary() -> dict:
+    from scipy import stats
+
+    share = measured_dlc_share()
+    bands = kw_by_dlc_share().set_index("dlc_share_band")
+    df = _mix_frame()
+    df = df[(df.actual_mw > 0) & df.dlc_customers.notna() & (df.enrolled >= 100)]
+    df = df[~np.isclose(df.actual_mw, df.potential_mw)]
+    per_utility = df.assign(
+        dlc_share=(df.dlc_customers / df.enrolled).clip(upper=1.0),
+        kw=df.actual_mw * 1_000 / df.enrolled,
+    ).groupby("utility_number")[["dlc_share", "kw"]].mean()
+    rho, p = stats.spearmanr(per_utility.dlc_share, per_utility.kw)
+    return {
+        "floor_min": float(share.dlc_share_floor.min()),
+        "floor_max": float(share.dlc_share_floor.max()),
+        "ceiling_min": float(share.dlc_share_ceiling.min()),
+        "ceiling_max": float(share.dlc_share_ceiling.max()),
+        "line_filled_min": float(share.enrolment_where_line_is_filled.min()),
+        "line_filled_max": float(share.enrolment_where_line_is_filled.max()),
+        "more_dlc_than_enrolled_max": int(share.utilities_reporting_more_dlc_than_enrolled.max()),
+        "kw_mostly_dlc": float(bands.loc["90% or more", "median_kw_per_enrolled"]),
+        "kw_little_dlc": float(bands.loc["under 10%", "median_kw_per_enrolled"]),
+        "utilities_in_rank_test": int(len(per_utility)),
+        "rho_dlc_share_vs_kw": float(rho),
+        "p_dlc_share_vs_kw": float(p),
+    }
+
+
 def synthetic_registry() -> list:
     """Two modelled programs, routed through the shared registry so they carry
     SIMULATED provenance and cannot be pooled with measured rows by accident."""
@@ -379,5 +495,7 @@ def run() -> dict:
         .groupby("peak_kw")["implied_dlc_share"]
         .describe()
         .reset_index(),
+        "measured_dlc_share": measured_dlc_share(),
+        "kw_by_dlc_share": kw_by_dlc_share(),
         "summary": inversion_summary(),
     }

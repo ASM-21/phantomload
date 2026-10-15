@@ -9,9 +9,14 @@ with the component it addresses and its share of the gap in 2018.
 
 | Component | Share of enrolled capacity, 2018 | Status |
 | --- | --- | --- |
-| Partial delivery | 34% | open: response to system conditions is specification-dependent |
-| No actual reported | 15% | open: its apparent concentration outside RTO footprints is Florida |
-| Exact zero | 10% | partly explained: non-dispatch, with a measured delivery elsewhere for 15% of it |
+| Partial delivery | 34% | open: a regional component in some specifications, no response to each utility's own peak |
+| No actual reported | 15% | mostly explained: 73% of it is at utilities reporting an exact zero in another year |
+| Exact zero | 10% | partly explained: non-dispatch in the peak hour, with a measured delivery elsewhere for 15% of it |
+
+Underneath all three is a question v0.5.0 opened: the form measures the
+delivered figure in one hour, the company's annual system peak hour, and the
+reports show no sign of tracking that hour (FINDINGS section 12). Item 1 below
+now carries it.
 
 ---
 
@@ -22,8 +27,10 @@ conditions depends on two analyst choices, which reports to include and how many
 utilities a footprint needs: across nine specifications the regional share beats
 chance in all nine and is significant in three (`t9_mechanisms.specification_grid()`).
 Excluding reports where actual simply equals potential tilts it toward a regional,
-dispatch-driven component. Three explanations fit and they have opposite
-implications:
+dispatch-driven component. Against each utility's own peak it points the other
+way: no response to the size of the peak, to the January 2018 cold, or to a
+change of peak season (`t10_reporting.timing_summary()`). Three explanations fit
+and they have opposite implications:
 
 - **Definition.** Potential is a fixed multiple of what the program ever
   delivers, for example a contracted maximum against a typical event. Benign; a
@@ -40,7 +47,11 @@ partial dispatch with full response; response predicts full dispatch with
 partial response.
 
 **Where to look.** CALMAC, state commission evaluation archives, and DOE's
-Uniform Methods Project protocols. Ten programs would be enough to start.
+Uniform Methods Project protocols. Ten programs would be enough to start. The
+most useful single fact per program is how its EIA actual figure was
+determined: in the peak hour, as the form asks, or as an event maximum or
+average. The 59 utilities the January 2018 cold pushed to new winter peaks are
+the place to ask first (`t10_reporting.january_2018_event()`).
 
 **Entry point.** `phantomload/tracks/t9_mechanisms.py`, function
 `partial_delivery_panel()`, which identifies the utilities to look for.
@@ -59,30 +70,28 @@ answerable from their filings, and the answer decides how much of the national
 realised figure is measured at all.
 
 **Entry point.** `t9_mechanisms.exact_equality()`, which lists the utilities.
-Adding the EIA-861 short-form flag, present from 2019, would test whether the
-convention follows filing type.
+Metering explains part of it and not most: copying runs at 37% of positive
+reports where interval meters are almost absent and 25% where they are nearly
+universal (`t10_reporting.copy_vs_metering()`). The filings are what is left.
 
 ## 3. What is the unreported group? *No actual reported, a quarter of the gap.*
 
 Utilities reporting potential but no actual hold 15% to 17% of capacity every
 year. It looked concentrated outside RTO footprints, which was read as ruling
 out wholesale bookkeeping; without Florida it is more common inside, so that
-reading is withdrawn (FALSIFICATION attack E). Candidates: small utilities
-exempt from the field, programs that existed on paper and were never run,
-reductions recorded only in a wholesale settlement, or plain non-response to the
-survey item. The EIA-861 form instructions and its short-form exemptions would
-settle the first.
+reading is withdrawn (FALSIFICATION attack E).
 
-One fact narrows it. All four Florida utilities that carry the outside-RTO
-result move between reporting zero and reporting nothing from year to year, so
-for some filers a blank and a zero are the same answer entered two ways. A
-first step is to count how many utilities switch between the two anywhere in the
-country, which bounds how much of this component is the zero mass under another
-label.
+**Mostly answered in v0.5.0.** Small utilities exempt from the field are ruled
+out: short-form filers report no demand response quantities and none appears in
+the file. The count this item asked for was run: 73% of the capacity ever left
+blank belongs to utilities that report an exact zero in another year, and 31
+utility-state units switch between the two. For them a blank is the zero mass
+under another label (`t10_reporting.unreported_summary()`). What is left is the
+13% that is blank in every year, and the 35% at utilities that report a positive
+figure elsewhere, whose blank years are unexplained.
 
-**Entry point.** `t9_mechanisms.footprint_grid_summary()` for the Florida case,
-and `t9_mechanisms.footprint_split()` extended by utility size and by whether
-the utility files the short form.
+**Entry point.** `t10_reporting.unreported()`, which lists every unit with what
+it reported in its other years.
 
 ## 4. Was the zero mass available? *Exact zero, a sixth of the gap.*
 
@@ -98,12 +107,16 @@ tests would move that number, each scoped to a named place:
   residential program as used in system emergencies. The Commission's annual
   FEECA report describes the programs but not whether they were called; the
   utilities' own demand-side management filings and ten-year site plans are
-  where event records may be.
-- **South Carolina, January 2018.** Of what 2017's zero capacity delivered in
-  2018, 71% came from three South Carolina utilities, and Duke Energy Carolinas
-  set a peak demand record on January 5, 2018. If those deliveries were at a
-  winter peak, it is the uncalled-then-called pattern seen directly. EIA-930
-  hourly demand by balancing authority would date their 2018 peaks.
+  where event records may be. Two facts so far: FPL says it activates its
+  residential program a few times a year at most, and the Florida reliability
+  council told the Commission that no energy emergency was declared in 2016.
+  Neither says whether any activation covered an annual peak hour.
+- **South Carolina, January 2018. Answered for Santee Cooper.** Its 2018 annual
+  peak was a winter peak set in the January cold, 4.3% above its earlier
+  maximum, and its one positive report is in that year (FINDINGS section 1).
+  What remains is whether the 2018 figure is a measurement: Santee Cooper's
+  curtailment records for January 2018 would say. EIA-930 hourly demand would
+  date the peak hour; the form only gives the season.
 - **Reserve margins.** Pair each utility's zero years with its reserve margin,
   which state integrated resource plans and FERC Form 1 report.
 
@@ -114,14 +127,17 @@ utilities and the state carrying each year's follow-up.
 ## 5. More years. *All components.*
 
 Every utility-level result rests on 2016 to 2018, the minimum for a persistence
-test and too short to separate a weather cycle from a trend.
+test and too short to separate a weather cycle from a trend. More years would
+also give track 10's timing tests more than one winter event to work with.
 
 **The route.** Catalyst Cooperative's PUDL archives the raw EIA-861 release for
 every year from 1990 to 2025 on Zenodo (record 10.5281/zenodo.4127028, per-year
 zips of 1 to 5 MB) and publishes a cleaned demand response table,
-`core_eia861__yearly_demand_response`, for 2013 onward. Zenodo is not reachable
-from the environment this was built in; from anywhere else it is a download. A
-search for the file names turned up no other vendored copies.
+`core_eia861__yearly_demand_response`, for 2013 onward, also as Parquet in its
+public S3 bucket. Neither Zenodo nor the bucket is reachable from the
+environment this was built in; from anywhere else either is a download. A search
+for the file names turned up no other vendored copies, and the one mirror found
+holds only 2016 to 2018.
 
 **The traps, from PUDL's own column maps,** which anyone extending the panel will
 hit:
@@ -140,8 +156,9 @@ state, which this repository's parse already matches for 2017 and 2018 and
 misses in 2016 by exactly the Wabash pair; and the national panel, which every
 year must reconcile to within the published table's rounding.
 
-**Entry point.** `tools/build_eia861_utility.py`, constant `YEARS`, plus a
-column map for 2019 onward.
+**Entry point.** `tools/build_eia861_utility.py` and
+`tools/build_eia861_context.py`, constant `YEARS`, plus a column map for 2019
+onward.
 
 ## 6. The price in the hours demand response is called. *Cost comparison.*
 
@@ -158,7 +175,9 @@ measured figure would settle it.
 
 The firmest result here is that summer-shaped programs cannot reach winter
 stress, reached three independent ways, two of them firmly and the accreditation
-route by a margin of 3.5%. PJM's wholesale market already requires
+route by a margin of 3.5%. A fourth, the January 2018 cold in the utility files,
+says nothing either way: utilization at the utilities it pushed to new peaks did
+not change. PJM's wholesale market already requires
 year-round availability. What is missing is the retail side: what share of
 utility-administered programs can be called in January. Utility tariff sheets
 carry it.
@@ -176,6 +195,9 @@ response capacity exists.
 
 One evaluation reporting both kW per controlled device and devices per enrolled
 customer would move track 3's modeled reconciliation into the citable findings.
+The other side of it is now measured: utilities whose residential enrolment is
+almost all direct load control deliver 0.94 kW per enrolled customer
+(`t3_behavioral.kw_by_dlc_share()`).
 
 **Entry point.** `calibration.DEVICES_PER_ENROLLED_CUSTOMER`.
 

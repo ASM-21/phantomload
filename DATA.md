@@ -1,6 +1,6 @@
 # Data
 
-Seven sources. All are vendored in `data/` so the repo runs offline, and all
+Eight sources. All are vendored in `data/` so the repo runs offline, and all
 are re-derivable from the scripts in `tools/`. A test asserts that every CSV
 under `data/` is named in this file, so a dataset cannot arrive without
 provenance.
@@ -22,15 +22,25 @@ value, note.
 Metrics: `customers_enrolled`, `energy_savings_mwh`, `potential_peak_mw`,
 `actual_peak_mw`, `customer_incentives_kusd`, `other_costs_kusd`.
 
-Definitions matter here more than usual:
+Definitions matter here more than usual, and these are the form's own, from the
+EIA-861 instructions, Schedule 6 Part B. The wording is identical in the
+instructions dated March 2017 (approval through 3/31/2020), under which the 2016
+to 2018 utility files were filed, and in the current form (approval through
+7/31/2029). Both are archived in the PUDL repository at
+`docs/data_sources/eia861/`:
 
-- **Potential peak demand savings** is the peak reduction the reporting utility
-  says its DR programs are able to deliver. It is self-reported and unaudited.
-  This repo calls it enrolled capacity.
-- **Actual peak demand savings** is the reduction actually realised that year.
-  This repo calls it delivered capacity.
-- A program not called in a given year contributes its full potential and zero
-  actual. That single fact is why track 1 exists.
+- **Potential peak demand savings**: "the total demand savings that could occur
+  at the time of the system peak hour assuming all demand response is called."
+  Self-reported and unaudited. This repo calls it enrolled capacity.
+- **Actual peak demand savings**: "demand reduction actually achieved by demand
+  response activities and is measured at the time of the company's annual
+  system peak hour." This repo calls it delivered capacity, and earlier
+  versions described it as the reduction realised during the year. It is not.
+  It is the reduction in force during one hour.
+- So a program not running in the hour that set the company's annual peak
+  contributes its full potential and zero actual, whether or not it was called
+  on other days that year. That single fact is why track 1 exists, and
+  track 10 is what follows from reading the definition rather than assuming it.
 
 Regenerate with `python tools/build_eia861_panel.py`, and check the vendored
 copy against the live tables with `python tools/check_source.py`, which fails
@@ -233,6 +243,51 @@ curl -sSL https://raw.githubusercontent.com/carbonfirst/CarbonCast/main/data/CIS
   -o data/carboncast/CISO_direct_emissions.csv
 ```
 
+## 8. The rest of EIA-861, 2016 to 2018
+
+Five files, all from the same release as section 6 and reached the same way:
+`IMMM-SFA/electricity_entity_boundaries` bundles every EIA-861 detailed file for
+those three years, not only the demand response one. Nobody looked at the files
+beside the demand response workbook until October 2026. Same licence as section
+6: US Government work, bundled under a BSD 2-Clause project.
+
+| File | Rows | From | Holds |
+| --- | --- | --- | --- |
+| `data/eia861_peaks_2016_2018.csv` | 6,885 | `Operational_Data_<year>.xlsx` | summer and winter peak demand by utility, MW |
+| `data/eia861_meters_2016_2018.csv` | 7,042 | `Advanced_Meters_<year>.xlsx` | AMI meters, all meters, customers with direct load control, by utility, state and balancing authority |
+| `data/eia861_dynamic_pricing_2017_2018.csv` | 1,337 | `Dynamic_Pricing_<year>.xlsx` | customers on time-of-use, real-time, variable peak, critical peak pricing or critical peak rebates |
+| `data/eia861_customers_2016_2018.csv` | 10,172 | `Sales_Ult_Cust_<year>.xlsx` | customer counts by class and by part (A bundled, B energy only, C delivery only, D bundled by energy service providers, in practice Texas) |
+| `data/eia861_short_form_2016_2018.csv` | 3,347 | `Short_Form_<year>.xlsx` | the utilities filing the abbreviated Form EIA-861S |
+
+Retrieved 2026-10-14. The 2016 dynamic pricing file is not in the mirror, so
+that file covers two years.
+
+What each is for. The demand response schedule is one page of a form whose other
+pages describe the same utilities in the same year. Peak demand is what a
+potential figure defined at the peak hour can be checked against (track 10).
+The direct load control count on the metering schedule measures part of the
+program mix that track 3 could previously only infer. Dynamic pricing enrolment
+and customer counts by utility bound the tariff overlap track 5 could only bound
+nationally. The short-form list says whether the utilities that leave the actual
+figure blank are small filers exempt from it (they are not).
+
+Definitions that matter, from the same instructions as section 1. Summer peak is
+"the maximum hourly summer load (for the months of June through September)
+based on net energy for the system"; winter peak is the same for January through
+March and the previous December. Both are net of any demand response running at
+the time, which is why track 10 adds the actual savings back before comparing.
+Schedule 6 Part D line 8 asks for "the number of customers with direct load
+control, by customer class", and notes that it counts customers, not meters.
+
+Handling, tested: "." becomes blank, never zero, as in section 6; utility number
+88888, EIA's placeholder for withheld Texas retail marketers, reports no peak
+and is dropped; only the States sheets are used; values are written as stored,
+without rounding. Every utility-year in the demand response panel finds a row in
+the peaks file. No short-form filer appears in the demand response file in any
+year.
+
+Regenerate with `python tools/build_eia861_context.py <path-to-EIA_861_Dataset>`.
+
 ## What is not here, and why
 
 Each absence below names the sources actually checked, so the claim is
@@ -245,13 +300,15 @@ looked.
   Electric Power Annual chapter 10 HTML tables (national and by sector only);
   FERC's 2025 assessment tables 3-1, 3-2, 5-1 and 5-2 (census division, and
   potential peak savings but not actual). EIA-861 detailed files carry state,
-  sector and balancing-authority splits including actual peak savings, but they
-  are distributed as bulk ZIPs from eia.gov, which was blocked in the
-  environment this was built in. Not checked: state commission filings, which
-  would have it utility by utility.
+  sector and balancing-authority splits including actual peak savings; for 2016
+  to 2018 they are here (sections 6 and 8), and for every other year they are
+  distributed as bulk ZIPs from eia.gov, which was blocked in the environment
+  this was built in. Not checked: state commission filings, which would have it
+  program by program.
 
 - **Event-level dispatch logs.** Checked: the EIA-861 form instructions, which
-  show no event count is collected; FERC's assessment, which gives narrative
+  show no event count is collected and that the actual figure is measured in
+  one hour only; FERC's assessment, which gives narrative
   deployment figures for individual events but no per-program series. Not
   checked: individual utility evaluation reports filed with state commissions,
   which routinely contain events called, duration and measured performance. That

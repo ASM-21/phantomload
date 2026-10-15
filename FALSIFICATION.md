@@ -1,10 +1,12 @@
 # Falsification
 
-Seven attacks on this repository's own claims, A to G. Two bounced off the
+Eight attacks on this repository's own claims, A to H. Two bounced off the
 headline. Two landed on it and changed what the repository is allowed to say.
-The last three were aimed at mechanisms rather than the headline, and each ended
+The next three were aimed at mechanisms rather than the headline, and each ended
 less certain than it began: two readings first reported as settled are now
-open, and one is specification-dependent.
+open, and one is specification-dependent. The last was aimed at the number every
+other attack takes for granted, the delivered figure itself, and it landed in
+part.
 
 Run them with `python -c "from phantomload.tracks import t8_falsification as t; import json; print(json.dumps(t.run()['summary'], indent=2, default=str))"`.
 
@@ -23,7 +25,9 @@ capability still realises only 44.6%. Enrolled capacity does not show up in some
 other year; it does not show up in any year.
 
 This is the strongest thing in the repo. Whatever the shortfall is, it is not an
-artefact of picking a quiet year.
+artefact of picking a quiet year. Read against the form's definition (attack H)
+it is a statement about one hour: in no year was more than 44.6% of mean
+enrolled capability running in the hour that set the year's peak.
 
 ## Attack B: the alternative's best case
 
@@ -124,6 +128,13 @@ minimum window that permits this test and not enough to tell a one-off filing
 correction from the start of a trend. The two discontinuity divisions are where
 respondent-level data would pay off first.
 
+Respondent-level data for 2016 to 2018 now occupies part of the room directly.
+Attack H finds 18 utility-years whose potential exceeds the load in the peak
+hour, which the form's definition rules out, all in three Plains states. That
+is definitional inconsistency seen in the reports themselves rather than
+inferred from a regional spread, and it is small, 3.4% of the capacity that can
+be checked. The rest of the room is still unoccupied, not cleared.
+
 The practical consequence is a third thing that has to be settled before the
 ratio means anything, alongside the reserve question from attack C and the
 accounting bases from the synthesis. Reading the shortfall as non-performance
@@ -178,11 +189,15 @@ bias the test toward a null. The other was the minimum number of utilities a
 footprint needs. Across the nine combinations the regional share beats chance
 every time and is significant in three, p from 0.0055 to 0.36.
 
-**Result: SPECIFICATION-DEPENDENT.** Neither "partial delivery follows system
-conditions" nor "it does not" survives. The lean, once copied reports are set
-aside, is slightly toward a regional, dispatch-driven component, which is the
-opposite of the first reading. This attack is kept in full because the first
-version of it was itself an untested analyst choice presented as a finding.
+**Result: SPECIFICATION-DEPENDENT, AND NOW MIXED.** Neither "partial delivery
+follows system conditions" nor "it does not" survives. The regional lean, once
+copied reports are set aside, is slightly toward a dispatch-driven component,
+the opposite of the first reading. Attack H then tested the same idea against
+each utility's own peak, which is a sharper measure of system conditions than a
+footprint, and found no response to its size or timing. So the regional test
+leans one way and the utility tests the other. This attack is kept in full
+because the first version of it was itself an untested analyst choice presented
+as a finding.
 
 ## Attack G: does rotation show the capacity was there?
 
@@ -210,6 +225,34 @@ three years cannot separate a rarely called reserve from a program that does not
 operate. The falsification criterion in FINDINGS that this attack tested was
 itself rewritten afterwards, and both versions are kept there, because a
 criterion changed after the data arrive deserves suspicion.
+
+## Attack H: does the delivered figure follow its own definition?
+
+**Hypothesis.** Every attack above reads EIA's actual peak demand savings as the
+reduction delivered during the year. The form defines it as the reduction
+"measured at the time of the company's annual system peak hour", and potential
+as the savings possible in that hour. If utilities report to that definition,
+their reports must obey two things checkable against the rest of the same form:
+potential cannot exceed the load in the peak hour, and the delivered figure
+should follow the peak, rising in harder years and dropping for summer-only
+programs when the peak comes in winter.
+
+**Result: LANDED IN PART.** Some reports cannot be the defined quantity: **18
+utility-years** from 8 utilities in North Dakota, Minnesota and Nebraska report
+more potential than the load in their peak hour. For the rest, no test finds the
+delivered figure following the peak. Within utilities it does not rise with the
+size of the peak, where a rise of 2 points of utilization per percent of peak
+would have been detected; the January 2018 cold did not raise it at the 59
+utilities it pushed to new winter peaks, where a 20-point rise would have been
+detected; and utilities whose peak moved between seasons show no difference,
+though that test is weak. Either most capacity runs in either season and is not
+called harder in a harder year, or most reports do not follow the definition.
+
+**What it changes.** Nothing numeric, and the scope of everything. The shortfall
+is measured in one hour, which makes a low ratio weaker evidence of failure than
+any earlier version said. And whether reports follow that hour is now an open
+question in its own right, which bears on attack D directly and on attack F.
+FINDINGS section 12 has the tests and their power.
 
 ## Retractions
 
@@ -256,6 +299,10 @@ because each was a positive claim backed by a computed, pinned, tested number.
 6. **The winter accreditation value** (present by v0.3.0, corrected in v0.4.3). The winter
    four-hour cell was computed at 50% while labelled with E3's winter figure,
    which is 55%. The cell is still lost, by 3.5% instead of 14%.
+7. **What the delivered figure is** (from the first version, corrected in
+   v0.5.0). Described as the reduction realised during the year; the form
+   defines it at the company's annual system peak hour. Attack H. No number
+   moved, and every reading of a low ratio got weaker. METHOD rule 18.
 
 In each of the first three a guard was green throughout, because the guard
 checks that the prose quotes the number, not that the number means what the
@@ -288,9 +335,11 @@ Stated so the absence is not mistaken for a clean bill of health.
 - No attempt to estimate the retail-wholesale overlap. Both populations are
   measured, neither reporter publishes the intersection, and this repo does not
   guess at it.
-- No utility-level version of attack D. The regional test above shows the
-  reporting hypothesis has room; separating it from genuine program-design
-  differences needs respondent-level data, which is roadmap item 1.
+- No full utility-level version of attack D. Attack H checks potential
+  against each utility's own peak, which catches reports that cannot be the
+  defined quantity; it cannot catch a figure that is wrong but possible.
+  Separating the rest of the reporting hypothesis from genuine program-design
+  differences needs program-level data, which is roadmap item 1.
 - Track 4's proxy is not validated against observed curtailment, because
   observed curtailment is not reachable here.
 - The cost comparison is still one-sided: PJM's peaker is priced both gross and

@@ -67,6 +67,7 @@ def _load_summaries() -> dict:
         t7_crossval,
         t8_falsification,
         t9_mechanisms,
+        t10_reporting,
     )
 
     return {
@@ -96,6 +97,7 @@ def _load_summaries() -> dict:
         "s8c": t8_falsification.attack_c(),
         "s8d": t8_falsification.attack_d(),
         "s9": t9_mechanisms.summary(),
+        "s10": t10_reporting.summary(),
         "sy": synthesis.summary(),
         "sp": t1_utilization.persistence_summary(),
         "s4r": t4_curtailment.robustness_summary(),
@@ -127,6 +129,7 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
     s5, s6, s7 = m["s5"], m["s6"], m["s7"]
     s8a, s8b, s8c, s8d = m["s8a"], m["s8b"], m["s8c"], m["s8d"]
     s9 = m["s9"]
+    s10 = m["s10"]
     sr2 = m["srot"]
     t1 = m["t1"]
     return [
@@ -469,6 +472,119 @@ def build_claims(m: dict) -> list[tuple[str, str]]:
         ("synthesis winter superseded",
          f"by {sy['elcc_worst_margin']:.1%} instead of "
          f"{sy['elcc_worst_margin_at_superseded_value']:.0%}"),
+        # --- v0.5.0: what the delivered figure measures, and the rest of the form
+        ("t10 definition",
+         s10["def_actual"].split(" and is ")[1].rstrip(".")),
+        ("t10 peak impossible",
+         f"{s10['pk_exceeds_gross_peak_utility_years']} utility-years** from "
+         f"{s10['pk_exceeds_gross_peak_utilities']} utilities"),
+        ("t10 peak impossible share",
+         f"{s10['pk_exceeds_gross_peak_share_of_checkable_potential']:.1%} of the capacity"),
+        ("t10 peak largest",
+         f"{s10['pk_largest_impossible_potential_mw']:.1f} MW of potential against a peak "
+         f"hour load of {s10['pk_largest_impossible_gross_peak_mw']:.1f} MW"),
+        ("t10 peak utilization",
+         f"Their utilization is {s10['pk_exceeds_gross_peak_utilization']:.0%} against "
+         f"{s10['pk_exceeds_gross_peak_rest_utilization']:.0%}"),
+        ("t10 peak national",
+         f"potential is {s10['pk_potential_over_peak_capacity_weighted']:.1%} of the peak"),
+        ("t10 peak over half",
+         f"{s10['pk_over_half_gross_peak_utility_years']} utility-years report potential above "
+         f"half the load in the peak hour, "
+         f"{s10['pk_over_half_gross_peak_share_of_checkable_potential']:.1%}"),
+        ("t10 peak effect",
+         f"by {s10['pk_exceeds_gross_peak_national_effect_points_min']:.1f} to "
+         f"{s10['pk_exceeds_gross_peak_national_effect_points_max']:.1f} points"),
+        ("t10 peak checkable",
+         f"Of {s10['pk_utility_years_checkable']} utility-years where it can be run"),
+        ("t10 timing size detectable",
+         f"{s10['tm_size_smallest_reliably_detected_slope'] * 100:.0f} points of utilization "
+         "per percent of peak"),
+        ("t10 timing size utilities",
+         f"the {s10['tm_size_utilities']} utilities whose demand response"),
+        ("t10 timing size coverage",
+         f"hold {s10['tm_size_share_of_timing_panel_capacity']:.0%} of the capacity in the panel"),
+        ("t10 timing size result",
+         f"slope zero, p = {s10['tm_size_p_value']:.2f}"),
+        ("t10 timing size power",
+         f"1 point, {s10['tm_size_power_at_1pt_per_pct']:.0%} of the time"),
+        ("t10 timing size constant",
+         f"{s10['tm_size_share_reporting_identical_utilization']:.0%} of them report the same "
+         "utilization every year"),
+        ("t10 timing panel",
+         f"on the {s10['tm_panel_utilities']} utilities with a complete figure"),
+        ("t10 timing event treated",
+         f"{s10['tm_event_published_treated']} utilities pushed to new winter peaks"),
+        ("t10 timing event result",
+         f"{s10['tm_event_published_difference'] * 100:.0f} points, "
+         f"p = {s10['tm_event_published_p']:.2f}; none of "
+         f"{_word(s10['tm_event_specifications'])} specifications significant"
+         if s10["tm_event_significant_any"] == 0 else "event test now significant"),
+        ("t10 timing event power",
+         f"a 20-point rise, {s10['tm_event_power_at_20_points']:.0%} of the time"),
+        ("t10 timing season result",
+         f"no difference, p = {s10['tm_season_p_value']:.2f}"),
+        ("t10 timing season power",
+         f"in winter, {s10['tm_season_power_if_50pct_lost']:.0%} of the time"),
+        ("t10 santee rise",
+         f"{s10['tm_santee_peak_2018_over_prior_max']:.1%} above its earlier maximum"),
+        ("t10 santee peaks",
+         f"{s10['tm_santee_winter_peak_2018']:,.0f} MW against "
+         f"{s10['tm_santee_summer_peak_2018']:,.0f} MW in summer"),
+        ("t10 santee report",
+         f"{s10['tm_santee_actual_2018']:.1f} MW of {s10['tm_santee_potential_2018']:.1f} MW"),
+        ("t10 blank zero elsewhere",
+         f"{s10['un_blank_with_zero_elsewhere_share']:.0%} of the capacity ever left blank"),
+        ("t10 blank short form",
+         f"at least {s10['un_short_form_filers_min']:,} utilities a year"),
+        ("t10 blank never positive",
+         f"never anything positive | {s10['un_blank_and_zero_never_positive_share']:.0%}"),
+        ("t10 blank positive",
+         f"positive figure in another year | {s10['un_blank_and_positive_share']:.0%}"),
+        ("t10 blank every year",
+         f"blank in every year it reported | {s10['un_blank_every_year_share']:.0%}"),
+        ("t10 blank switchers",
+         f"{s10['un_zero_blank_switcher_keys']} utility-state units switch"),
+        ("t10 copy rates",
+         f"{s10['cp_copy_rate_ami_under 10%']:.0%} against "
+         f"{s10['cp_copy_rate_ami_90% or more']:.0%}"),
+        ("t10 copy within size",
+         f"{s10['cp_no_ami_minus_full_ami_within_size'] * 100:.0f} points within programs of "
+         f"the same size quarter (p = {s10['cp_p_value']:.3f})"),
+        ("t5 utility level residential",
+         f"{s5['ul_residential_utility_state_lower']:.0%} to "
+         f"{s5['ul_residential_utility_state_upper']:.0%}"),
+        ("t5 utility level state",
+         f"{s5['ul_residential_state_upper']:.0%} allowing overlap across utilities"),
+        ("t5 utility level table nation",
+         f"From national totals | {s5['ul_residential_nation_lower']:.0%} | "
+         f"{s5['ul_residential_nation_upper']:.0%}"),
+        ("t5 utility level table state",
+         f"within a state | {s5['ul_residential_state_lower']:.0%} | "
+         f"{s5['ul_residential_state_upper']:.0%}"),
+        ("t5 utility level table utility",
+         f"same utility | {s5['ul_residential_utility_state_lower']:.0%} | "
+         f"{s5['ul_residential_utility_state_upper']:.0%}"),
+        ("t5 utility level independence",
+         f"national independence figure was {s5['ul_residential_independent_nationally']:.0%}"),
+        ("t3 measured mix floor",
+         f"{s3['mix_floor_min']:.0%} to {s3['mix_floor_max']:.0%}"),
+        ("t3 measured mix ceiling",
+         f"{s3['mix_ceiling_min']:.0%} to {s3['mix_ceiling_max']:.0%}"),
+        ("t3 measured mix bracket",
+         f"at {s3['mix_floor_min']:.0%} to {s3['mix_ceiling_max']:.0%} of residential"),
+        ("t3 measured mix kw",
+         f"{s3['mix_kw_mostly_dlc']:.2f} kW"),
+        ("t3 measured mix kw low",
+         f"{s3['mix_kw_little_dlc']:.2f} kW"),
+        ("t3 measured mix rank",
+         f"Across {s3['mix_utilities_in_rank_test']} utilities the rank correlation between "
+         f"direct load control share and delivery per customer is "
+         f"{s3['mix_rho_dlc_share_vs_kw']:.2f} (p = {s3['mix_p_dlc_share_vs_kw']:.3f})"),
+        ("t3 measured mix filled",
+         f"filled for {s3['mix_line_filled_min']:.0%} to {s3['mix_line_filled_max']:.0%} of enrolment"),
+        ("t3 measured mix over",
+         f"As many as {s3['mix_more_dlc_than_enrolled_max']} utilities a year report more"),
     ]
 
 
@@ -505,6 +621,10 @@ REQUIRED = [
     "reached grey literature and open papers, not journals",
     # v0.4.3: what the zero mass does and does not show
     "not dispatched is not the same as available",
+    # v0.5.0: the delivered figure is a single-hour quantity
+    "not the share used during the year",
+    # v0.5.0: the timing tests cannot tell program design from reporting
+    "cannot separate the two",
 ]
 
 FORBIDDEN = [
@@ -561,6 +681,15 @@ RETIRED = [
     "not regionally driven",
     "most unrealised capacity was available and not called",
     "Utility-level data settles part of it anyway",
+    # corrected in v0.5.0: the form defines the delivered figure at one hour,
+    # and the rest of the form answered two things these said were open
+    "reduction actually realised that year",
+    "the reduction realised that year",
+    "leaning slightly toward dispatch rather than structure",
+    "unreported share is not accounted for",
+    "and nothing here explains them",
+    "The program mix itself is not identified",
+    "The exact mix is not identified",
 ]
 HISTORICAL_MARKERS = ("retract", "earlier", "previous", "withdrawn", " was ",
                       "originally", "first version", "had been")

@@ -7,6 +7,7 @@ from __future__ import annotations
 import pathlib
 
 import matplotlib
+import numpy as np
 
 matplotlib.use("Agg")
 # Pinned so a figure rebuilt on another machine uses the same font as the
@@ -26,6 +27,7 @@ from .. import synthesis  # noqa: E402
 from ..tracks import t7_crossval as t7  # noqa: E402
 from ..tracks import t8_falsification as t8  # noqa: E402
 from ..tracks import t9_mechanisms as t9  # noqa: E402
+from ..tracks import t10_reporting as t10  # noqa: E402
 from .calibration import cone  # noqa: E402
 
 FIG_DIR = pathlib.Path(__file__).resolve().parents[2] / "figures"
@@ -438,6 +440,59 @@ def fig_rotation() -> pathlib.Path:
     return _save(fig, "fig13_rotation.png")
 
 
+def fig_peak_check() -> pathlib.Path:
+    """Track 10 in two panels: potential against the load in the peak hour it is
+    defined in, and utilization against the size of each utility's own peak,
+    with the smallest slope the test would have detected drawn beside the one it
+    found."""
+    df = t10.utility_year()
+    chk = df[df.checkable & (df.potential_mw > 0) & (df.gross_peak_mw > 0)]
+    bad = chk[chk.exceeds_gross_peak]
+    ok = chk[~chk.exceeds_gross_peak]
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.6))
+    ax1.scatter(ok.gross_peak_mw, ok.potential_mw, s=9, color=MEASURED, alpha=0.45,
+                label="utility-year")
+    ax1.scatter(bad.gross_peak_mw, bad.potential_mw, s=22, color=SIM,
+                label=f"potential above the load in the peak hour ({len(bad)})")
+    lo, hi = 0.05, max(chk.gross_peak_mw.max(), chk.potential_mw.max()) * 1.5
+    ax1.plot([lo, hi], [lo, hi], color=GREY, linestyle="--", linewidth=1)
+    box = dict(facecolor="white", edgecolor="none", alpha=0.85, pad=1.5)
+    ax1.text(1.3, 9, "potential = load\nin the peak hour", color=GREY, fontsize=8,
+             ha="left", va="bottom", bbox=box)
+    s = t10.peak_check_summary()
+    share = s["potential_over_peak_capacity_weighted"]
+    ax1.plot([lo, hi], [lo * share, hi * share], color=GREY, linestyle=":", linewidth=1)
+    ax1.text(hi * 0.6, 0.12, f"dotted: national ratio, {share:.1%}", color=GREY,
+             fontsize=8, ha="right", va="bottom", bbox=box)
+    ax1.set_xscale("log")
+    ax1.set_yscale("log")
+    ax1.set_xlim(1, hi)
+    ax1.set_ylim(0.05, hi)
+    ax1.set_xlabel("load in the peak hour: reported peak plus actual savings, MW")
+    ax1.set_ylabel("potential peak demand savings, MW")
+    ax1.set_title("Potential against the hour it is defined in", fontsize=10)
+    ax1.legend(fontsize=8, loc="upper left", frameon=False)
+
+    pts = t10.peak_size_frame()
+    tm = t10.timing_summary()
+    ax2.scatter(pts.peak_deviation_pct, pts.utilization_deviation * 100, s=10,
+                color=MEASURED, alpha=0.45)
+    xs = np.linspace(pts.peak_deviation_pct.min(), pts.peak_deviation_pct.max(), 2)
+    found = tm["size_slope_per_pct_of_peak"]
+    detectable = tm["size_smallest_reliably_detected_slope"]
+    ax2.plot(xs, xs * found * 100, color=MEASURED, linewidth=1.5,
+             label=f"fitted slope, {found * 100:.2f} points per percent")
+    ax2.plot(xs, xs * detectable * 100, color=SIM, linewidth=1.2, linestyle="--",
+             label=f"slope detected every time, {detectable * 100:.0f} points per percent")
+    ax2.axhline(0, color=GREY, linewidth=0.6)
+    ax2.set_xlabel("peak, percent above the utility's own three-year mean")
+    ax2.set_ylabel("utilization, points above its own mean")
+    ax2.set_title(f"Utilization against the size of the peak, {tm['size_utilities']} utilities",
+                  fontsize=10)
+    ax2.legend(fontsize=8, loc="upper left", frameon=False)
+    return _save(fig, "fig14_peak_check.png")
+
+
 def make_all() -> list[pathlib.Path]:
     return [
         fig_utilization(),
@@ -453,4 +508,5 @@ def make_all() -> list[pathlib.Path]:
         fig_targeting(),
         fig_decomposition(),
         fig_rotation(),
+        fig_peak_check(),
     ]

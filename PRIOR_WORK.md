@@ -253,6 +253,50 @@ practice", arXiv:2205.03285, 2022). Their setting is regression standard
 errors; the logic carries over unchanged to a ratio of shares, and here it
 found that one state carried the footprint result (METHOD rule 17).
 
+## The primary record: the form's own instructions, and three utility documents
+
+Read in October 2026, after the results in track 10 existed, and the most
+consequential reading in this file. The Form EIA-861 instructions, Schedule 6
+Part B, define actual peak demand savings as the reduction "measured at the
+time of the company's annual system peak hour", and potential as what could
+occur at the system peak hour if all demand response were called. The wording
+is identical in the instructions dated March 2017 (OMB approval through
+3/31/2020), under which the 2016 to 2018 files were filed, and in the current
+form (approval through 7/31/2029). Both are archived by the Public Utility Data
+Liberation project in `catalyst-cooperative/pudl`, `docs/data_sources/eia861/`.
+The same instructions define the summer and winter peaks on Schedule 2 and the
+direct load control count on Schedule 6 Part D, which is what made the checks in
+track 10 possible.
+
+What it changed. Every earlier version described the actual figure as the
+reduction realised during the year. No number moved, and every reading of a low
+ratio got weaker: a program called on other days and not in the peak hour
+reports zero. It also opened a question this repository had not asked, whether
+utilities report to that definition at all (FINDINGS section 12).
+
+Three documents bear on the named cases, and are offered as context, not
+measurement:
+
+- Florida Power & Light's description of its On Call program: "Historically, we
+  have only activated the program a few times per year for just a short period
+  time", followed by "if at all" ([fpl.com](https://fpl.com/blog/on-call.html),
+  undated).
+- The Florida Public Service Commission's workshop on the 2017 ten-year site
+  plans, where the Florida Reliability Coordinating Council said that no energy
+  emergency alert was declared in 2016, and that FRCC carries the largest share
+  of its reserves in demand response
+  ([transcript, October 3, 2017](https://www.floridapsc.com/library/FILINGS/2017/08385-2017/08385-2017.pdf)).
+- Santee Cooper's [2018 integrated resource plan](https://energy.sc.gov/sites/energy/files/Documents/IRPs/Santee%20Cooper_IRP_2018_FINAL.pdf),
+  which describes 644 MW of non-firm interruptible and economy load as
+  curtailable and excluded from reserve planning, and says firm load in winter
+  2018 ran well above forecast; and its
+  [2018 annual report](https://www.scstatehouse.gov/reports/SanteeCooper/2018%20Annual%20Report_Santee%20Cooper.pdf),
+  which gives territorial peaks of 4,794, 4,989 and 5,203 MW for 2016 to 2018,
+  within 3 MW of what EIA-861 records.
+
+None of them says whether a program was running in a given year's peak hour,
+which is the one fact the ratio turns on.
+
 ## Corrections are invited
 
 The claims most likely to be wrong because of literature this repository has not
@@ -281,9 +325,11 @@ order of how likely they are to change something here:
    item-response problems that survey statisticians have vocabulary for.
 3. **Utility filings to state commissions.** Not a literature, but the place
    the answers live. Event counts, dispatch logs and evaluation reports for the
-   programs named in FINDINGS sections 1 and 11, starting with Florida's four
-   load management utilities and Santee Cooper's 2018 interruptible curtailment,
-   would settle questions no amount of reading can.
+   programs named in FINDINGS sections 1, 11 and 12, starting with Florida's
+   four load management utilities, Santee Cooper's 2018 interruptible
+   curtailment, and how the 59 utilities pushed to new peaks by the January
+   2018 cold fill in the actual figure, would settle questions no amount of
+   reading can.
 
 Until a journal search happens, nothing here should be presented as novel
 without the "no prior published treatment located" qualifier. It should be

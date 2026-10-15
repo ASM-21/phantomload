@@ -147,3 +147,119 @@ def test_to_frame_serialises_enums():
     df = to_frame(registry())
     assert df.provenance.unique().tolist() == ["measured"]
     assert df.program_type.unique().tolist() == ["unknown"]
+
+
+# --- the rest of EIA-861, 2016 to 2018 ----------------------------------------
+# These files describe the same utilities as the demand response panel on other
+# schedules of the same form. The checks below are what make them usable as a
+# check on that panel: every utility joins, blanks stay blank, and the national
+# totals stay where the source put them.
+
+
+def test_every_demand_response_utility_year_has_a_peaks_row():
+    from phantomload.shared import eia861
+    from phantomload.tracks import t1_utilization as t1
+
+    dr = t1.utility_panel()
+    dr = dr[dr.potential_peak_mw > 0][["year", "utility_number"]].drop_duplicates()
+    pk = eia861.peaks()[["year", "utility_number"]]
+    assert not pk.duplicated().any()
+    joined = dr.merge(pk, how="left", indicator=True)
+    assert (joined._merge == "both").all()
+
+
+def test_annual_peak_is_the_larger_of_summer_and_winter():
+    from phantomload.shared import eia861
+
+    pk = eia861.peaks().dropna(subset=["summer_peak_mw", "winter_peak_mw"])
+    assert (pk.annual_peak_mw == pk[["summer_peak_mw", "winter_peak_mw"]].max(axis=1)).all()
+    assert set(pk.peak_season) == {"summer", "winter"}
+
+
+def test_withheld_marketers_are_not_in_the_peaks_file():
+    from phantomload.shared import eia861
+
+    assert "88888" not in set(eia861.peaks().utility_number)
+
+
+def test_context_blanks_stay_blank():
+    """Utility 34 in South Carolina filed the short form in 2016 and printed '.'
+    for its AMI count. That must arrive as missing, not as zero AMI meters."""
+    from phantomload.shared import eia861
+
+    m = eia861.meters()
+    row = m[(m.year == 2016) & (m.utility_number == "34") & (m.state == "SC")].iloc[0]
+    assert pd.isna(row.ami_total)
+    assert row.meters_total == 3450
+
+
+@pytest.mark.parametrize(
+    "year,column,expected",
+    [
+        (2016, "dlc_residential", 4_628_832),
+        (2017, "dlc_residential", 4_964_740),
+        (2018, "dlc_residential", 4_846_144),
+    ],
+)
+def test_direct_load_control_totals_are_pinned(year, column, expected):
+    from phantomload.shared import eia861
+
+    m = eia861.meters()
+    assert m[m.year == year][column].sum() == expected
+
+
+@pytest.mark.parametrize("year,expected", [(2017, 8_497_720), (2018, 9_219_869)])
+def test_dynamic_pricing_totals_are_pinned(year, expected):
+    from phantomload.shared import eia861
+
+    dp = eia861.dynamic_pricing()
+    assert dp[dp.year == year].dp_total.sum() == expected
+
+
+def test_santee_cooper_peaks_are_pinned():
+    """The one case ROADMAP item 4 named, straight off Operational_Data."""
+    from phantomload.shared import eia861
+
+    pk = eia861.peaks().set_index(["year", "utility_number"])
+    assert pk.loc[(2018, "17543"), "winter_peak_mw"] == 5206
+    assert pk.loc[(2018, "17543"), "summer_peak_mw"] == 4376
+    assert pk.loc[(2017, "17543"), "summer_peak_mw"] == 4989
+
+
+def test_customer_parts_and_retail_filter():
+    from phantomload.shared import eia861
+
+    allc = eia861.customers(retail_only=False)
+    assert set(allc.part.dropna()) <= {"A", "B", "C", "D"}
+    assert "B" not in set(eia861.customers().part)
+    assert {"MD", "PA", "TX"} <= eia861.retail_choice_states()
+
+
+def test_short_form_filers_never_file_demand_response():
+    """The abbreviated form collects no demand response quantities, so a
+    short-form filer in the demand response file would mean a join error."""
+    from phantomload.shared import eia861
+    from phantomload.tracks import t1_utilization as t1
+
+    sf = eia861.short_form()
+    dr = t1.utility_panel()
+    for year in (2016, 2017, 2018):
+        assert not set(sf[sf.year == year].utility_number) & set(
+            dr[dr.year == year].utility_number
+        )
+    assert sf.groupby("year").utility_number.nunique().min() > 1_000
+
+
+def test_definition_is_quoted_from_the_form():
+    """What the numerator measures decides what every ratio means, so the text
+    is held verbatim and must keep its single-hour wording, in the code and in
+    DATA.md."""
+    import pathlib
+
+    from phantomload.shared import eia861
+
+    assert "annual system peak hour" in eia861.ACTUAL_DEFINITION
+    assert "assuming all demand response is called" in eia861.POTENTIAL_DEFINITION
+    root = pathlib.Path(__file__).resolve().parents[1]
+    data_md = " ".join((root / "DATA.md").read_text().split())
+    assert "measured at the time of the company's annual system peak hour" in data_md

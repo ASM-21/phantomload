@@ -23,6 +23,7 @@ from phantomload.tracks import (
     t7_crossval,
     t8_falsification,
     t9_mechanisms,
+    t10_reporting,
 )
 
 ROOT = pathlib.Path(__file__).resolve().parent
@@ -38,12 +39,14 @@ TRACKS = {
     "t7_crossval": t7_crossval,
     "t8_falsification": t8_falsification,
     "t9_mechanisms": t9_mechanisms,
+    "t10_reporting": t10_reporting,
     "synthesis": synthesis,
 }
 
 # Run order from the spec: shared layer, then track 1 (foundational), then the
 # fast reuse track, then cost, overhead, the synthetic pair, cross-validation,
-# and falsification last so it can attack finished work.
+# falsification so it can attack finished work, then the mechanism and
+# reporting checks that read the utility files.
 ORDER = [
     "t1_utilization",
     "t5_double_count",
@@ -54,6 +57,7 @@ ORDER = [
     "t7_crossval",
     "t8_falsification",
     "t9_mechanisms",
+    "t10_reporting",
     "synthesis",
 ]
 

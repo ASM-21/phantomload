@@ -2,9 +2,12 @@
 
 **In one paragraph.** US utilities realise about 39% of the demand response peak
 reduction they report as available, a gap of roughly 19 GW that has been stable
-for twelve years. That measurement is solid. No interpretation of it is. The
-data cannot distinguish capacity that was never called from capacity that would
-not have delivered, and separating them needs a longer panel than exists. Priced
+for twelve years. That measurement is solid, and narrower than it sounds: the
+form measures the delivered figure in one hour, the company's annual system peak
+hour, so the ratio is the share of enrolled capacity running in that hour. No
+interpretation of it is solid. The data cannot distinguish capacity that was
+never called from capacity that would not have delivered, and separating them
+needs a longer panel than exists. Priced
 against PJM's published cost of new entry, demand response wins six of the eight
 defensible pairings of accounting bases, including both pairings that align
 every basis. And reported capacity per enrolled customer varies more than
@@ -75,7 +78,8 @@ MEASURED. EIA-861, national, four sectors, 2013 to 2024.
 
 US utilities report "potential peak demand savings", the peak reduction their DR
 programs are said to be able to deliver, and "actual peak demand savings", the
-reduction realised that year. The ratio averages 39.2%, leaving 60.8% of
+reduction achieved in the hour of the company's annual system peak. The ratio
+averages 39.2%, leaving 60.8% of
 enrolled capability unrealised. It runs 33.0% in 2016 to 45.4% in 2022 with a
 flat trend, r2 0.01 on year, so this is a structural feature of how DR is
 reported rather than a bad year or a recent slide.
@@ -89,6 +93,18 @@ aggregates carry no dispatch-event count. They **cannot separate capacity that
 was never called from capacity that would not have delivered** if it had been.
 A program held for a 1-in-10-year condition and a program whose enrolment is
 fictional report the same low ratio in a mild year.
+
+What the ratio counts is narrower than this section used to say. The form's
+instructions define actual peak demand savings as the reduction "measured at the
+time of the company's annual system peak hour", and potential as the savings
+that could occur in that hour if all demand response were called (DATA.md
+section 1 quotes both). So the dispatch utilization is the share of enrolled
+capacity running in one hour a year. A program called on ten other afternoons
+and not in that hour counts as zero, and Florida Power & Light says it has "only
+activated the program a few times per year for just a short period time", if at
+all. Earlier versions described the actual figure as the reduction
+realised during the year. Section 12 checks whether utilities report to the
+single-hour definition, and finds reasons to doubt that many do.
 
 That gap is quantifiable. A resource for a 1-in-T year event is genuinely quiet
 in a given year with probability (1 - 1/T), so W quiet years reject the reserve
@@ -249,11 +265,21 @@ that one report it is 24%.
 about a sixth of them, a third if Santee Cooper's report is real, the data
 shows the capacity can deliver. For the rest it shows nothing either way, which
 is what three years can be expected to show about a resource that may be called
-once a decade. One lead is worth following: whether the South Carolina
-deliveries fell in the January 2018 cold snap, when neighbouring Duke Energy
+once a decade. One lead was worth following, whether the South Carolina
+deliveries fell in the January 2018 cold, when neighbouring Duke Energy
 Carolinas set a [peak demand record](https://www.greenvillebusinessmag.com/2018/01/09/164451/duke-energy-carolinas-peak-record)
-on January 5. If they did, that is the uncalled-then-called pattern seen
-directly, in the one place the data shows it.
+on January 5, and the rest of the same form answers it as far as public data
+can. Santee Cooper's annual peak in 2018 was its winter peak, 5,206 MW against
+4,376 MW in summer, set in the cold and 4.3% above its earlier maximum. Its one
+positive report, 520.4 MW of 520.5 MW, is in that year, and its zeros in 2016
+and 2017 are at lower peaks. Its 2018 integrated resource plan describes 644 MW
+of interruptible and economy load as non-firm and excluded from reserve
+planning, and says winter 2018 firm load ran well above forecast. That is the
+uncalled-then-called pattern in the one place the data shows it: called when its
+system was most stressed, at the hour the form measures. It does not show the
+2018 figure is a measurement rather than the contract quantity, and the
+January 2018 cold did not raise utilization across the other utilities it pushed
+to new peaks (section 12).
 
 ![rotation](figures/fig13_rotation.png)
 
@@ -400,8 +426,10 @@ the same in the two auction columns: 78.00% in 2026/2027 and 77.20% in
 
 ## 3. Is residential demand response mostly price-based or mostly control-based?
 
-**Answer.** Not mostly price-based. The exact mix is not identified, and the
-modeling that tried to identify it lives in [MODELED.md](MODELED.md).
+**Answer.** Not mostly price-based. Between about half and four fifths of
+residential enrolment is direct load control, measured from the form's own
+count, and the modeling that tried to infer the mix from the national ratio
+alone lives in [MODELED.md](MODELED.md).
 
 MEASURED, compared against cited evaluation ranges.
 
@@ -426,6 +454,34 @@ source supplies the bridge between them. The attempt, the contradiction it
 produced and its resolution as a denominator mismatch are recorded in
 [MODELED.md](MODELED.md), because every number in it depends on an assumed
 response rate.
+
+### The mix, where the form counts it
+
+The same form counts part of the mix directly. Its metering schedule asks every
+long-form utility for "the number of customers with direct load control, by
+customer class", in the same year as its demand response enrolment. Set against
+residential enrolment, utility by utility, for 2016 to 2018:
+
+- At least **45% to 50%** of residential enrolment is direct load control,
+  counting a blank line as none, and at most **78% to 83%**, counting it as all.
+  The line is filled for 65% to 68% of enrolment.
+- As many as 33 utilities a year report more direct load control customers than
+  demand response enrollees, so the two lines are not always filled on the same
+  basis, and each count is capped at enrolment.
+- Utilities whose residential enrolment is 90% or more direct load control
+  deliver a median **0.94 kW** per enrolled customer; those under 10% deliver
+  0.40 kW. Across 92 utilities the rank correlation between direct load control
+  share and delivery per customer is 0.25 (p = 0.016).
+
+That converts the one-sided bound above into a bracket, and it agrees with it: a
+fleet that is at least half direct load control cannot be predominantly
+price-based. Two things it does not settle. Utilities with little direct load
+control still deliver 0.40 kW per customer, above every price-based evaluation
+value used here, so their remaining programs are not purely price-based either,
+or the counts are incomplete. And 0.94 kW per enrolled customer where enrolment
+is nearly all direct load control is high against per-device evaluations, which
+is the units question MODELED.md works through, now with a measured figure on
+the other side of it.
 
 ## 4. Could existing demand response absorb curtailed renewables?
 
@@ -512,8 +568,10 @@ better confirmation because it is priced rather than modelled.
 
 ## 5. How many customers are exposed to tariff and program double counting?
 
-**Answer.** Somewhere between one in nine and all of them, and the exposure is
-concentrated in a few regions.
+**Answer.** From national totals, somewhere between one in nine and all of
+them. Utility by utility, in the last year that can be computed that way, at
+most a third of residential enrollees, and the exposure is concentrated in a few
+places.
 
 MEASURED. The attribution model that says how much of the claimed reduction is
 really the tariff is in [MODELED.md](MODELED.md); this section is the part that
@@ -526,6 +584,31 @@ The intersection is not published, so it is bounded: between 10.9% and 100% of
 demand response enrollees are also on a time-varying rate. The lower bound
 assumes the two enrolments are independent, which is the wrong prior, since both
 concentrate in the AMI-equipped customers of the same utilities.
+
+The upper bound is an artefact of adding up before bounding. A customer can only
+be in both if the program and the rate reach the same customer, which happens
+inside one utility, or inside one state where a cooperative runs the program
+for its members or a retail supplier sells the rate. EIA-861 publishes the three
+counts this needs by utility and state: demand response enrolment, time-varying
+rate enrolment and customers. Computed unit by unit and summed, for 2018, the
+latest year with those files reachable:
+
+| Residential enrollees who could also be on a time-varying rate, 2018 | Lower bound | Upper bound |
+| --- | --- | --- |
+| From national totals | 0% | 83% |
+| Overlap allowed across utilities within a state | 5% | 45% |
+| Rate and program from the same utility | 13% | 33% |
+
+So, utility by utility, **13% to 33%** of residential demand response enrollees
+could also have been on a time-varying rate, and at most **45% allowing overlap
+across utilities** within a state. The floor is almost
+all four Maryland and Delaware utilities whose peak-time rebates reach nearly
+every residential customer, so anyone in their demand response programs is
+necessarily on a time-varying rate as well, which is the double-count exposure
+this section is about, named. It also supports reading independence as a floor:
+in 2018 the national independence figure was 5%, below the utility-level floor.
+Dynamic pricing enrolment roughly doubled between 2018 and 2023, so these bounds
+are not the 2023 bounds, and computing those needs the 2023 files.
 
 The exposure is lopsided. Seven of nine census divisions have more customers on
 dynamic pricing than in demand response programs, so the overlap could in
@@ -757,7 +840,9 @@ interpretation of it, and this repo can close none of them with public data.
    it: most of the spread holds steady, which favours genuine differences in
    what is enrolled, but two divisions show one-year discontinuities that no
    real fleet produces. Both mechanisms are present and the data cannot weigh
-   them.
+   them. The form itself now shows the second at utility scale: potential is
+   defined in the peak hour, and 18 utility-years report more potential than
+   the load in that hour (section 12).
 
 They are not independent. Question 3 undercuts the denominator that questions 1
 and 2 both operate on, so resolving the accounting bases while leaving the
@@ -768,9 +853,11 @@ event counts. That is roadmap items 1 and 2, and it is the whole shopping list.
 
 ## 11. What produces each part of the gap?
 
-**Answer.** The gap is three things that behave differently, and none is
-explained. The zero mass is non-dispatch of mostly undetermined availability,
-the unreported share is not accounted for, and the largest piece is open.
+**Answer.** The gap is three things that behave differently, and two of them
+are mostly one. The zero mass is non-dispatch in the peak hour, of mostly
+undetermined availability; the unreported share is mostly the same utilities'
+zeros entered another way; and the largest piece is open, with the evidence on
+it now mixed.
 
 MEASURED, EIA-861 utility files 2016 to 2018, every reporting utility, with
 balancing-authority codes carried back from 2017 and 2018 to 2016 by utility.
@@ -779,7 +866,7 @@ balancing-authority codes carried back from 2017 and 2018 to 2016 by utility.
 | --- | --- | --- | --- | --- |
 | Realised | 33.0% | 38.9% | 40.5% | |
 | Partial delivery | 32.7% | 34.3% | 34.1% | sticky within a utility; any regional component is specification-dependent |
-| No actual reported | 16.6% | 16.9% | 15.3% | more common outside organised markets only because of Florida |
+| No actual reported | 16.6% | 16.9% | 15.3% | mostly utilities that report an exact zero in other years |
 | Exact zero | 17.8% | 10.0% | 10.2% | non-dispatch; a measured delivery elsewhere for 15% of it |
 
 **The zero mass is non-dispatch, and mostly unexplained beyond that.** Track 1
@@ -818,11 +905,28 @@ zero and reporting nothing from one year to the next, which says that for some
 filers the distinction this repository keeps most carefully, between a zero and
 a blank, is not a stable one.
 
-**The unreported share is not accounted for.** It looked concentrated outside
-RTO footprints, which was read as ruling out wholesale bookkeeping; without
-Florida it is more common inside. What it is, non-response, exemption, a
-reporting convention or bookkeeping in another accounting, is not answerable
-from these files.
+**The unreported share is mostly the zero mass under another label.** It looked
+concentrated outside RTO footprints, which was read as ruling out wholesale
+bookkeeping; without Florida it is more common inside. The rest of the form
+narrows what it is. It is not small utilities exempt from the question: the
+abbreviated Form EIA-861S, filed by at least 1,104 utilities a year, collects no
+demand response quantities, and none of its filers appears in the demand
+response file. And it is mostly the same utilities as the zero mass. Of the
+capacity ever reported with potential and no actual figure:
+
+| Capacity ever left blank, 2016 to 2018 | Share |
+| --- | --- |
+| at utilities that report an exact zero in another year and never anything positive | 52% |
+| at utilities that report a positive figure in another year | 35% |
+| blank in every year it reported | 13% |
+
+So **73% of the capacity ever left blank** belongs to utilities that report an
+exact zero in another year, 31 utility-state units switch between the two, and
+the largest is Florida Power & Light, zero in 2016 and blank in 2017 and 2018.
+For those filers a blank and a zero are one answer entered two ways, and for
+interpretation the two components are better read together. What the remaining
+eighth is, non-response or bookkeeping in another accounting, is not
+answerable from these files.
 
 **Partial delivery is the largest piece and the open question.** Utilities that
 delivered some but not all of their potential account for 49% to 57% of the gap
@@ -852,10 +956,16 @@ every report included, as first published, nothing is detectable. Excluding
 utilities that ever report actual equal to potential, a modest regional
 component appears, about 11% of year-to-year variation against 6% expected.
 
-So this component is specification-dependent, and the honest summary is that it
-leans slightly toward dispatch responding to system conditions, rather than
-toward a fixed property of each program, without either being established. The
-three candidate mechanisms remain: a definition, where potential is a fixed
+So the regional test is specification-dependent, and on its own it leaned
+slightly toward dispatch responding to system conditions. Two sharper tests,
+possible once each utility's own peak was in hand (section 12), point the other
+way. Within a utility, utilization does not rise in the year its peak was
+highest, and a rise of 2 points of utilization per percent of peak would have
+been detected. And the utilities the January 2018 cold pushed to new winter
+peaks did not raise their utilization relative to everyone else. The honest
+summary is now that the evidence is mixed: a modest regional common component in
+some specifications, and no response to the size or timing of each utility's own
+peak. The three candidate mechanisms remain: a definition, where potential is a fixed
 multiple of what a program ever delivers; a protocol, where a program is always
 called at a fixed share; and a consistent partial response, which is the phantom
 reading this repository argues against. Event-level evaluations would separate
@@ -897,6 +1007,78 @@ What remains is a weak pooled gradient, rho -0.13 on measured reports with
 p = 0.03, probably a small class-mix effect, and a practical lesson for anyone
 reading one program's number: check whether its delivered figure is its enrolled
 figure before comparing it with anything.
+
+Whether copying is inability to measure can now be tested, because the same form
+counts each utility's interval meters. A reduction in one hour needs hourly data
+to measure. Copying is more common where there are almost none: **37% against
+25%** of positive reports from utilities with under a tenth and with nine tenths
+or more of their meters advanced, and 9 points within programs of the same size
+quarter (p = 0.008). So metering explains part of the convention. It does not
+explain most of it: a quarter of fully metered utilities' reports copy too.
+
+## 12. What does the delivered figure measure, and do the reports follow it?
+
+**Answer.** One hour a year, by definition. Some reports cannot be that
+quantity, and for the rest the data shows no sign that they track it.
+
+MEASURED, EIA-861 2016 to 2018. The demand response schedule against what the
+same utilities reported on other schedules of the same form in the same year.
+Track 10.
+
+**The definition.** The form's instructions, quoted in DATA.md section 1, define
+potential as the savings that could occur at the system peak hour if all demand
+response is called, and actual as the reduction measured at the time of the
+company's annual system peak hour. Two consequences follow, and both are
+testable against the rest of the form.
+
+**Potential cannot exceed the load in the peak hour.** That load, before demand
+response, is the reported net peak plus the actual savings achieved in it, and
+the comparison uses the larger of each utility's summer and winter peak so the
+test is as lenient as the data allows. Of 999 utility-years where it can be run:
+
+- **18 utility-years** from 8 utilities report more potential than that load,
+  **3.4% of the capacity** that can be checked. All but one are cooperatives,
+  in North Dakota, Minnesota and Nebraska, and most peak in winter. The largest
+  is Cass County Electric Cooperative, 467.8 MW of potential against a peak hour
+  load of 397.4 MW; the most extreme reports nearly three times its load.
+- 53 utility-years report potential above half the load in the peak hour, 6.4%
+  of the checkable capacity. Nationally, potential is 5.1% of the peak.
+- The impossible group realises 24% of its potential against 45% for everyone
+  else, so it pulls the national ratio down, by 0.3 to 0.9 points a year.
+
+The pattern is consistent with reporting the connected load under a
+load-control program, such as the dual-fuel and off-peak heating programs common
+in Minnesota and North Dakota or irrigation control in Nebraska, rather than
+savings in the peak hour. Whatever the cause, it is the reporting inconsistency
+attack D could only make room for, seen directly in one region.
+
+![peak check](figures/fig14_peak_check.png)
+
+**If reports follow the definition, the actual figure should follow the peak.**
+Three tests, on the 254 utilities with a complete figure and a stable enrolled
+quantity in all three years:
+
+| Test | Result | What it could have detected |
+| --- | --- | --- |
+| Utilization against the size of the utility's own peak, within utility | slope zero, p = 0.99 | 2 points of utilization per percent of peak, every time; 1 point, 76% of the time |
+| The January 2018 cold: 59 utilities pushed to new winter peaks, against the rest | -10 points, p = 0.25; none of eight specifications significant | a 20-point rise, 84% of the time; 10 points, half the time |
+| Utilities whose peak moved between summer and winter | no difference, p = 0.89 | weak: losing half of summer delivery in winter, 72% of the time |
+
+The size test uses the utility's net peak, which demand response lowers in the
+years it runs, so its bias works against finding an effect, and it is restricted
+to the 99 utilities whose demand response is under 5% of their peak, where that
+bias is negligible. Those hold 23% of the capacity in the panel, which is the
+test's main limit. 43% of them report the same utilization every year.
+
+Read together: no test finds the reported actual moving with the size or timing
+of the peak. Either most enrolled capacity runs in either season and is not
+called harder in a harder year, or reports do not follow the single-hour
+definition, and these files cannot separate the two. The first reading is a
+statement about program design; the second is the reporting question again. The
+one case whose timing does line up, Santee Cooper, is in section 1.
+
+What would separate them is what would separate everything else here: program
+season flags and event logs for even a few dozen of these utilities.
 
 ## Cross-track thread
 

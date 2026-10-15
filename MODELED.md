@@ -13,8 +13,11 @@ these models were tested against stay in FINDINGS, and FINDINGS points here.
 
 ## Track 3. Does price-based demand response match direct load control per customer?
 
-**Answer.** The mix is not identified. But a purely price-based residential
-fleet is excluded, and part of the original uncertainty was self-inflicted.
+**Answer.** This inversion does not identify the mix. But a purely price-based
+residential fleet is excluded, and part of the original uncertainty was
+self-inflicted. Since v0.5.0 the mix is also bracketed by measurement, from the
+form's own count of direct load control customers, at 45% to 83% of residential
+enrolment (FINDINGS section 3), which agrees with the bound below.
 
 SIMULATED, with one measured anchor, and revised after the first version
 reported a plain null.
@@ -90,7 +93,7 @@ collect.
 
 ### And the null was hiding a bound
 
-The mix is not identified. But the measured delivery per enrolled residential
+The inversion does not identify the mix. But the measured delivery per enrolled residential
 customer is 1.8x to 9.0x what a pure time-of-use fleet could produce, across the
 entire parameter range, so the residential demand response fleet is not
 predominantly price-based. Every draw of the sweep requires some direct load

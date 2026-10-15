@@ -153,6 +153,39 @@ def _carboncast_hours() -> pd.DataFrame:
     ).assign(utc=lambda d: d.utc.astype(str))
 
 
+def _eia861_peaks() -> pd.DataFrame:
+    from . import eia861
+
+    return eia861.peaks()[["year", "utility_number", "summer_peak_mw", "winter_peak_mw"]]
+
+
+def _eia861_meters() -> pd.DataFrame:
+    from . import eia861
+
+    cols = ["year", "utility_number", "state", "ba_code", "ami_total", "meters_total",
+            "dlc_residential"]
+    return eia861.meters()[cols]
+
+
+def _eia861_dynamic_pricing() -> pd.DataFrame:
+    from . import eia861
+
+    return eia861.dynamic_pricing()[["year", "utility_number", "state", "dp_residential", "dp_total"]]
+
+
+def _eia861_customers() -> pd.DataFrame:
+    from . import eia861
+
+    cols = ["year", "utility_number", "state", "customers_residential", "customers_total"]
+    return eia861.customers()[cols]
+
+
+def _eia861_short_form() -> pd.DataFrame:
+    from . import eia861
+
+    return eia861.short_form()[["year", "utility_number"]]
+
+
 SLICES: dict[str, Callable[[], pd.DataFrame]] = {
     "eia_national_total": _national_total,
     "eia_national_by_sector": _national_by_sector,
@@ -166,6 +199,11 @@ SLICES: dict[str, Callable[[], pd.DataFrame]] = {
     "ferc_regional": _ferc_regional,
     "ferc_rto_wholesale": _rto,
     "carboncast_hourly": _carboncast_hours,
+    "eia861_peaks_2016_2018": _eia861_peaks,
+    "eia861_meters_2016_2018": _eia861_meters,
+    "eia861_dynamic_pricing_2017_2018": _eia861_dynamic_pricing,
+    "eia861_customers_2016_2018": _eia861_customers,
+    "eia861_short_form_2016_2018": _eia861_short_form,
 }
 
 

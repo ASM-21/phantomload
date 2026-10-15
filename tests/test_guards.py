@@ -235,7 +235,7 @@ def test_every_figure_is_drawn_by_make_all_and_shown_somewhere():
     docs = " ".join((ROOT / n).read_text() for n in ("README.md", "FINDINGS.md",
                                                       "FALSIFICATION.md", "MODELED.md"))
     shown = set(re.findall(r"figures/(fig\d+_\w+\.png)", docs))
-    assert {"fig12_decomposition.png", "fig13_rotation.png"} <= shown
+    assert {"fig12_decomposition.png", "fig13_rotation.png", "fig14_peak_check.png"} <= shown
 
 
 def test_citation_and_package_versions_agree():

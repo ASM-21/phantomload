@@ -29,6 +29,18 @@ confidence requires 29 years of quiet, and more under realistic weather
 persistence, against twelve years of data. That bound is the **rule of three**,
 a standard result from 1983, applied here rather than derived here.
 
+The ratio itself is narrower than it looks, and earlier versions of this
+repository misdescribed it. EIA's form instructions define the actual figure as
+the reduction **measured at the time of the company's annual system peak hour**,
+and potential as what could occur in that hour if all demand response were
+called. So the dispatch utilization is the share of enrolled capacity running
+in one hour a year, not the share used during the year. A program called on ten
+other afternoons and not in that hour reports zero. Florida Power & Light says
+it has "only activated the program a few times per year for just a short period
+time", if at all. The definition does not change any number here. It
+changes what a zero can mean, and it makes the reports checkable against what
+the same utilities report elsewhere on the same form.
+
 Utility-level data narrows it, by less than this repository first claimed.
 Capacity that would fail if called produces *partial* delivery. Capacity never
 dispatched produces *exactly zero*, because not calling an event has no partial
@@ -53,9 +65,14 @@ zero (21%) or rotated only into reports that show nothing about availability
 enrolled capacity, and positive years under 4% of potential. Followed one year
 forward, capacity at zero that reported again delivered **15% of its potential**
 the next year, against 45% for capacity that had delivered a measured amount. So the zero mass
-is non-dispatch; for a minority of it the capacity has shown it can deliver, and
-for the rest three years of data cannot separate a rarely called reserve from a
-program that does not operate. The largest persistent zero is Baltimore Gas and
+is non-dispatch in the peak hour; for a minority of it the capacity has shown it
+can deliver, and for the rest three years of data cannot separate a rarely
+called reserve from a program that does not operate. The one case whose timing
+can be checked fits the uncalled reading. Santee Cooper reported zero in 2016
+and 2017 and then 520.4 MW of its 520.5 MW in 2018, the year its annual peak
+came from the January 2018 cold, **4.3% above its earlier maximum**; its
+planning documents describe that load as non-firm and excluded from reserve
+planning. The largest persistent zero is Baltimore Gas and
 Electric, which reported zero from 2015 through 2018, and whose program bids into
 PJM's wholesale market, so its peak reduction may simply be recorded in the other
 accounting. Above zero the distribution is continuous and separates nothing.
@@ -77,9 +94,14 @@ program's number, mainly because small programs so often report a contract
 rather than an outcome. `python -m phantomload benchmark` compares against peers
 of similar size and flags the convention.
 
-**The gap is three different things, and they behave differently.** In 2018 the
-unrealised 59.5% splits into partial delivery (34%), capacity with no actual
-figure reported (15%), and the zero mass (10%). Partial delivery is the largest
+**The gap is three different things, and two of them are mostly one.** In 2018
+the unrealised 59.5% splits into partial delivery (34%), capacity with no actual
+figure reported (15%), and the zero mass (10%). The blanks are not small
+utilities exempt from the question: **none of the 1,104 or more short-form
+filers** a year appears in the demand response file. They are mostly the
+zero mass entered another way: **73% of the capacity ever left blank** belongs
+to utilities that report an exact zero in another year, and half of it to
+utilities that never report anything else. Partial delivery is the largest
 piece every year, **49% to 57% of the gap**, and whether it responds to system
 conditions is the question this repository could not settle. If system need
 decided how much of each program got called, utilization would rise and fall
@@ -90,9 +112,17 @@ Across the nine combinations, the regional common share exceeds what shuffled
 labels produce in all nine and is significant in **3 of 9**, with p ranging
 from 0.0055 to 0.36. With every report included, as first published, nothing is
 detectable (**p = 0.36**); excluding the copied reports, a modest regional
-component appears. So this part of the gap is open, leaning slightly toward
-dispatch rather than structure, and it is the most important open question in
-the repository.
+component appears. Two sharper tests, possible once each utility's own peak was
+in hand, point the other way. Within a utility, utilization does not rise with
+the size of the year's peak: across the 99 utilities whose demand response is
+too small to move their own peak, the slope is zero, and a rise of **2 points of
+utilization per percent of peak** would have been detected. And the January
+2018 cold, which pushed **59 utilities** to new winter peaks, did not raise their
+utilization relative to everyone else's. Either most enrolled capacity runs in
+either season and is not called harder in a harder year, or the reports do not
+follow the single-hour definition, and these files cannot say which. So this
+part of the gap is open and the evidence on it is mixed, and it is the most
+important open question in the repository.
 
 Whether the zero and unreported shares are wholesale bookkeeping is also open,
 and this too was first reported more firmly than the data allows. If they were
@@ -145,6 +175,19 @@ means is that nobody can call the gap non-performance without first arguing that
 reporting is consistent across respondents, and no such argument appears in the
 source.
 
+For part of the population the same form now shows it directly. Potential is
+defined in the peak hour, so it cannot exceed the load in that hour, which is the
+reported peak plus the savings achieved in it. **18 utility-years** from 8
+utilities, cooperatives in North Dakota, Minnesota and Nebraska, report more
+potential than that, **3.4% of the capacity** that can be checked; the largest
+is Cass County Electric Cooperative, with 467.8 MW of potential against a peak
+hour load of 397.4 MW. Their utilization is 24% against 45% for everyone else.
+The pattern is consistent with reporting the connected load under a
+load-control program rather than savings in the peak hour, and it is evidence of
+exactly the inconsistency the fivefold spread could only make room for.
+
+![peak check](figures/fig14_peak_check.png)
+
 What survives is narrower and more useful than the headline. The measurement is
 solid. Every reading of it turns on an accounting choice rather than on
 evidence. And the quantity that actually decides the economics is *when* demand
@@ -159,9 +202,13 @@ neither the retail nor the wholesale accounting reports.
 | | |
 | --- | --- |
 | Dispatch utilization | 39.2% mean, 2013 to 2024, no trend worth reporting |
+| What the actual figure measures | the reduction running in one hour, the company's annual system peak hour |
 | Exact-zero reporting, every utility, 2016 to 2018 | 10.0% to 17.8% of enrolled capacity per year |
 | Zero-reported capacity with a measured delivery in another year | 15%, though 79% reports something positive somewhere |
+| Unreported capacity at utilities reporting an exact zero in another year | 73% |
 | Zero and unreported capacity, outside against inside RTO footprints | 39% against 22%, but 25% against 22% without Florida |
+| Potential above the utility's own load in the peak hour | 18 utility-years, 3.4% of the capacity that can be checked |
+| Utilization against the size or timing of the utility's own peak | no response detected; 2 points per percent of peak would have been |
 | Cost, enrolled basis | $50.39 per kW-year |
 | Cost, delivered basis | $128.78 per kW-year |
 | PJM comparator | $149.31 gross CONE, $68.35 net, both per kW-year |
@@ -170,6 +217,8 @@ neither the retail nor the wholesale accounting reports.
 | Accredited the way the field accredits, not by dispatch utilization | 5 of 6, losing only the winter four-hour case |
 | Reserve share needed to flip the cost verdict | -8.8% against gross CONE, 56.8% against net |
 | Regional spread in reported intensity | 5.5-fold, mix-adjusted |
+| Residential enrollees who could also be on a time-varying rate, 2018 | 13% to 33% utility by utility, against 0% to 83% from national totals |
+| Residential demand response enrolment that is direct load control | at least 45% to 50%, at most 78% to 83% |
 | Scarcity targeting of the call window | 11x to 15x over chance |
 | Oversupply targeting of the same window | 0.07x to 0.16x |
 
@@ -188,9 +237,10 @@ questions to ask before reading a potential-versus-actual gap as underperformanc
 each with the evidence behind it and the data request that answers it.
 
 **Utility planners and program managers.** Place your program among every US
-program of similar size, since size matters more than anything else visible here:
+program of similar size, and check its potential against your own peak, which
+the form's definition caps it at:
 
-    python -m phantomload benchmark --potential 120 --actual 45
+    python -m phantomload benchmark --potential 120 --actual 45 --peak 2400
 
 With several years of your own records, run the classification the zero-mass
 results rest on: `python -m phantomload zero-mass your_data.csv`. It reports how
@@ -227,6 +277,13 @@ rate of 1.0 and a dispatch utilization of 0.0 in the same year, by performing
 perfectly on every event while being called for none. Most of the gap this
 repository studies is the second thing, not the first, and early drafts used the
 borrowed term and were wrong to.
+
+Both figures are defined at a single hour. The form asks for potential savings
+at the system peak hour and actual savings measured at the company's annual
+system peak hour (DATA.md section 1 quotes it), so dispatch utilization is the
+share of enrolled capacity running in the hour that set the year's peak. Earlier
+versions described it as the share realised during the year, which is a looser
+quantity than the one reported.
 
 ## Scope, and what was not checked
 
@@ -322,25 +379,26 @@ There is no track here whose headline depends on a number this repo invented.
 | --- | --- | --- |
 | 1 utilization | What share of enrolled capacity shows up? | 39.2% mean, stable for 12 years. More usefully: a 12-year panel can only rule out reserve resources designed for events more frequent than **4.5 years**. Ruling out a 1-in-10-year reserve at 95% needs **29 years of quiet**, and that closed form assumes independent years: model extreme conditions as persistent and it takes **65 years at persistence 0.6**, **2.2x longer**. Phantom and reserve are not separable here. A shift-share split of the **-4.7 points** since 2013 puts **118% of it** inside sectors rather than in the mix, driven by **commercial, which fell from 2013's 49.7% to 33.4%**. Regionally, class mix alone implies utilization ranging **30.4% in the East South Central to 37.9% in New England**, and three census divisions hold **59.3% of enrolled capacity**. |
 | 2 cost | Still cheap per kW delivered? | $50.39 enrolled, $128.78 delivered, against PJM's published $149.31 gross and $68.35 net CONE. Demand response needs **33.7% to clear gross CONE** and **73.7% to clear net CONE**; measured utilization is 39.2%, so it clears one and misses the other by half. In PPL's own PL zone net CONE is **$88.89**, the only zone where net CONE fell year over year. Energy revenue is **54.2%** of the RTO peaker's gross cost, which is the size of the netting asymmetry, but correcting it cannot rescue demand response: the gap to net CONE is **$60.43 per kW-year** and closing it would need avoided energy worth **$0.65 per kWh** across every event hour, which is **12.7x the annual load-weighted average** PJM LMP, so **0% of that grid** of plausible hours and prices clears. Priced at the annual average itself the correction covers **7.9% of the gap**. The cheapest sector also flips: **industrial on the enrolled basis and residential on the delivered basis**, and **commercial demand response costs more per delivered kW than building the peaker** on either basis. |
-| 3 price vs DLC | Is residential DR mostly price-based? | No. Measured delivery of **0.45 kW** per enrolled customer is **1.8x to 9.0x** what any purely price-based fleet produces, against evaluation values reported on the same per-customer basis. The program mix itself is not identified; the modeling that tried, and the units contradiction it surfaced and resolved, is in [MODELED.md](MODELED.md). |
+| 3 price vs DLC | Is residential DR mostly price-based? | No. Measured delivery of **0.45 kW** per enrolled customer is **1.8x to 9.0x** what any purely price-based fleet produces, against evaluation values reported on the same per-customer basis. The form's own count of direct load control customers brackets the mix: at least **45% to 50%** of residential enrolment is direct load control and at most **78% to 83%**, depending on whether the many blank lines count as none or all, and utilities whose enrolment is mostly direct load control deliver **0.94 kW** per enrolled customer against 0.40 kW where it is under a tenth. The modeling that tried to infer the mix from the national ratio alone, and the units contradiction it surfaced and resolved, is in [MODELED.md](MODELED.md). |
 | 4 curtailment | Can DR absorb curtailed renewables? | Not as currently scheduled. Lift of curtailment-risk hours inside a summer-evening call window is **CISO 0.16, PJM 0.07, ERCO 0.00**, all far below 1. CISO oversupply peaks at local **hour 12** in May, not at the evening peak. Move the window to all-year midday and the lift becomes **2.46x**, but that is a different product: absorbing surplus needs load increase, not load shed. Robust across **24 combinations** of threshold and proxy definition, **max lift 0.45**. The mirror image holds too: the same window captures the scarcity tail with lift **11x to 15x**, containing **59% to 76%** of the top 94 net-load hours, a **68-fold** targeting asymmetry. It was built for the second job. Its blind spot is seasonal, not hourly: **6 of ERCOT's top 200** net-load hours are February 2021, unreachable by a summer-only window, and that count is a floor because generation data cannot see shed load. The gap is structural rather than storm-specific: winter net load reaches **91% of its annual maximum in ERCO**, 85% in PJM. Scoped, though: PJM's wholesale market retired **3 summer-only products** and has required year-round availability **since the 2020/2021 delivery year**, so this applies to the retail population EIA measures, which publishes no seasonal availability at all. |
-| 5 double counting | How many customers are exposed to tariff and program double counting? | **18,240,088** customers were on a time-varying rate in 2023 against 10.6 million in DR programs, so the overlap is between **10.9% and 100%** of DR enrollees, led by **Pacific at 5.76** dynamic-pricing customers per DR customer. How much of the claimed reduction that overlap inflates depends on an attribution model, which is in [MODELED.md](MODELED.md). |
+| 5 double counting | How many customers are exposed to tariff and program double counting? | **18,240,088** customers were on a time-varying rate in 2023 against 10.6 million in DR programs, so from national totals the overlap is between **10.9% and 100%** of DR enrollees, led by **Pacific at 5.76** dynamic-pricing customers per DR customer. The upper end is an artefact of adding up first: computed utility by utility for 2018, the latest year with utility files reachable, **13% to 33%** of residential enrollees could also have been on a time-varying rate, and at most **45% allowing overlap across utilities** within a state, where that year's national totals allowed **83%**. The floor is mostly four Maryland and Delaware utilities whose peak-time rebates reach nearly every residential customer. How much of the claimed reduction the overlap inflates depends on an attribution model, which is in [MODELED.md](MODELED.md). |
 | 6 overhead | Does bad utilization come with heavy overhead? | No. The compounding hypothesis fails: pooled correlation across sector-years is **r = +0.10**, the wrong sign. Residential carries **48.9%** of program cost as non-incentive overhead against industrial's **4.9%**, an **8.9x** spread per delivered kW, but residential also has the best utilization. |
 | 7 cross-validation | Does the ratio survive a second estimator? | Yes, and the first version of this track was wrong to say otherwise. Within EIA the energy column is not independent: it falls **-69.9%** at the 2023 reclassification while realised peak moves **-5.4%**, and implied event hours split implausibly at **218 hours for residential and 25 for industrial**. But the RTOs report their own registrations, **33,272 MW** in 2024, **1.08x** national retail potential, and PJM deployed at least **46.9%** of its registered demand response at the third-highest peak in its history. Different reporters, different method, same order of magnitude, and the same unresolved ambiguity. Registration double counting and **$38.4M in civil penalties** for capacity that did not exist are both in the regulatory record. |
 | 8 falsification | Does the headline hold? | Two attacks survived, two landed. Multi-year windows do not rescue the capacity: the best single year of the whole panel still only realises **44.6%** of mean enrolled. Against the cheapest published comparator demand response still loses on the delivered basis at **$128.78**. But the reserve attack works from both directions: against gross CONE the required reserve share is **-8.8%**, meaning none is needed, and against net CONE it is **56.8%**, meaning most of the shortfall would have to be legitimate insurance. A fourth attack opens a third explanation the repo cannot close: after holding class mix constant, reported MW per enrolled customer varies **5.5-fold** from the **Pacific to the Mountain** division, and imposing the least intense division's standard on everyone moves utilization from **35.2% to 90.6%**. That bounds the room inconsistent reporting has without occupying it, since **genuine program-design differences produce the same signature**, and only **30% of enrolled MW** sits near the national norm. Persistence separates them partway: **7 of 9 divisions** are stable year over year, favouring genuine differences, but **Mountain lost 51.8% of its enrolled customers in one year while its reported capacity rose 8.9%**, which no real fleet does. |
-
 | 9 mechanisms | What produces each part of the gap? | Three components that behave differently. Partial delivery is the largest, **49% to 57% of the gap**, and whether it follows regional conditions is specification-dependent, significant in **3 of 9** specifications. Exact zeros read as non-dispatch, and **15% of the capacity ever reported at exactly zero** shows a measured delivery in another year. Zero and unreported capacity is more common outside RTO footprints mainly because of one state, Florida. Separately, **30% of reports set actual exactly equal to potential**, a contract recorded as a delivery. |
+| 10 reporting | Do the reports measure what the form asks for? | Partly. The actual figure is defined at one hour, the company's annual system peak hour. Checked against the same utilities' own peaks, **18 utility-years** report potential above the load in that hour, which the definition rules out. Utilization does not respond to the size or timing of the peak, and each test states what it could have detected. Copying potential into actual is more common without interval meters, **37% against 25%**, but a quarter of fully metered utilities' reports copy too, so inability to measure explains part of the convention, not most of it. The unreported group is mostly the zero mass under another label. |
 
-Full write-ups in [FINDINGS.md](FINDINGS.md) and [FALSIFICATION.md](FALSIFICATION.md). [METHOD.md](METHOD.md) has the 17 rules the repo runs on, each with what went wrong to produce it and whether a test enforces it. Most of it is portable to work that has nothing to do with demand response.
+Full write-ups in [FINDINGS.md](FINDINGS.md) and [FALSIFICATION.md](FALSIFICATION.md). [METHOD.md](METHOD.md) has the 18 rules the repo runs on, each with what went wrong to produce it and whether a test enforces it. Most of it is portable to work that has nothing to do with demand response.
 
 ## Why you can trust the numbers
 
-- Every quoted figure in these docs is recomputed by `tools/check_claims.py`, which fails the build on drift in either direction: change the analysis without the text, or the text without the analysis, and CI goes red. 169 claims are pinned, and the same script rejects dead links to files that no longer exist.
+- Every quoted figure in these docs is recomputed by `tools/check_claims.py`, which fails the build on drift in either direction: change the analysis without the text, or the text without the analysis, and CI goes red. 215 claims are pinned, and the same script rejects dead links to files that no longer exist.
 - Results that carry the argument are varied before they are trusted, and then read case by case. The rotation statistic runs under 288 specifications, the footprint comparison under 96 with every state dropped in turn, the common-shock test under 9 and the cost headline under 300. The v0.4.3 grids withdrew two readings that had stood in this README since v0.3.0 and v0.4.0, one because the statistic did not measure what the prose said and one because a single state carried it.
+- Reports are checked against what the same utilities reported on other pages of the same form in the same year: potential against their own peak load, the unreported group against the list of short-form filers, the direct load control count against enrolment. That cross-check, not a new statistic, is what found utility-years reporting a potential the form's own definition rules out.
 - The same script enforces caveat retention. Delete the sentence saying the comparator is unverified, or the one saying phantom and reserve are not separable, and the build fails. It also rejects overclaiming language outside retraction blockquotes.
 - The source table is checked against itself: published sector values must sum to published totals within EIA's own rounding, and spot values are pinned to the published table cell by cell. `tools/check_source.py` re-fetches the live EIA tables and diffs them against the vendored copy, so a future EIA revision of a prior year surfaces as a failure rather than as silent staleness.
 - Simulated records cannot masquerade as measured ones. They are built through `synthetic_program()`, which stamps provenance at construction and ignores any attempt to pass a different one.
-- `verify.sh` rebuilds everything from a clean checkout in a fresh virtual environment and reports whether every committed file in `results/` reproduced byte for byte, the claim ledger aside, since it records the commit and environment. For v0.4.3, run from a `git archive` of the tag, every one did. Figures pin their font and reproduce visually; antialiasing differs slightly between matplotlib builds.
+- `verify.sh` rebuilds everything from a clean checkout in a fresh virtual environment and reports whether every committed file in `results/` reproduced byte for byte, the claim ledger aside, since it records the commit and environment. For v0.5.0, run from a `git archive` of the tag, every one did. Figures pin their font and reproduce visually; antialiasing differs slightly between matplotlib builds.
 - The cost algebra is asserted as an identity to 1e-9, which catches unit slips between thousand-dollars and MW.
 - Pseudo-replication is called out where it exists: track 6's pooled correlation reuses four recurring sectors, so the sector-mean version is reported next to it and neither is presented as inferential.
 
@@ -348,18 +406,18 @@ Full write-ups in [FINDINGS.md](FINDINGS.md) and [FALSIFICATION.md](FALSIFICATIO
 
 ```
 phantomload/
-  shared/        dr_program.py registry, calibration.py parameters, plotting.py
-  tracks/        t1..t9, one module per track, each with run()
+  shared/        dr_program.py registry, eia861.py loaders, calibration.py parameters, plotting.py
+  tracks/        t1..t10, one module per track, each with run()
   synthesis.py   the capstone: every pairing of accounting bases, in one table
-data/            EIA-861 panel, PJM CONE and LMP, FERC regional and RTO tables, CarbonCast hourly generation
-tools/           six data builders, check_claims.py, check_source.py, claim_ledger.py, rename.sh
+data/            EIA-861 national panel and 2016 to 2018 utility files, PJM CONE and LMP, FERC regional and RTO tables, CarbonCast hourly generation
+tools/           seven data builders, check_claims.py, check_source.py, claim_ledger.py, rename.sh
 results/         every table each track produces, plus findings.json
-figures/         13 figures, all drawn from track outputs
+figures/         14 figures, all drawn from track outputs
 METHOD.md        the rules, what they cost to learn, and what enforces them
 MODELED.md       simulated analyses, kept out of the citable findings by rule
 CLAIMS.md        every quoted figure with its provenance record, generated
 PRIOR_WORK.md    what was already published, and what is still unsearched
-tests/           217 tests
+tests/           244 tests
 ```
 
 ## Install and run
@@ -367,18 +425,19 @@ tests/           217 tests
 ```bash
 pip install -e ".[dev]"
 python run_all.py            # all tracks, tables, figures
-pytest -q                    # 217 tests
-python tools/check_claims.py # 169 claims recomputed against the docs
+pytest -q                    # 244 tests
+python tools/check_claims.py # 215 claims recomputed against the docs
 python tools/check_source.py # diff the vendored panel against live EIA (skips offline)
 ```
 
 ## Data
 
-See [DATA.md](DATA.md) for provenance, licences and how to refresh. Short version: EIA-861 DR aggregates are a US government work; CarbonCast hourly generation is Apache-2.0 and is redistributed here with its licence and NOTICE.
+See [DATA.md](DATA.md) for provenance, licences and how to refresh. Short version: EIA-861 aggregates and utility files are US government works; CarbonCast hourly generation is Apache-2.0 and is redistributed here with its licence and NOTICE.
 
 ## Limitations
 
-- The EIA panel is national by sector. It has no program-type split, so "direct load control vs price-based vs capacity market" cannot be measured here, only modelled. The registry schema supports program-level records; the public data does not fill them.
+- The national EIA panel has no program-type split. For 2016 to 2018 the form's own count of direct load control customers brackets the residential mix (track 3), but price-based against capacity-market programs still cannot be separated, only modelled. The registry schema supports program-level records; the public data does not fill them.
+- The actual figure is defined at one hour, and the reports do not visibly follow it: utilization does not move with the size or timing of each utility's peak. Without program season flags or event logs, a low ratio cannot be split into not called, not running in that hour, and not reported to the definition.
 - Capacity-weighted statistics over a few dozen utilities are carried by a handful of them. The three largest hold 56% of the capacity ever reported at exactly zero, and one state holds 53% of the zero-or-unreported capacity outside RTO footprints. Read every utility-level result with that in mind; the tests pin the influential cases by name so they stay visible.
 - Aggregates hide dispersion. The between-sector spread averages **11.0%** of utilization and the regional class-mix floor spans about 7.6 points, both floors on the real spread rather than measures of it. FERC's regional cut carries potential peak savings but not actual, so regional utilization itself is still not observable. A national 39.2% remains consistent with every utility near 0.39 and with half the fleet at zero. This is roadmap item 1.
 - No event-level dispatch data exists in public form, which is what makes track 1's identification problem unfixable from this data rather than merely unsolved.
@@ -390,8 +449,11 @@ See [DATA.md](DATA.md) for provenance, licences and how to refresh. Short versio
 
 Stated once, here.
 
-**Blocked:** eia.gov, PJM Data Miner, api.pjm.com and caiso.com, all returning
-403 from the environment this was built in, re-tested on 2026-09-20.
+**Blocked:** eia.gov and api.eia.gov, PJM Data Miner, api.pjm.com and
+caiso.com, all refusing connections from the environment this was built in,
+re-tested on 2026-10-14. The mirrors that would supply more EIA-861 years are
+blocked too: PUDL's Zenodo archive and its public S3 bucket, and the PUDL data
+viewer, which serves CSV only after sign-in.
 
 **What that costs:** EIA-861 detailed files outside 2016 to 2018, which would
 lengthen the persistence test; hourly PJM prices, which would measure the
@@ -401,7 +463,9 @@ observed curtailment, which track 4 replaces with a stated proxy.
 **What was tried:** direct fetches; search engines, which reached the PJM and
 FERC PDFs, the market monitor reports and the ACEEE note; and a search for the
 EIA file names, which found the 2016 to 2018 files vendored inside an unrelated
-public repository. That last route is the one most likely to find more years.
+public repository. Asking what else that repository held found every other
+EIA-861 file for the same three years, which is where track 10 comes from. That
+route is the one most likely to find more years.
 
 **What would unblock it:** network access to any of the four hosts, or the same
 files vendored anywhere reachable.

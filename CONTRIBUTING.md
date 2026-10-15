@@ -66,18 +66,23 @@ or toward non-performance, and a result in either direction is welcome.
 
 **2. Extend the utility panel by file name.** Search for
 `Demand_Response_2019.xlsx` and its neighbours, as described in METHOD.md rule
-13. Start in `tools/build_eia861_utility.py`, which already parses the layout;
-add the years to `YEARS`. Finish line: the reconciliation test passes for the
-new years and `zero_persistence()` runs on the longer panel.
+13, and take the files next to it too (rule 18): `Operational_Data`,
+`Advanced_Meters`, `Dynamic_Pricing`, `Sales_Ult_Cust` and `Short_Form`. Start
+in `tools/build_eia861_utility.py` and `tools/build_eia861_context.py`, which
+already parse the layouts; add the years to `YEARS`. Finish line: the
+reconciliation test passes for the new years, and `zero_persistence()` and
+track 10's timing tests run on the longer panel.
 
-**3. Explain the not-reported group.** Utilities reporting potential but no
-actual figure hold 15% to 17% of enrolled capacity every year and nothing here
-explains them. Its apparent concentration outside RTO footprints turned out to
-be Florida, and all four Florida utilities involved switch between reporting
-zero and reporting nothing from year to year. Start in
-`phantomload/tracks/t9_mechanisms.py`, function `footprint_grid_summary()`.
-Finish line: a count of utilities nationwide that switch between a zero and a
-blank across years, and the share of not-reported capacity they hold.
+**3. Ask ten utilities how they fill in the actual figure.** The form measures
+it at the company's annual system peak hour, and the reports show no sign of
+tracking that hour (FINDINGS section 12). Whether a utility reports the peak
+hour, its largest event or its contract quantity is answerable from its
+evaluation reports or one email. Start with the 59 utilities the January 2018
+cold pushed to new winter peaks, listed by
+`phantomload/tracks/t10_reporting.py`, function `january_2018_event()` and the
+frame behind it. Finish line: a table of utility, method and source, which
+decides whether the timing tests in track 10 are about programs or about
+paperwork.
 
 **4. Pin the DLC denominator.** One utility evaluation that reports both kW per
 controlled device and devices per enrolled customer would move a modeled result
@@ -88,11 +93,13 @@ Finish line: the parameter moves to LITERATURE with a citation.
 **5. Find out whether Florida called its load management.** Four Florida
 utilities hold most of the zero and unreported capacity outside RTO footprints,
 and the Public Service Commission describes FPL's residential program as used
-in system emergencies. Their demand-side management filings and ten-year site
-plans may record whether load management was activated in 2016 to 2018. Finish
-line: a table of activations by utility and year with the source document for
-each, which tests the long-on-capacity explanation in the one place the data
-points to.
+in system emergencies; FPL itself says it activates the program a few times a
+year at most. Their demand-side management filings and ten-year site plans may
+record whether load management was activated in 2016 to 2018, and at what
+hours. Finish line: a table of activations by utility and year with the source
+document for each, which tests the long-on-capacity explanation in the one place
+the data points to, and shows whether any activation covered an annual peak
+hour.
 
 **6. Build the PJM price duration curve.** PJM Data Miner hourly LMP, paired with
 the net-load ranking track 4 already computes, would replace the last swept

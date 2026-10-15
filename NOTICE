@@ -71,3 +71,23 @@ This repository redistributes third-party data.
    The values were transcribed from the published HTML tables; the
    transcription lives in tools/build_eia861_panel.py and is checked against
    EIA's own published totals by tests/test_data.py.
+
+8. EIA-861 detailed files beyond demand response, 2016 to 2018
+   Files: data/eia861_peaks_2016_2018.csv,
+          data/eia861_meters_2016_2018.csv,
+          data/eia861_dynamic_pricing_2017_2018.csv,
+          data/eia861_customers_2016_2018.csv,
+          data/eia861_short_form_2016_2018.csv
+   Source: Form EIA-861 detailed data files Operational_Data, Advanced_Meters,
+           Dynamic_Pricing, Sales_Ult_Cust and Short_Form, U.S. Energy
+           Information Administration. Work of the U.S. Government, not subject
+           to domestic copyright.
+   Obtained from: the same IMMM-SFA/electricity_entity_boundaries repository as
+           item 6, under the same terms. Selected columns are extracted
+           unmodified by tools/build_eia861_context.py.
+
+9. Form EIA-861 instructions (quoted, not redistributed)
+   The definitions quoted in DATA.md and phantomload/shared/eia861.py are from
+   the Form EIA-861 instructions, OMB No. 1905-0129, a U.S. Government work, as
+   archived by the Public Utility Data Liberation project in
+   catalyst-cooperative/pudl, docs/data_sources/eia861/.

@@ -1,0 +1,73 @@
+key,utility,mean_potential_mw,also_zero,also_positive,status_2016,status_2017,status_2018,category,provenance
+6452_FL,Florida Power & Light Co,1643.3333333333333,True,False,exact_zero,not_reported,not_reported,"blank and exactly zero, never positive",measured
+14063_AR,Oklahoma Gas & Electric Co,1027.0666666666666,True,False,not_reported,not_reported,exact_zero,"blank and exactly zero, never positive",measured
+6455_FL,"Duke Energy Florida, LLC",1018.0,True,False,not_reported,not_reported,exact_zero,"blank and exactly zero, never positive",measured
+13781_MN,Northern States Power Co - Minnesota,759.3333333333334,True,True,positive,not_reported,exact_zero,blank and positive in other years,measured
+5416_NC,"Duke Energy Carolinas, LLC",534.5666666666667,True,True,exact_zero,positive,not_reported,blank and positive in other years,measured
+9191_ID,Idaho Power Co,356.3333333333333,False,True,positive,not_reported,not_reported,blank and positive in other years,measured
+7140_GA,Georgia Power Co,355.73333333333335,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+12647_MN,"ALLETE, Inc.",274.3333333333333,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+20860_WI,Wisconsin Public Service Corp,263.8666666666666,False,True,not_reported,positive,positive,blank and positive in other years,measured
+5416_SC,"Duke Energy Carolinas, LLC",224.16666666666666,True,True,exact_zero,positive,not_reported,blank and positive in other years,measured
+18454_FL,Tampa Electric Co,200.23333333333335,True,False,exact_zero,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+20847_WI,Wisconsin Electric Power Co,188.16666666666666,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+4254_MI,Consumers Energy Co,181.4333333333333,False,True,not_reported,positive,positive,blank and positive in other years,measured
+10005_KS,Kansas Gas & Electric Co,179.66666666666666,True,False,exact_zero,not_reported,not_reported,"blank and exactly zero, never positive",measured
+17539_SC,"Dominion Energy South Carolina, Inc",164.66666666666666,True,True,not_reported,exact_zero,positive,blank and positive in other years,measured
+20856_WI,Wisconsin Power & Light Co,157.5,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+3046_NC,Duke Energy Progress - (NC),150.5,False,True,not_reported,positive,positive,blank and positive in other years,measured
+40228_VA,Rappahannock Electric Coop,135.03333333333333,False,True,positive,positive,not_reported,blank and positive in other years,measured
+3046_SC,Duke Energy Progress - (NC),95.23333333333333,True,True,not_reported,exact_zero,positive,blank and positive in other years,measured
+3542_OH,Duke Energy Ohio Inc,78.10000000000001,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+15477_NJ,Public Service Elec & Gas Co,70.2,True,False,exact_zero,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+12698_MO,KCP&L Greater Missouri Operations Co.,68.5,True,False,exact_zero,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+22500_KS,Westar Energy Inc,66.66666666666667,True,False,not_reported,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+12395_IL,Menard Electric Coop,58.666666666666664,False,True,positive,not_reported,not_reported,blank and positive in other years,measured
+10000_MO,Kansas City Power & Light Co,52.43333333333334,True,False,exact_zero,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+12796_WV,Monongahela Power Co,50.0,True,False,not_reported,not_reported,exact_zero,"blank and exactly zero, never positive",measured
+13781_ND,Northern States Power Co - Minnesota,48.03333333333333,True,True,positive,not_reported,exact_zero,blank and positive in other years,measured
+18445_FL,City of Tallahassee - (FL),45.06666666666666,True,False,exact_zero,not_reported,not_reported,"blank and exactly zero, never positive",measured
+17561_TX,South Plains Electric Coop Inc,44.333333333333336,True,False,exact_zero,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+19547_HI,Hawaiian Electric Co Inc,32.46666666666666,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+13640_VA,Northern Virginia Elec Coop,31.666666666666668,False,True,not_reported,positive,positive,blank and positive in other years,measured
+19446_KY,Duke Energy Kentucky,31.2,False,True,not_reported,not_reported,positive,blank and positive in other years,measured
+12745_CA,Modesto Irrigation District,30.733333333333334,True,True,exact_zero,positive,not_reported,blank and positive in other years,measured
+60631_MI,Upper Michigan Energy Resources Corp.,28.95,False,False,,not_reported,not_reported,blank in every year reported,measured
+13781_SD,Northern States Power Co - Minnesota,25.63333333333333,True,True,positive,not_reported,exact_zero,blank and positive in other years,measured
+10000_KS,Kansas City Power & Light Co,22.46666666666667,True,False,exact_zero,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+4045_MO,City of Columbia - (MO),22.23333333333333,True,False,not_reported,not_reported,exact_zero,"blank and exactly zero, never positive",measured
+12199_ND,Montana-Dakota Utilities Co,19.866666666666664,True,False,not_reported,exact_zero,exact_zero,"blank and exactly zero, never positive",measured
+8570_NE,Highline Electric Assn,17.5,True,False,not_reported,not_reported,exact_zero,"blank and exactly zero, never positive",measured
+9191_OR,Idaho Power Co,17.133333333333333,False,True,positive,not_reported,not_reported,blank and positive in other years,measured
+11475_SD,City of Madison - (SD),16.666666666666668,True,False,not_reported,not_reported,exact_zero,"blank and exactly zero, never positive",measured
+8570_CO,Highline Electric Assn,15.933333333333332,True,False,not_reported,exact_zero,exact_zero,"blank and exactly zero, never positive",measured
+4065_OH,City of Columbus - (OH),14.1,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+590_CA,City of Anaheim - (CA),13.0,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+19798_CA,City of Vernon,12.7,True,False,,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+12199_MT,Montana-Dakota Utilities Co,10.666666666666666,True,False,not_reported,exact_zero,exact_zero,"blank and exactly zero, never positive",measured
+7090_GA,GreyStone Power Corporation,9.733333333333333,False,True,not_reported,not_reported,positive,blank and positive in other years,measured
+3258_IA,Central Iowa Power Cooperative,9.649999999999999,False,True,not_reported,positive,,blank and positive in other years,measured
+16181_MN,Rochester Public Utilities,9.266666666666667,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+4147_MA,Town of Concord - (MA),7.433333333333334,False,True,positive,not_reported,positive,blank and positive in other years,measured
+17572_NC,South River Elec Member Corp,6.8,False,True,not_reported,positive,positive,blank and positive in other years,measured
+10595_MN,City of Lake City - (MN),6.2,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+14717_NC,Pee Dee Electric Member Corp,6.0,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+13683_NC,North Carolina El Member Corp,4.5,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+20847_MI,Wisconsin Electric Power Co,4.5,False,False,not_reported,,,blank in every year reported,measured
+20860_MI,Wisconsin Public Service Corp,3.5,False,False,not_reported,,,blank in every year reported,measured
+15619_VA,City of Radford - (VA),3.25,False,True,,not_reported,positive,blank and positive in other years,measured
+11298_IA,Lyon Rural Electric Coop,3.233333333333333,False,True,positive,not_reported,not_reported,blank and positive in other years,measured
+18203_AL,Tallapoosa River Elec Coop Inc,3.2000000000000006,True,False,exact_zero,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+14175_SC,"Tri-County Electric Coop, Inc",3.0,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+16295_CA,City of Roseville - (CA),2.8000000000000003,True,False,exact_zero,not_reported,exact_zero,"blank and exactly zero, never positive",measured
+9231_MO,City of Independence - (MO),2.0,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+16971_MN,Shakopee Public Utilities Comm,2.0,False,True,not_reported,not_reported,positive,blank and positive in other years,measured
+3931_IL,Coles-Moultrie Electric Coop,1.5,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+8179_IN,Harrison County Rural E M C,1.0,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+9996_KS,City of Kansas City - (KS),1.0,False,False,not_reported,,,blank in every year reported,measured
+13815_WI,Northwestern Wisconsin Elec Co,1.0,False,True,not_reported,not_reported,positive,blank and positive in other years,measured
+5860_MO,Empire District Electric Co,0.8000000000000002,True,False,exact_zero,exact_zero,not_reported,"blank and exactly zero, never positive",measured
+19951_OH,City of Wadsworth - (OH),0.6,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+4430_AL,"Covington Electric Coop, Inc",0.5333333333333333,False,False,not_reported,not_reported,not_reported,blank in every year reported,measured
+8288_IA,City of Hawarden - (IA),0.5333333333333333,False,True,not_reported,positive,positive,blank and positive in other years,measured
+12199_SD,Montana-Dakota Utilities Co,0.1,False,False,not_reported,,,blank in every year reported,measured

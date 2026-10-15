@@ -1529,3 +1529,152 @@ def test_t9_size_gradient_vanishes_within_every_class_on_measured_reports():
     assert s["classes"] == 3
     assert s["raw_significant_in_every_class"] is True
     assert s["measured_significant_in_any_class"] is False
+
+
+# --- track 10: what the reported numbers measure ------------------------------
+from phantomload.tracks import t10_reporting as t10  # noqa: E402
+
+
+def test_t10_definition_is_the_single_hour_one():
+    d = t10.definition()
+    assert "annual system peak hour" in d["actual"]
+    assert "the one hour" not in d["actual"]  # the quote is verbatim, not ours
+    assert "in the hour that set the company's annual peak" in d["consequence"]
+
+
+def test_t10_impossible_potential_rule_on_a_constructed_utility():
+    """The rule: savings at the peak hour cannot exceed the load in that hour,
+    which before demand response is the net peak plus the actual savings."""
+    df = t10.utility_year()
+    r = df[df.checkable].iloc[0].copy()
+    gross = r.annual_peak_mw + r.actual_mw
+    assert (r.potential_mw > gross + t10.ROUNDING_MW) == bool(r.exceeds_gross_peak)
+    # a blank actual makes the check impossible, so it is never flagged
+    assert not df[~df.actual_complete].exceeds_gross_peak.any()
+
+
+def test_t10_impossible_reports_are_few_cooperatives_with_low_utilization():
+    s = t10.peak_check_summary()
+    assert s["exceeds_gross_peak_utility_years"] == 18
+    assert s["exceeds_gross_peak_utilities"] == 8
+    assert s["exceeds_gross_peak_top_states"] == "ND, MN, NE"
+    assert s["exceeds_gross_peak_cooperative_share"] > 0.9
+    assert 0.02 < s["exceeds_gross_peak_share_of_checkable_potential"] < 0.05
+    assert s["exceeds_gross_peak_utilization"] < s["exceeds_gross_peak_rest_utilization"] / 1.5
+    assert s["largest_impossible_utility"].startswith("Cass County")
+    assert s["potential_over_peak_capacity_weighted"] == pytest.approx(0.051, abs=0.002)
+
+
+def test_t10_santee_cooper_delivered_only_in_its_highest_peak_year():
+    s = t10.santee_cooper()
+    assert s["positive_only_in_highest_peak_year"] is True
+    assert s["peak_season_2018"] == "winter"
+    assert s["actual_2016"] == s["actual_2017"] == 0
+    assert s["actual_2018"] == pytest.approx(520.4)
+    assert s["peak_2018_over_prior_max"] == pytest.approx(0.0435, abs=5e-4)
+
+
+def test_t10_timing_tests_are_null_and_their_power_is_stated():
+    s = t10.timing_summary()
+    assert s["event_specifications"] == 8
+    assert s["event_significant_any"] == 0
+    assert s["size_p_value"] > 0.5
+    assert abs(s["size_slope_per_pct_of_peak"]) < 0.005
+    # the size test is the informative one; the season test is not
+    assert s["size_smallest_reliably_detected_slope"] == 0.02
+    assert s["season_smallest_reliably_detected_loss"] is None
+    assert s["event_power_at_20_points"] >= 0.8 > s["event_power_at_10_points"]
+
+
+def test_t10_peak_size_test_power_check_detects_an_injected_slope():
+    """A power check that never fires is an assumption. Inject a slope of five
+    points per percent of peak and the test must find it every time."""
+    s = t10.peak_size_test()
+    assert s["power_at_5pt_per_pct"] == 1.0
+    assert s["slope_among_utilities_that_vary"] == pytest.approx(0, abs=0.005)
+
+
+def test_t10_blank_is_mostly_the_zero_mass_under_another_label():
+    s = t10.unreported_summary()
+    assert s["short_form_filers_in_dr_file"] == 0
+    assert s["short_form_filers_min"] > 1_000
+    parts = (s["blank_and_zero_never_positive_share"] + s["blank_and_positive_share"]
+             + s["blank_every_year_share"])
+    assert parts == pytest.approx(1.0)
+    assert s["blank_with_zero_elsewhere_share"] > 0.7
+    assert s["blank_and_zero_never_positive_share"] > 0.5
+    assert s["largest_blank"] == "Florida Power & Light Co"
+
+
+def test_t10_copying_follows_metering_partly():
+    s = t10.copy_vs_metering()
+    assert s["copy_rate_ami_under 10%"] > s["copy_rate_ami_90% or more"]
+    assert 0 < s["no_ami_minus_full_ami_within_size"] < 0.15
+    assert s["p_value"] < 0.05
+    # most of the convention survives full metering
+    assert s["copy_rate_ami_90% or more"] > 0.2
+
+
+# --- track 5, utility by utility ----------------------------------------------
+def test_t5_utility_level_bounds_are_tighter_and_ordered():
+    df = t5.utility_level_overlap()
+    assert (df.lower_share_of_dr <= df.upper_share_of_dr + 1e-12).all()
+    for (year, cls), g in df.groupby(["year", "customer_class"]):
+        g = g.set_index("level")
+        assert g.loc["utility-state", "upper_share_of_dr"] < g.loc["state", "upper_share_of_dr"]
+        assert g.loc["state", "upper_share_of_dr"] < g.loc["nation", "upper_share_of_dr"]
+    s = t5.utility_level_summary()
+    assert s["residential_utility_state_lower"] == pytest.approx(0.127, abs=0.002)
+    assert s["residential_utility_state_upper"] == pytest.approx(0.330, abs=0.002)
+    assert s["residential_state_upper"] == pytest.approx(0.454, abs=0.002)
+    assert s["residential_nation_upper"] == pytest.approx(0.828, abs=0.002)
+
+
+def test_t5_capping_keeps_cooperative_reporting_from_crossing_the_bounds():
+    """A generation and transmission cooperative reports its members' demand
+    response enrolment and has no retail customers of its own. Uncapped, that
+    pushes the lower bound above the upper."""
+    import pandas as pd
+
+    f = pd.DataFrame({"d": [1000.0], "p": [0.0], "n": [0.0]})
+    lo, hi, _ = t5._bounds(f)
+    assert lo == 0.0 and hi == 0.0
+
+
+def test_t5_national_independence_understates_the_within_utility_value():
+    s = t5.utility_level_summary()
+    assert s["residential_independent_within_utility"] > 3 * s["residential_independent_nationally"]
+
+
+# --- track 3, the mix where the form counts it ----------------------------------
+def test_t3_measured_dlc_share_is_bracketed():
+    s = t3.measured_mix_summary()
+    assert 0.45 < s["floor_min"] <= s["floor_max"] < 0.51
+    assert 0.77 < s["ceiling_min"] <= s["ceiling_max"] < 0.83
+    assert s["kw_mostly_dlc"] > 2 * s["kw_little_dlc"]
+    assert s["p_dlc_share_vs_kw"] < 0.05
+
+
+def test_t3_blank_dlc_line_counts_as_none_in_the_floor():
+    """The bug this guards: pandas min() skips a missing value and returns the
+    enrolment instead, which turned every blank line into full direct load
+    control and put the floor near 80%."""
+    df = t3._mix_frame()
+    f = df[df.year == 2018]
+    by_hand = np.minimum(f.dlc_customers.fillna(0), f.enrolled).sum() / f.enrolled.sum()
+    row = t3.measured_dlc_share().set_index("year").loc[2018]
+    assert row.dlc_share_floor == pytest.approx(by_hand)
+    assert row.dlc_share_floor < 0.5
+
+
+def test_benchmark_flags_a_potential_above_the_load_in_the_peak_hour():
+    """The CLI runs track 10's check on one program: Cass County's 2018 report
+    must be flagged, an ordinary program must not."""
+    from phantomload.__main__ import benchmark
+
+    r = benchmark(467.8, 126.3, None, 271.1)
+    assert r["potential_exceeds_load_at_peak"] is True
+    assert "cannot be the defined quantity" in r["your_status"]
+    ok = benchmark(120, 45, None, 2400)
+    assert ok["potential_exceeds_load_at_peak"] is False
+    assert ok["your_status"] == "within the usual range"

@@ -7,8 +7,8 @@ authors:
     given-names: Andrew
     orcid: "https://orcid.org/0009-0004-8758-2687"
     affiliation: "independent"
-version: 0.4.3
-date-released: "2026-10-07"
+version: 0.5.0
+date-released: "2026-10-15"
 license: Apache-2.0
 keywords:
   - demand response
@@ -18,7 +18,10 @@ keywords:
   - EIA-861
 abstract: >-
   US utilities realise about 39 percent of the demand response peak reduction
-  they report as available, a gap that has held for twelve years. Using
+  they report as available, a gap that has held for twelve years. The form
+  measures the delivered figure in one hour, the company's annual system peak
+  hour, so the ratio is the share of enrolled capacity running in that hour,
+  not the share used during the year. Using
   EIA-861 utility-level files for 2016 to 2018, which reconcile to the national
   series to the megawatt, this work decomposes that gap into three components
   that behave differently. Capacity reported at exactly zero reads as
@@ -26,8 +29,13 @@ abstract: >-
   to utilities with a measured delivery in another year, so whether it was
   available is mostly undetermined. Its apparent concentration outside
   organised markets, and that of capacity with no reported outcome, rests
-  mostly on four Florida utilities. Whether partial delivery, about half the
-  gap, responds to system conditions is specification-dependent. Nearly a
+  mostly on four Florida utilities, and capacity with no reported outcome is
+  mostly the same utilities' zeros entered another way. Whether partial
+  delivery, about half the gap, responds to system conditions is unsettled: a
+  regional component appears in some specifications, while within utilities
+  the reported figure does not respond to the size or timing of the peak.
+  Checked against each utility's own peak on the same form, some reports
+  cannot be the defined quantity. Nearly a
   third of positive reports set actual exactly equal to potential, a
   convention that produced an apparent size gradient this work first reported
   and then withdrew. Priced against PJM's published cost of new entry, demand

@@ -6,7 +6,7 @@ different country's reporting, or a single utility's program-level records.
 This makes that one command.
 
     python -m phantomload zero-mass your_data.csv
-    python -m phantomload benchmark --potential 100 --actual 35 [--rto | --non-rto]
+    python -m phantomload benchmark --potential 100 --actual 35 [--peak 2400] [--rto | --non-rto]
 
 Input: a CSV with one row per reporting entity per year and these columns.
 
@@ -18,6 +18,12 @@ Input: a CSV with one row per reporting entity per year and these columns.
 
 Blank and zero are different and the test depends on keeping them apart:
 blank means the entity did not report, zero means it reported calling nothing.
+
+Know what your actual figure measures before reading anything below. EIA's is
+"measured at the time of the company's annual system peak hour", so a zero
+means nothing was running in that one hour, not that nothing was called all
+year. If your figure is the largest reduction in any event, or the average
+across events, a zero means something stronger.
 
 With one year you get the shape: how much enrolled capacity sits at exactly
 zero. With several years and a key you also get persistence, and the two
@@ -121,7 +127,9 @@ def _what_the_rotation_is_made_of(df: pd.DataFrame) -> dict:
     return out
 
 
-def benchmark(potential_mw: float, actual_mw: float | None, in_rto: bool | None) -> dict:
+def benchmark(
+    potential_mw: float, actual_mw: float | None, in_rto: bool | None, peak_mw: float | None = None
+) -> dict:
     """Place one program among every US utility program, 2016 to 2018.
 
     For a planner asking whether their program is unusual, or a reviewer asking
@@ -161,8 +169,11 @@ def benchmark(potential_mw: float, actual_mw: float | None, in_rto: bool | None)
     u = actual_mw / potential_mw
     out["your_utilization"] = float(u)
     out["your_percentile"] = float((reported.utilization < u).mean())
-    # Utilization falls steeply with program size, so the fair comparison is
-    # against programs of similar size, not against everyone.
+    if peak_mw is not None:
+        out.update(_against_peak(potential_mw, actual_mw, peak_mw))
+    # Size matters for reading one program's number, mostly because small
+    # programs so often report a contract figure, so peers are also drawn from
+    # programs of similar size.
     edges = reported.potential_peak_mw.quantile([0, 0.25, 0.5, 0.75, 1.0]).to_numpy()
     band = int(np.clip(np.searchsorted(edges, potential_mw, side="right") - 1, 0, 3))
     names = ["smallest", "second", "third", "largest"]
@@ -174,7 +185,13 @@ def benchmark(potential_mw: float, actual_mw: float | None, in_rto: bool | None)
     out["size_band"] = f"{names[band]} quarter, {span}"
     out["size_band_median_utilization"] = float(peers.utilization.median())
     out["your_percentile_within_size_band"] = float((peers.utilization < u).mean())
-    if actual_mw > 0 and np.isclose(actual_mw, potential_mw):
+    if out.get("potential_exceeds_load_at_peak"):
+        out["your_status"] = (
+            "potential exceeds the load in the peak hour: the form defines potential "
+            "at the system peak hour, so this cannot be the defined quantity and is "
+            "probably connected or contracted load (CHECKLIST.md question 3)"
+        )
+    elif actual_mw > 0 and np.isclose(actual_mw, potential_mw):
         out["your_status"] = (
             "actual equals potential: this is usually a contract figure rather than "
             "a measurement, so check how actual was determined before comparing "
@@ -199,6 +216,26 @@ def benchmark(potential_mw: float, actual_mw: float | None, in_rto: bool | None)
     return out
 
 
+def _against_peak(potential_mw: float, actual_mw: float, peak_mw: float) -> dict:
+    """Check one potential figure against the utility's own peak, the way track
+    10 checks every utility. The peak EIA collects is net of any demand response
+    running at the time, so the load in the peak hour before demand response is
+    the peak plus the actual savings achieved in it."""
+    from .tracks import t10_reporting as t10
+
+    if peak_mw <= 0:
+        raise SystemExit("peak must be positive")
+    pop = t10.utility_year()
+    pop = pop[pop.checkable]
+    share = potential_mw / (peak_mw + actual_mw)
+    return {
+        "your_potential_share_of_load_at_peak": float(share),
+        "us_median_potential_share_of_peak": float(pop.potential_share_of_gross_peak.median()),
+        "your_percentile_against_peak": float((pop.potential_share_of_gross_peak < share).mean()),
+        "potential_exceeds_load_at_peak": bool(potential_mw > peak_mw + actual_mw + t10.ROUNDING_MW),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m phantomload")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -209,6 +246,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     bm.add_argument("--potential", type=float, required=True, help="potential MW")
     bm.add_argument("--actual", type=float, default=None, help="actual MW; omit if not reported")
+    bm.add_argument(
+        "--peak", type=float, default=None,
+        help="the utility's annual peak demand, MW: checks potential against the load in the peak hour",
+    )
     where = bm.add_mutually_exclusive_group()
     where.add_argument("--rto", action="store_true", help="compare only inside RTO footprints")
     where.add_argument("--non-rto", action="store_true", help="compare only outside them")
@@ -216,7 +257,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "benchmark":
         in_rto = True if args.rto else (False if args.non_rto else None)
-        result = benchmark(args.potential, args.actual, in_rto)
+        if args.peak is not None and args.actual is None:
+            raise SystemExit("--peak needs --actual: the load in the peak hour is the peak plus the actual savings")
+        result = benchmark(args.potential, args.actual, in_rto, args.peak)
         width = max(len(k) for k in result)
         for k, v in result.items():
             shown = f"{v:.1%}" if isinstance(v, float) else v
@@ -242,7 +285,7 @@ def _reading(r: dict) -> str:
         f"{r['measured_rotation_share_of_zero_capacity']:.0%} of the capacity ever "
         "reported at zero belongs to entities that delivered a measured amount in "
         "another year. That part has shown it can deliver, so its zero years read "
-        "as not called rather than not there.",
+        "as not running in the peak hour rather than not there.",
         f"{r['zero_every_year_share_of_zero_capacity']:.0%} stayed at zero in every "
         "year. That is ambiguous over a short panel: a reserve called once a "
         "decade and a program that does not operate both look like this.",

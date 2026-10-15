@@ -34,7 +34,9 @@ quantity. Then compare against peers of similar size that report measurements:
 
 **Why.** A program that was not dispatched reports zero realised reduction,
 whether or not it would have performed. Zero is what an unneeded reserve looks
-like in a mild year.
+like in a mild year. And EIA's actual figure is the reduction "measured at the
+time of the company's annual system peak hour", so a program called on other
+days but not running in that one hour reports zero too.
 
 **What the evidence says.** Across every utility reporting to EIA from 2016 to
 2018, exact zeros held 10.0% to 17.8% of enrolled capacity a year. Only 9 of 304
@@ -44,8 +46,9 @@ utilities with a measured delivery in another year. The rest stayed at zero or
 moved only to a copied figure, a delivery under 5% of potential, or a program
 that changed size several-fold.
 
-**How to answer it.** Ask for the number of events called each year, and for
-the measured response in any year the program was called. A zero with no events
+**How to answer it.** Ask for the number of events called each year, whether
+any of them covered the hour of the annual peak, and for the measured response
+in any year the program was called. A zero with no events
 is a dispatch decision, not a performance failure; a zero followed by a measured
 delivery shows the capacity can perform; a zero followed by the enrolled figure
 copied into the delivered field shows nothing.
@@ -64,7 +67,10 @@ program; this repository cannot test it directly, and cannot show it applies
 more widely.
 
 **How to answer it.** Compare the program's dispatch record against the
-utility's reserve margin in the same years.
+utility's reserve margin in the same years. Santee Cooper is the pattern to look
+for: zero in two years, and its full interruptible load in the one year its
+peak was highest, the January 2018 cold, for load its planning documents treat
+as non-firm.
 
 ## 3. How is "potential" defined?
 
@@ -78,9 +84,16 @@ the least intense division's standard everywhere would move national utilization
 from 35.2% to 90.6%. That bounds how much a definition can matter; it does not
 show which definitions are in use.
 
+The utility's own peak gives a hard check. Potential is defined in the peak
+hour, so it cannot exceed the load in that hour, which is the reported peak plus
+the savings achieved in it. 18 utility-years from 8 utilities, cooperatives and
+a public power district in North Dakota, Minnesota and Nebraska, report more than
+that; nationally potential runs at about 5% of peak.
+
 **How to answer it.** Ask what the potential figure represents: a contract
-quantity, a device count times an engineering estimate, or a measured
-historical maximum.
+quantity, a device count times an engineering estimate, a connected load, or a
+measured historical maximum. Then check it against the peak:
+`python -m phantomload benchmark --potential <MW> --actual <MW> --peak <MW>`.
 
 ## 4. Does the shortfall move with system conditions?
 
@@ -96,9 +109,17 @@ specifications the regional share exceeds chance in all nine but is significant
 in 3 of 9. Excluding reports where actual equals potential, a modest regional
 component appears; including them, it does not.
 
+Within utilities, the reported figure does not move with the size or timing of
+the utility's own peak. It does not rise in the year the peak was highest, where
+a rise of 2 points of utilization per percent of peak would have been detected,
+and the January 2018 cold did not raise it at the 59 utilities it pushed to new
+winter peaks. So either the program is not called harder in a harder year, or
+the figure is not being reported for the peak hour at all.
+
 **How to answer it.** Ask for several years of the program's events and realised
-reduction alongside the system peak in each year. Event-level evaluation reports
-usually contain all three.
+reduction alongside the system peak in each year, and how the reported figure
+was determined: at the peak hour, as the form asks, or as the largest or average
+event reduction. Event-level evaluation reports usually contain all of it.
 
 ## 5. Which basis is the cost being compared on?
 
@@ -138,6 +159,11 @@ hourly net load reaches 91% of its annual maximum in ERCO and 85% in PJM in
 winter months, and PJM's own seasonal aggregation was limited by a shortage of
 winter-capable resource. The third agrees narrowly: the winter four-hour case is
 the only accreditation pairing demand response loses, by 3.5%.
+
+A fourth route says nothing either way: the utilities the January 2018 cold
+pushed to new winter peaks reported no change in utilization, which a
+summer-only fleet reporting to the peak-hour definition would have shown as a
+fall, and a winter-capable fleet called harder as a rise.
 
 **How to answer it.** Ask for the program's seasonal call window and its winter
 event record.

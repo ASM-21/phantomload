@@ -1,0 +1,60 @@
+year,utility_number,utility,home_state,ownership,nerc_region,summer_peak_mw,winter_peak_mw,actual_mw,potential_mw,potential_share_of_gross_peak,exceeds_gross_peak,over_half_gross_peak,actual_exceeds_potential,provenance
+2016,19160,"Tri-County Electric Coop, Inc",OK,Cooperative,SPP,158.2,120.5,500.0,537.0,0.8158614402917046,False,True,False,measured
+2018,24949,Cass County Elec Coop Inc,ND,Cooperative,MRO,231.9,271.1,126.3,467.8,1.1771514846502265,True,True,False,measured
+2017,24949,Cass County Electric Coop Inc,ND,Cooperative,MRO,232.1,258.1,126.0,466.4,1.2142671179380369,True,True,False,measured
+2016,24949,Cass County Elec Coop Inc,ND,Cooperative,MRO,233.3,261.8,115.0,426.0,1.1305732484076432,True,True,False,measured
+2017,1529,"Beltrami Electric Coop, Inc",MN,Cooperative,MRO,66.8,114.6,31.2,226.7,1.5548696844993142,True,True,False,measured
+2016,1529,"Beltrami Electric Coop, Inc",MN,Cooperative,MRO,73.9,116.0,31.3,225.8,1.5329260013577732,True,True,False,measured
+2018,12301,Nodak Electric Coop Inc,ND,Cooperative,MRO,195.0,223.0,81.8,205.1,0.6729002624671916,False,True,False,measured
+2016,12301,Nodak Electric Coop Inc,ND,Cooperative,MRO,194.2,233.0,81.2,204.6,0.6511775938892426,False,True,False,measured
+2017,12301,Nodak Electric Coop Inc,ND,Cooperative,MRO,185.0,223.0,80.8,203.9,0.6711652402896643,False,True,False,measured
+2017,803,Arizona Public Service Co,AZ,Investor Owned,WECC,7367.0,4303.0,207.3,202.8,0.026774751462181324,False,False,True,measured
+2017,20639,"Wild Rice Electric Coop, Inc",MN,Cooperative,MRO,41.7,75.5,35.0,121.8,1.102262443438914,True,True,False,measured
+2018,20639,"Wild Rice Electric Coop, Inc",MN,Cooperative,MRO,43.6,72.5,32.0,121.7,1.1645933014354066,True,True,False,measured
+2017,8901,CenterPoint Energy,TX,Investor Owned,TRE,,,142.8,117.9,,False,False,True,measured
+2018,8901,CenterPoint Energy,TX,Investor Owned,TRE,,,130.1,117.5,,False,False,True,measured
+2018,14426,Panhandle Rural El Member Assn,NE,Cooperative,WECC,38.9,10.8,0.0,114.9,2.9537275064267354,True,True,False,measured
+2016,8901,CenterPoint Energy,TX,Investor Owned,TRE,,,120.2,114.2,,False,False,True,measured
+2017,14426,Panhandle Rural El Member Assn,NE,Cooperative,WECC,39.5,10.8,26.5,110.7,1.6772727272727272,True,True,False,measured
+2016,20639,"Wild Rice Electric Coop, Inc",MN,Cooperative,MRO,39.5,70.2,24.4,96.0,1.0147991543340382,True,True,False,measured
+2016,108,Adams-Columbia Electric Coop,WI,Cooperative,MRO,124.4,82.5,15.8,81.5,0.5813124108416547,False,True,False,measured
+2018,108,Adams-Columbia Electric Coop,WI,Cooperative,MRO,141.6,91.0,11.7,79.8,0.5205479452054795,False,True,False,measured
+2017,108,Adams-Columbia Electric Coop,WI,Cooperative,MRO,109.1,83.4,7.7,79.1,0.6772260273972602,False,True,False,measured
+2016,12539,Midwest Electric Member Corp,NE,Cooperative,MRO,141.7,18.5,13.2,77.7,0.5016139444803099,False,True,False,measured
+2017,16284,"Roseau Electric Coop, Inc",MN,Cooperative,MRO,25.2,39.8,76.3,76.9,0.6623600344530578,False,True,False,measured
+2016,21111,Perennial Public Power Dist,NE,Political Subdivision,SPP,97.6,45.5,30.0,72.0,0.5642633228840126,False,True,False,measured
+2018,13698,North Central Public Pwr Dist,NE,Political Subdivision,MRO,52.4,16.9,18.0,71.0,1.0085227272727273,True,True,False,measured
+2017,13698,North Central Public Pwr Dist,NE,Political Subdivision,MRO,62.8,18.7,17.0,68.5,0.8583959899749374,False,True,False,measured
+2016,26939,Red River Valley Coop Pwr Assn,MN,Cooperative,MRO,19.6,34.1,19.0,61.0,1.1487758945386064,True,True,False,measured
+2018,17548,South Central Public Pwr Dist,NE,Political Subdivision,SPP,68.7,34.3,34.0,60.0,0.5842259006815969,False,True,False,measured
+2017,26939,Red River Valley Coop Pwr Assn,MN,Cooperative,MRO,18.5,39.5,21.0,60.0,0.9917355371900827,False,True,False,measured
+2016,12395,Menard Electric Coop,IL,Cooperative,RFC,64.3,34.1,13.0,59.0,0.7632600258732213,False,True,False,measured
+2018,3764,Clearwater-Polk Elec Coop Inc,MN,Cooperative,MRO,12.2,18.7,16.1,56.8,1.632183908045977,True,True,False,measured
+2018,3205,Cedar-Knox Public Power Dist,NE,Political Subdivision,MRO,48.4,47.4,18.8,56.2,0.8363095238095238,False,True,False,measured
+2016,26934,"Red Lake Electric Coop, Inc",MN,Cooperative,MRO,21.7,30.5,14.0,52.5,1.1797752808988764,True,True,False,measured
+2018,26939,Red River Valley Coop Pwr Assn,MN,Cooperative,MRO,23.2,39.0,14.0,52.0,0.9811320754716981,False,True,False,measured
+2017,26934,"Red Lake Electric Coop, Inc",MN,Cooperative,MRO,19.0,30.5,11.9,44.0,1.0377358490566038,True,True,False,measured
+2018,26934,"Red Lake Electric Coop, Inc",MN,Cooperative,MRO,21.3,29.7,11.8,43.9,1.0578313253012048,True,True,False,measured
+2016,16284,"Roseau Electric Coop, Inc",MN,Cooperative,MRO,29.6,39.7,21.0,42.0,0.6919275123558484,False,True,False,measured
+2016,16920,Sedgwick County El Coop Assn Inc,KS,Cooperative,SPP,34.4,22.4,3.0,36.5,0.9759358288770054,False,True,False,measured
+2016,12472,Middle Georgia El Member Corp,GA,Cooperative,SERC,55.0,33.0,16.0,36.0,0.5070422535211268,False,True,False,measured
+2018,12472,Middle Georgia El Member Corp,GA,Cooperative,SERC,46.6,34.8,8.0,36.0,0.6593406593406593,False,True,False,measured
+2017,12472,Middle Georgia El Member Corp,GA,Cooperative,SERC,47.1,31.1,8.0,36.0,0.6533575317604355,False,True,False,measured
+2017,3764,Clearwater-Polk Elec Coop Inc,MN,Cooperative,MRO,10.0,20.0,10.4,34.0,1.118421052631579,True,True,False,measured
+2016,3764,Clearwater-Polk Elec Coop Inc,MN,Cooperative,MRO,9.0,12.0,9.4,33.5,1.5654205607476637,True,True,False,measured
+2018,14178,"P K M Electric Coop, Inc",MN,Cooperative,MRO,13.8,16.6,16.4,32.3,0.9787878787878787,False,True,False,measured
+2017,14178,"P K M Electric Coop, Inc",MN,Cooperative,MRO,12.2,15.5,26.0,32.1,0.7734939759036145,False,True,False,measured
+2016,14178,"P K M Electric Coop, Inc",MN,Cooperative,MRO,14.2,16.6,25.0,31.0,0.7451923076923077,False,True,False,measured
+2018,15188,Polk County Rural Pub Pwr Dist,NE,Political Subdivision,MRO,38.0,20.9,7.4,23.9,0.526431718061674,False,True,False,measured
+2016,15034,Pierce-Pepin Coop Services,WI,Cooperative,MRO,26.5,27.8,4.0,22.9,0.720125786163522,False,True,False,measured
+2018,16183,Rochester Gas & Electric Corp,NY,Investor Owned,NPCC,1615.9,1178.9,27.1,21.3,0.012964090079123554,False,False,True,measured
+2017,15034,Pierce-Pepin Coop Services,WI,Cooperative,MRO,23.7,27.2,4.2,20.0,0.6369426751592357,False,True,False,measured
+2018,15034,Pierce-Pepin Coop Services,WI,Cooperative,MRO,26.2,27.5,4.4,20.0,0.6269592476489029,False,True,False,measured
+2018,2599,Burt County Public Power Dist,NE,Political Subdivision,MRO,18.6,18.6,2.0,19.0,0.9223300970873786,False,True,False,measured
+2017,19788,City of Vermillion - (SD),SD,Municipal,MRO,16.3,10.9,4.0,18.0,0.8866995073891625,False,True,False,measured
+2018,19788,City of Vermillion - (SD),SD,Municipal,MRO,16.6,11.9,4.0,18.0,0.8737864077669902,False,True,False,measured
+2016,19788,City of Vermillion - (SD),SD,Municipal,MRO,15.9,10.9,4.0,17.0,0.8542713567839196,False,True,False,measured
+2018,11475,City of Madison - (SD),SD,Municipal,MRO,19.7,19.3,0.0,17.0,0.8629441624365483,False,True,False,measured
+2017,2599,Burt County Public Power Dist,NE,Political Subdivision,MRO,22.0,20.0,5.0,17.0,0.6296296296296297,False,True,False,measured
+2016,2599,Burt County Public Power Dist,NE,Political Subdivision,MRO,19.0,19.0,3.0,15.0,0.6818181818181818,False,True,False,measured
+2017,15248,Portland General Electric Co,OR,Investor Owned,WECC,3976.0,3727.0,13.3,12.4,0.003108314741934675,False,False,True,measured

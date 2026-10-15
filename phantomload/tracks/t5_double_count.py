@@ -183,6 +183,104 @@ def regional_exposure(year: int = 2023) -> pd.DataFrame:
     return out.sort_values("dp_per_dr_customer", ascending=False)
 
 
+# --- the same bound, utility by utility --------------------------------------
+# The bound above is computed from two national totals, and a national total
+# cannot see that demand response and time-varying rates are enrolled by
+# different utilities. The intersection can only fall within a utility (or,
+# where customers buy energy from one company and are served by another, within
+# a state), so the same Frechet bounds computed unit by unit and summed are far
+# tighter than the national ones. EIA-861 publishes the three counts this needs
+# by utility and state: customers enrolled in demand response, customers on a
+# time-varying rate, and customers. The files reachable here are 2017 and 2018.
+#
+# Two levels are reported. Utility-state assumes a customer's rate and program
+# come from the same utility. State allows overlap across utilities within a
+# state, which matters where a generation and transmission cooperative runs the
+# program and a member cooperative sets the rate, or where a retail supplier
+# sells the time-of-use plan and the delivery utility runs the program.
+
+OVERLAP_YEARS = (2017, 2018)
+OVERLAP_CLASSES = ("residential", "total")
+
+
+def _overlap_frame(year: int, customer_class: str) -> pd.DataFrame:
+    from ..shared import eia861
+
+    keys = ["utility_number", "state"]
+    dr = eia861.demand_response_by_class()
+    dr = dr[dr.year == year]
+    if customer_class != "total":
+        dr = dr[dr.customer_class == customer_class]
+    d = dr.groupby(keys).customers_enrolled.sum().rename("d")
+    dp = eia861.dynamic_pricing()
+    p = dp[dp.year == year].groupby(keys)[f"dp_{customer_class}"].sum().rename("p")
+    cu = eia861.customers()
+    n = cu[cu.year == year].groupby(keys)[f"customers_{customer_class}"].sum().rename("n")
+    return pd.concat([d, p, n], axis=1).fillna(0.0)
+
+
+def _bounds(f: pd.DataFrame) -> tuple[float, float, float]:
+    """Frechet bounds on the intersection, summed over units, as shares of all
+    demand response enrolment. Counts are capped at the unit's customers: a
+    generation and transmission cooperative reports its members' enrolment and
+    has no retail customers of its own, which would otherwise push the lower
+    bound above the upper."""
+    f = f[f.d > 0]
+    total = f.d.sum()
+    dc, pc = f[["d", "n"]].min(axis=1), f[["p", "n"]].min(axis=1)
+    lower = (dc + pc - f.n).clip(lower=0).sum() / total
+    upper = f[["d", "p"]].min(axis=1).sum() / total
+    within = (f.d * (f.p / f.n.where(f.n > 0)).fillna(0).clip(upper=1)).sum() / total
+    return float(lower), float(upper), float(within)
+
+
+def utility_level_overlap() -> pd.DataFrame:
+    rows = []
+    for year in OVERLAP_YEARS:
+        for cls in OVERLAP_CLASSES:
+            f = _overlap_frame(year, cls)
+            states = f.groupby(level="state").sum()
+            nation = f.sum().to_frame().T
+            for level, frame in (("utility-state", f), ("state", states), ("nation", nation)):
+                lo, hi, ind = _bounds(frame)
+                rows.append(
+                    {
+                        "year": year,
+                        "customer_class": cls,
+                        "level": level,
+                        "dr_customers": float(f.d.sum()),
+                        "dynamic_pricing_customers": float(f.p.sum()),
+                        "lower_share_of_dr": lo,
+                        "upper_share_of_dr": hi,
+                        "independent_within_unit": ind,
+                        "units": int((frame.d > 0).sum()),
+                        "provenance": Provenance.MEASURED.value,
+                    }
+                )
+    return pd.DataFrame(rows)
+
+
+def utility_level_summary() -> dict:
+    df = utility_level_overlap()
+
+    def pick(year, cls, level, col):
+        r = df[(df.year == year) & (df.customer_class == cls) & (df.level == level)]
+        return float(r[col].iloc[0])
+
+    y = max(OVERLAP_YEARS)
+    out = {"year": y}
+    for cls in OVERLAP_CLASSES:
+        for level in ("utility-state", "state", "nation"):
+            tag = f"{cls}_{level.replace('-', '_')}"
+            out[f"{tag}_lower"] = pick(y, cls, level, "lower_share_of_dr")
+            out[f"{tag}_upper"] = pick(y, cls, level, "upper_share_of_dr")
+        out[f"{cls}_independent_within_utility"] = pick(y, cls, "utility-state", "independent_within_unit")
+        out[f"{cls}_independent_nationally"] = pick(y, cls, "nation", "independent_within_unit")
+    out["dynamic_pricing_customers"] = pick(y, "total", "nation", "dynamic_pricing_customers")
+    out["dr_customers"] = pick(y, "total", "nation", "dr_customers")
+    return out
+
+
 def summary() -> dict:
     df = sweep()
     central = attribute(TOU_PEAK_REDUCTION.central, CPP_PEAK_REDUCTION.central)
@@ -211,6 +309,7 @@ def summary() -> dict:
         "highest_exposure_ratio": float(
             regional_exposure().dp_per_dr_customer.iloc[0]
         ),
+        **{f"ul_{k}": v for k, v in utility_level_summary().items()},
     }
 
 
@@ -219,5 +318,6 @@ def run() -> dict:
         "sweep": sweep(),
         "kw_view": kw_view(),
         "regional_exposure": regional_exposure().reset_index(names="division"),
+        "utility_level_overlap": utility_level_overlap(),
         "summary": summary(),
     }
